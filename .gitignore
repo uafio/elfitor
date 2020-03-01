@@ -7,3 +7,22 @@
 *.obj
 *.log
 *.tlog
+icons/elf-file-format.JPG
+icons/elf-file-format.png
+icons/elf-file-format.svg
+x64/Release/elfcmd
+x64/Release/elfcmd2
+x64/Release/elfcmd3
+x64/Release/elfitor.exe
+x64/Release/elfitor.id0
+x64/Release/elfitor.id1
+x64/Release/elfitor.id2
+x64/Release/elfitor.iobj
+x64/Release/elfitor.ipdb
+x64/Release/elfitor.nam
+x64/Release/elfitor.pdb
+x64/Release/elfitor.til
+x64/Release/imgui - Copy.ini
+*.pdb
+elfitor/elfitor.vcxproj.user
+elfitor/elfitor.vcxproj.filters
