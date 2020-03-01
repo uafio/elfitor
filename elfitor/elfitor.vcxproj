@@ -120,6 +120,7 @@
   <ItemGroup>
     <ClCompile Include="elfreader\ELFReader.cpp" />
     <ClCompile Include="glew\gl3w.c" />
+    <ClCompile Include="imelf.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -128,10 +129,10 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="application.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="elfreader\ELFReader.h" />
+    <ClInclude Include="imelf.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_glfw.h" />

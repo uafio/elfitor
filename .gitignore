@@ -1,0 +1,9 @@
+
+*.ipch
+.vs/elfitor/v15/.suo
+*.db
+*.opendb
+.vs/glew_window/v15/.suo
+*.obj
+*.log
+*.tlog

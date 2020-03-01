@@ -66,7 +66,7 @@ int main( int, char** )
 #endif
 
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow( 2600, 1500, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL );
+    GLFWwindow* window = glfwCreateWindow( 1600, 800, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL );
     if ( window == NULL )
         return 1;
     glfwMakeContextCurrent( window );
@@ -101,7 +101,7 @@ int main( int, char** )
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows
     //io.ConfigViewportsNoAutoMerge = true;
     //io.ConfigViewportsNoTaskBarIcon = true;
-    io.FontGlobalScale = 2.6f;
+    io.FontGlobalScale = 1.3f;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
