@@ -1,6 +1,7 @@
 #include "elfreader/ELFReader.h"
 #include "imgui.h"
 #include "imelf.h"
+#include <intrin.h>
 
 #pragma warning( disable : 4200 )
 
@@ -10,14 +11,14 @@ typedef struct _ComboBoxMap {
     const int count;
     const struct {
         const uint32_t key;
-        const char* const desc;
-    } value[0];
+        const char* const val;
+    } kv[0];
 
 public:
-    bool has( uint32_t x ) const
+    inline bool has( uint32_t x ) const
     {
         for ( int i = 0; i < count; i++ ) {
-            if ( x == value[i].key ) {
+            if ( x == kv[i].key ) {
                 return true;
             }
         }
@@ -102,7 +103,7 @@ const ComboBoxMap EhdrTypeMap = {
 };
 
 const ComboBoxMap PhdrTypeMap = {
-    9,
+    18,
     {
         0, "PT_NULL", 
         1, "PT_LOAD", 
@@ -132,18 +133,18 @@ namespace Imelf
     {
         const char* preview = "";
         for ( int i = 0; i < map.count; i++ ) {
-            if ( dest == map.value[i].key ) {
-                preview = map.value[i].desc;
+            if ( dest == map.kv[i].key ) {
+                preview = map.kv[i].val;
                 break;
             }
         }
 
-        if ( ImGui::BeginCombo( map.value[0].desc, preview, ImGuiComboFlags_None ) ) {
-            for ( int n = 0; n < map.count; n++ ) {
-                bool is_selected = ( preview == map.value[n].desc );
-                if ( ImGui::Selectable( map.value[n].desc, is_selected ) ) {
-                    preview = map.value[n].desc;
-                    dest = map.value[n].key;
+        if ( ImGui::BeginCombo( map.kv[0].val, preview, ImGuiComboFlags_None ) ) {
+            for ( int i = 0; i < map.count; i++ ) {
+                bool is_selected = ( preview == map.kv[i].val );
+                if ( ImGui::Selectable( map.kv[i].val, is_selected ) ) {
+                    dest = map.kv[i].key;
+                    preview = map.kv[i].val;
                 }
             }
             ImGui::EndCombo();
@@ -640,12 +641,33 @@ namespace Imelf
 
     namespace Phdr
     {
-        void Row( Elf64_Phdr* phdr )
+        template<class T>
+        void Flags( T& perm )
+        {
+            bool read, write, exec;
+            read = true ? perm & 4 : false;
+            write = true ? perm & 2 : false;
+            exec = true ? perm & 1 : false;
+
+            if ( ImGui::Checkbox( "##read", &read ) ) {
+                perm ^= 4;
+            }
+            ImGui::SameLine();
+            if ( ImGui::Checkbox( "##write", &write ) ) {
+                perm ^= 2;
+            }
+            ImGui::SameLine();
+            if ( ImGui::Checkbox( "##exec", &exec ) ) {
+                perm ^= 1;
+            }
+        }
+
+        void TableRow( Elf64_Phdr* phdr )
         {
             ImGui::TableNextRow();
             Imelf::ComboBox( phdr->p_type, PhdrTypeMap );
             ImGui::TableNextCell();
-            ImGui::Text( "%x", phdr->p_flags );
+            Imelf::Phdr::Flags( phdr->p_flags );
             ImGui::TableNextCell();
             ImGui::Text( "%llx", phdr->p_offset );
             ImGui::TableNextCell();
@@ -667,7 +689,7 @@ namespace Imelf
         {
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
             ImGui::BeginTable( "elf program", 8, flags, ImVec2( 0, ImGui::GetTextLineHeightWithSpacing() * 1 ) );
-            ImGui::TableSetupColumn( "Type", 0, 100.0 );
+            ImGui::TableSetupColumn( "Type", 0, 170.0 );
             ImGui::TableSetupColumn( "Flags", 0, 100.0 );
             ImGui::TableSetupColumn( "Offset", 0, 100.0 );
             ImGui::TableSetupColumn( "Virtual Address", 0, 200.0 );
@@ -676,7 +698,7 @@ namespace Imelf
             ImGui::TableSetupColumn( "Segment Virtual Size", 0, 220.0 );
             ImGui::TableSetupColumn( "Alignment", ImGuiTableColumnFlags_WidthStretch );
 
-            const char* descs[] = { "Identifies the type of the segment.", "Segment-dependent flags.", "Offset of the segment in the file image.", "Virtual address of the segment in memory.", "On systems where physical address is relevant, reserved for segment's physical address.", "Size in bytes of the segment in the file image. May be 0.", "Size in bytes of the segment in memory. May be 0.", "0 and 1 specify no alignment. Otherwise should be a positive, integral power of 2, with p_vaddr equating p_offset modulus p_align." };
+            const char* descs[] = { "Identifies the type of the segment.", "Segment-dependent flags (RWX).", "Offset of the segment in the file image.", "Virtual address of the segment in memory.", "On systems where physical address is relevant, reserved for segment's physical address.", "Size in bytes of the segment in the file image. May be 0.", "Size in bytes of the segment in memory. May be 0.", "0 and 1 specify no alignment. Otherwise should be a positive, integral power of 2, with p_vaddr equating p_offset modulus p_align." };
 
             ImGui::TableNextRow( ImGuiTableRowFlags_Headers );
             for ( int i = 0; i < 8; i++ ) {
@@ -694,7 +716,9 @@ namespace Imelf
             Elf64_Ehdr* ehdr = reinterpret_cast< Elf64_Ehdr* >( elf->get_elf_header() );
             for ( int i = 0; i < ehdr->e_phnum; i++ ) {
                 Elf64_Phdr* phdr = reinterpret_cast< Elf64_Phdr* >( elf->get_prog_header( i ) );
-                Row( phdr );
+                ImGui::PushID( i );
+                TableRow( phdr );
+                ImGui::PopID();
             }
 
             ImGui::EndTable();
