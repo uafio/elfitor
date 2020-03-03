@@ -1,7 +1,7 @@
 #include "elfreader/ELFReader.h"
 #include "imgui.h"
 #include "imelf.h"
-#include <intrin.h>
+#include "imgui_memory_editor.h"
 
 #pragma warning( disable : 4200 )
 
@@ -14,15 +14,15 @@ typedef struct _ComboBoxMap {
         const char* const val;
     } kv[0];
 
-public:
-    inline bool has( uint32_t x ) const
+
+    inline const char* get_val( uint32_t key ) const
     {
         for ( int i = 0; i < count; i++ ) {
-            if ( x == kv[i].key ) {
-                return true;
+            if ( key == kv[i].key ) {
+                return kv[i].val;
             }
         }
-        return false;
+        return nullptr;
     }
 } ComboBoxMap;
 
@@ -215,7 +215,7 @@ namespace Imelf
             ImGui::TableNextCell();
             ImGui::Text( "%02x", sizeof( ehdr->e_class ) );
             ImGui::TableNextCell();
-            if ( EhdrClassMap.has( ehdr->e_class ) ) {
+            if ( EhdrClassMap.get_val( ehdr->e_class ) ) {
                 ImGui::InputScalar( "ei_class_input", ImGuiDataType_U8, &ehdr->e_class, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             } else {
                 ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1.0f, 0.0f, 0.0f, 1.0f ) );
@@ -240,7 +240,7 @@ namespace Imelf
             ImGui::TableNextCell();
             ImGui::Text( "%02x", sizeof( ehdr->e_data ) );
             ImGui::TableNextCell();
-            if ( EhdrDataMap.has( ehdr->e_data ) ) {
+            if ( EhdrDataMap.get_val( ehdr->e_data ) ) {
                 ImGui::InputScalar( "ei_data_input", ImGuiDataType_U8, &ehdr->e_data, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             } else {
                 ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1.0f, 0.0f, 0.0f, 1.0f ) );
@@ -289,7 +289,7 @@ namespace Imelf
             ImGui::TableNextCell();
             ImGui::Text( "%02x", sizeof( ehdr->e_osabi ) );
             ImGui::TableNextCell();
-            if ( EhdrOsabiMap.has( ehdr->e_osabi ) ) {
+            if ( EhdrOsabiMap.get_val( ehdr->e_osabi ) ) {
                 ImGui::InputScalar( "ei_osabi_input", ImGuiDataType_U8, &ehdr->e_osabi, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             } else {
                 ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1.0f, 0.0f, 0.0f, 1.0f ) );
@@ -333,7 +333,7 @@ namespace Imelf
             ImGui::TableNextCell();
             ImGui::Text( "%02x", sizeof( ehdr->e_type ) );
             ImGui::TableNextCell();
-            if ( EhdrTypeMap.has( ehdr->e_type ) ) {
+            if ( EhdrTypeMap.get_val( ehdr->e_type ) ) {
                 ImGui::InputScalar( "e_type_input", ImGuiDataType_U16, &ehdr->e_type, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             } else {
                 ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1.0f, 0.0f, 0.0f, 1.0f ) );
@@ -359,7 +359,7 @@ namespace Imelf
             ImGui::TableNextCell();
             ImGui::Text( "%02x", sizeof( ehdr->e_machine ) );
             ImGui::TableNextCell();
-            if ( EhdrMachineMap.has( ehdr->e_machine ) ) {
+            if ( EhdrMachineMap.get_val( ehdr->e_machine ) ) {
                 ImGui::InputScalar( "e_machine_input", ImGuiDataType_U16, &ehdr->e_machine, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             } else {
                 ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1.0f, 0.0f, 0.0f, 1.0f ) );
@@ -666,31 +666,47 @@ namespace Imelf
         {
             ImGui::TableNextRow();
             Imelf::ComboBox( phdr->p_type, PhdrTypeMap );
+
             ImGui::TableNextCell();
             Imelf::Phdr::Flags( phdr->p_flags );
+
             ImGui::TableNextCell();
-            ImGui::Text( "%llx", phdr->p_offset );
+            ImGui::InputScalar( "##offset", ImGuiDataType_U64, &phdr->p_offset, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+
             ImGui::TableNextCell();
-            ImGui::Text( "%llx", phdr->p_vaddr );
+            ImGui::InputScalar( "##vaddr", ImGuiDataType_U64, &phdr->p_vaddr, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+
             ImGui::TableNextCell();
-            ImGui::Text( "%llx", phdr->p_paddr );
+            ImGui::InputScalar( "##paddr", ImGuiDataType_U64, &phdr->p_paddr, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+
             ImGui::TableNextCell();
-            ImGui::Text( "%llx", phdr->p_filesz );
+            ImGui::InputScalar( "##filesz", ImGuiDataType_U64, &phdr->p_filesz, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+
             ImGui::TableNextCell();
-            ImGui::Text( "%llx", phdr->p_memsz );
+            ImGui::InputScalar( "##memsz", ImGuiDataType_U64, &phdr->p_memsz, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+
             ImGui::TableNextCell();
-            ImGui::Text( "%llx", phdr->p_align );
+            ImGui::InputScalar( "##memsz", ImGuiDataType_U64, &phdr->p_align, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
         }
-        void Row( Elf32_Phdr* phdr )
+        void TableRow( Elf32_Phdr* phdr )
         {
         }
 
-          void Draw( ELFReader* elf )
+        void HexDataTab( Elf64_Phdr phdr )
+        {
+        
+        }
+        void HexDataTab( Elf32_Phdr phdr )
+        {
+        }
+
+
+        void Draw( ELFReader* elf )
         {
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
             ImGui::BeginTable( "elf program", 8, flags, ImVec2( 0, ImGui::GetTextLineHeightWithSpacing() * 1 ) );
             ImGui::TableSetupColumn( "Type", 0, 170.0 );
-            ImGui::TableSetupColumn( "Flags", 0, 100.0 );
+            ImGui::TableSetupColumn( "R W X", 0, 100.0 );
             ImGui::TableSetupColumn( "Offset", 0, 100.0 );
             ImGui::TableSetupColumn( "Virtual Address", 0, 200.0 );
             ImGui::TableSetupColumn( "Physical Address", 0, 200.0 );
@@ -720,8 +736,32 @@ namespace Imelf
                 TableRow( phdr );
                 ImGui::PopID();
             }
-
             ImGui::EndTable();
+
+            ImGui::Separator();
+            ImGui::SetCursorPosY( ImGui::GetCursorPosY() + 50.0f );
+
+            ImGuiTabBarFlags tflags = ImGuiTabBarFlags_NoCloseWithMiddleMouseButton | ImGuiTabBarFlags_TabListPopupButton;
+            if ( ImGui::BeginTabBar( "PhdrDataTabs", flags ) ) {
+
+
+                for ( int i = 0; i < ehdr->e_phnum; i++ ) {
+                    Elf64_Phdr* phdr = reinterpret_cast< Elf64_Phdr* >( elf->get_prog_header( i ) );
+                    ImGui::PushID( i );
+                    auto type = PhdrTypeMap.get_val( phdr->p_type );
+                    type = type ? type : "";
+                    if ( ImGui::BeginTabItem( type, nullptr, 0 ) ) {
+                        MemoryEditor medit;
+                        MemoryEditor::Sizes sizes;
+                        medit.CalcSizes( sizes, sizeof(*phdr), 0 );
+                        medit.DrawContents( phdr, sizeof( *phdr ) );
+                        ImGui::EndTabItem();
+                    }
+                    ImGui::PopID();
+                }
+                ImGui::EndTabBar();
+            }
+
         }
     }
 

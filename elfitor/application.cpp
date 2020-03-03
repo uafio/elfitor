@@ -15,6 +15,9 @@
 
 #include "elfreader/ELFReader.h"
 #include "imelf.h"
+#include "imgui_memory_editor.h"
+
+MemoryEditor medit;
 
 std::vector< ELFReader* > elfs;
 
@@ -252,4 +255,7 @@ void ShowApplicationWindow( GLFWwindow* window )
     ShowNagivationWindow();
     ShowMainWindow();
     //ImGui::ShowMetricsWindow();
+    if ( ctx.elf ) {
+        medit.DrawWindow( "medit", ctx.elf->get_elf_header(), ctx.elf->get_file_size() );
+    }
 }
