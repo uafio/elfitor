@@ -192,13 +192,14 @@ void ShowNagivationWindow( void )
     ImGui::End();
 }
 
-void MainWindowProgHeader64( void )
-{
-}
-
 void MainWindowSectionHeader64( void )
 {
-    ImGui::Text( "Section Header %d, %s", ctx.display.idx, ctx.elf->get_section_name( ctx.display.idx ) );
+    if ( ctx.elf ) {
+        Elf64_Ehdr* ehdr = reinterpret_cast< Elf64_Ehdr* >( ctx.elf->get_elf_header() );
+        for ( int i = 0; i < ehdr->e_shnum; i++ ) {
+            ImGui::Text( "%s", ctx.elf->get_section_name( i ) );
+		}
+    }
 }
 
 void ShowMainWindow( void )

@@ -519,6 +519,73 @@ struct MemoryEditor
         ImGui::SetCursorPosX(s.WindowWidth);
     }
 
+	void HexViewer( void* mem, size_t mem_size )
+    {
+        ImU8* mem_data = (ImU8*)mem;
+        Sizes s;
+        CalcSizes( s, mem_size, 0 );
+
+        // We begin into our scrolling region with the 'ImGuiWindowFlags_NoMove' in order to prevent click from moving the window.
+        // This is used as a facility since our main click detection code doesn't assign an ActiveId so the click would normally be caught as a window-move.
+        ImGui::BeginChild( "##scrolling", ImVec2( 0, 0 ), false, ImGuiWindowFlags_NoMove );
+        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+        ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 0, 0 ) );
+        ImGui::PushStyleVar( ImGuiStyleVar_ItemSpacing, ImVec2( 0, 0 ) );
+
+        const int line_total_count = (int)( ( mem_size + Cols - 1 ) / Cols );
+        ImGuiListClipper clipper( line_total_count, s.LineHeight );
+
+        // Draw vertical separator
+        ImVec2 window_pos = ImGui::GetWindowPos();
+        draw_list->AddLine( ImVec2( window_pos.x + s.PosAsciiStart - s.GlyphWidth, window_pos.y ), ImVec2( window_pos.x + s.PosAsciiStart - s.GlyphWidth, window_pos.y + 9999 ), ImGui::GetColorU32( ImGuiCol_Border ) );
+
+        const ImU32 color_text = ImGui::GetColorU32( ImGuiCol_Text );
+        const ImU32 color_disabled = ImGui::GetColorU32( ImGuiCol_TextDisabled );
+
+        const char* format_address = "%0*" _PRISizeT "X: ";
+        const char* format_byte_space = "%02X ";
+
+        for ( int line_i = clipper.DisplayStart; line_i < clipper.DisplayEnd; line_i++ ) // display only visible lines
+        {
+            size_t addr = ( size_t )( line_i * Cols );
+            ImGui::Text( format_address, s.AddrDigitsCount, addr );
+
+            // Draw Hexadecimal
+            for ( int n = 0; n < Cols && addr < mem_size; n++, addr++ ) {
+                float byte_pos_x = s.PosHexStart + s.HexCellWidth * n;
+                byte_pos_x += (float)( n / OptMidColsCount ) * s.SpacingBetweenMidCols;
+                ImGui::SameLine( byte_pos_x );
+
+                // NB: The trailing space is not visible but ensure there's no gap that the mouse cannot click on.
+                ImU8 b = ReadFn ? ReadFn( mem_data, addr ) : mem_data[addr];
+
+                if ( b == 0 )
+                    ImGui::TextDisabled( "00 " );
+                else
+                    ImGui::Text( format_byte_space, b );
+            }
+
+            // Draw ASCII values
+            ImGui::SameLine( s.PosAsciiStart );
+            ImVec2 pos = ImGui::GetCursorScreenPos();
+            addr = line_i * Cols;
+            for ( int n = 0; n < Cols && addr < mem_size; n++, addr++ ) {
+                unsigned char c = ReadFn ? ReadFn( mem_data, addr ) : mem_data[addr];
+                char display_c = ( c < 32 || c >= 128 ) ? '.' : c;
+                draw_list->AddText( pos, ( display_c == '.' ) ? color_disabled : color_text, &display_c, &display_c + 1 );
+                pos.x += s.GlyphWidth;
+            }
+            ImGui::NewLine();
+        }
+        clipper.End();
+        ImGui::PopStyleVar( 2 );
+        ImGui::EndChild();
+
+        // Notify the main window of our ideal child content size (FIXME: we are missing an API to get the contents size from the child)
+        ImGui::SetCursorPosX( s.WindowWidth );
+    }
+
     // Utilities for Data Preview
     const char* DataTypeGetDesc(ImGuiDataType data_type) const
     {
@@ -713,6 +780,9 @@ struct MemoryEditor
         } // Switch
         IM_ASSERT(0); // Shouldn't reach
     }
+
+
+	
 };
 
 #undef _PRISizeT

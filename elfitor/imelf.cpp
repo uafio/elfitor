@@ -171,10 +171,10 @@ namespace Imelf
         }
 
         if ( valid ) {
-            ImGui::InputScalar( dest, flags, dest, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+            ImGui::InputScalar( &dest, flags, &dest, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
         } else {
             ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1.0f, 0.0f, 0.0f, 1.0f ) );
-            ImGui::InputScalar( dest, flags, dest, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+            ImGui::InputScalar( &dest, flags, &dest, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::PopStyleColor();
         }
     }
@@ -739,7 +739,7 @@ namespace Imelf
             ImGui::EndTable();
 
             ImGui::Separator();
-            ImGui::SetCursorPosY( ImGui::GetCursorPosY() + 50.0f );
+            ImGui::SetCursorPosY( ImGui::GetCursorPosY() + 10.0f );
 
             ImGuiTabBarFlags tflags = ImGuiTabBarFlags_NoCloseWithMiddleMouseButton | ImGuiTabBarFlags_TabListPopupButton;
             if ( ImGui::BeginTabBar( "PhdrDataTabs", flags ) ) {
@@ -752,9 +752,7 @@ namespace Imelf
                     type = type ? type : "";
                     if ( ImGui::BeginTabItem( type, nullptr, 0 ) ) {
                         MemoryEditor medit;
-                        MemoryEditor::Sizes sizes;
-                        medit.CalcSizes( sizes, sizeof(*phdr), 0 );
-                        medit.DrawContents( phdr, sizeof( *phdr ) );
+                        medit.HexViewer( phdr, sizeof( *phdr ) );
                         ImGui::EndTabItem();
                     }
                     ImGui::PopID();
