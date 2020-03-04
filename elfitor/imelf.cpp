@@ -6,6 +6,7 @@
 #pragma warning( disable : 4200 )
 
 extern void HelpMarker( const char* desc );
+extern CTX ctx;
 
 typedef struct _ComboBoxMap {
     const int count;
@@ -125,6 +126,8 @@ const ComboBoxMap PhdrTypeMap = {
         0x7fffffff, "PT_HIPROC"
     },
 };
+
+MemoryEditor mViewer;
 
 namespace Imelf
 {
@@ -662,7 +665,8 @@ namespace Imelf
             }
         }
 
-        void TableRow( Elf64_Phdr* phdr )
+        template<class T>
+        void TableRow( T* phdr )
         {
             ImGui::TableNextRow();
             Imelf::ComboBox( phdr->p_type, PhdrTypeMap );
@@ -688,16 +692,16 @@ namespace Imelf
             ImGui::TableNextCell();
             ImGui::InputScalar( "##memsz", ImGuiDataType_U64, &phdr->p_align, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
         }
-        void TableRow( Elf32_Phdr* phdr )
-        {
-        }
 
-        void HexDataTab( Elf64_Phdr phdr )
+        //template<class T>
+        void InterpretData( Elf64_Phdr* phdr )
         {
-        
-        }
-        void HexDataTab( Elf32_Phdr phdr )
-        {
+            if ( phdr->p_type == 2 ) {
+                // PT_DYNAMIC
+
+            } else {
+                mViewer.HexViewer( phdr, sizeof( *phdr ) );
+            }
         }
 
 
@@ -743,16 +747,14 @@ namespace Imelf
 
             ImGuiTabBarFlags tflags = ImGuiTabBarFlags_NoCloseWithMiddleMouseButton | ImGuiTabBarFlags_TabListPopupButton;
             if ( ImGui::BeginTabBar( "PhdrDataTabs", flags ) ) {
-
-
                 for ( int i = 0; i < ehdr->e_phnum; i++ ) {
                     Elf64_Phdr* phdr = reinterpret_cast< Elf64_Phdr* >( elf->get_prog_header( i ) );
                     ImGui::PushID( i );
                     auto type = PhdrTypeMap.get_val( phdr->p_type );
-                    type = type ? type : "";
+                    type = type ? type : "UNKNOWN";
                     if ( ImGui::BeginTabItem( type, nullptr, 0 ) ) {
-                        MemoryEditor medit;
-                        medit.HexViewer( phdr, sizeof( *phdr ) );
+                        ctx.display.idx = i;
+                        InterpretData( phdr );
                         ImGui::EndTabItem();
                     }
                     ImGui::PopID();

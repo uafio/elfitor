@@ -17,22 +17,10 @@
 #include "imelf.h"
 #include "imgui_memory_editor.h"
 
-MemoryEditor medit;
 
 std::vector< ELFReader* > elfs;
-
-struct _CTX {
-    ELFReader* elf;
-    struct {
-        enum {
-            ehdr = 1,
-            phdr,
-            shdr,
-        } hdr;
-        int idx;
-    } display;
-} ctx;
-
+MemoryEditor medit;
+CTX ctx;
 
 void HelpMarker( const char* desc )
 {
@@ -225,6 +213,21 @@ void ShowMainWindow( void )
     ImGui::End();
 }
 
+void ShowHexEditorWindow( void )
+{
+    if ( ctx.elf == nullptr ) {
+        return;
+    }
+    if ( ctx.display.hdr == ctx.display.ehdr ) {
+        medit.DrawWindow( "medit", ctx.elf->get_elf_header(), ctx.elf->get_file_size() );        
+    } else if ( ctx.display.hdr == ctx.display.phdr ) {
+        Elf64_Phdr* phdr = reinterpret_cast< Elf64_Phdr* >( ctx.elf->get_prog_header( ctx.display.idx ) );
+        if ( phdr->p_offset < ctx.elf->get_file_size() ) {
+            medit.DrawWindow( "medit", ctx.elf->rva2va( phdr->p_offset ), phdr->p_memsz, phdr->p_offset );
+        }
+    }
+}
+
 void ShowApplicationWindow( GLFWwindow* window )
 {
     if ( ImGui::BeginMainMenuBar() ) {
@@ -255,8 +258,6 @@ void ShowApplicationWindow( GLFWwindow* window )
 
     ShowNagivationWindow();
     ShowMainWindow();
+    ShowHexEditorWindow();
     //ImGui::ShowMetricsWindow();
-    if ( ctx.elf ) {
-        medit.DrawWindow( "medit", ctx.elf->get_elf_header(), ctx.elf->get_file_size() );
-    }
 }

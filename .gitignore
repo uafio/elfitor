@@ -25,4 +25,3 @@ x64/Release/elfitor.til
 x64/Release/imgui - Copy.ini
 *.pdb
 elfitor/elfitor.vcxproj.user
-elfitor/elfitor.vcxproj.filters
