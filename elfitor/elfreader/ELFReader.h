@@ -24,7 +24,7 @@ public:
     void* get_prog_header(int index);
     void* get_section_header(int index);
     char* get_section_name(int index);
-    void* rva2va(uint64_t rva);
+    void* rva2va( uint64_t rva );
 };
 
 typedef struct {

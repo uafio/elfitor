@@ -26,5 +26,6 @@ namespace Imelf
     }
     namespace Shdr
     {
+		void Draw( ELFReader* elf );
     }
 }

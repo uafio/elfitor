@@ -182,7 +182,7 @@ struct MemoryEditor
         CalcSizes(s, mem_size, base_display_addr);
         ImGui::SetNextWindowSizeConstraints(ImVec2(0.0f, 0.0f), ImVec2(s.WindowWidth, FLT_MAX));
 
-        if ( ImGui::Begin( title, nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove ) )
+        if ( ImGui::Begin( title, nullptr, ImGuiWindowFlags_NoDecoration /*| ImGuiWindowFlags_NoMove */ ) )
         {
             if (ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows) && ImGui::IsMouseClicked(1))
                 ImGui::OpenPopup("context");
@@ -526,7 +526,7 @@ struct MemoryEditor
 
         // We begin into our scrolling region with the 'ImGuiWindowFlags_NoMove' in order to prevent click from moving the window.
         // This is used as a facility since our main click detection code doesn't assign an ActiveId so the click would normally be caught as a window-move.
-        ImGui::BeginChild( "##scrolling", ImVec2( 0, 0 ), false, ImGuiWindowFlags_NoMove );
+        ImGui::BeginChild( "##scrolling", ImVec2( 0, 0 ), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize );
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
         ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 0, 0 ) );

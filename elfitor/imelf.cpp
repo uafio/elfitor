@@ -2,10 +2,12 @@
 #include "imgui.h"
 #include "imelf.h"
 #include "imgui_memory_editor.h"
+#include <type_traits>
 
 #pragma warning( disable : 4200 )
 
 extern void HelpMarker( const char* desc );
+extern void ToolTip( const char* desc );
 extern CTX ctx;
 
 typedef struct _ComboBoxMap {
@@ -154,8 +156,8 @@ namespace Imelf
         }
     }
 
-    template< typename T >
-    void InputHex( T& dest, bool valid )
+    template< class T >
+    void InputHex( const char* label, T& dest, bool valid = true )
     {
         ImGuiDataType flags = ImGuiDataType_U8;
         switch ( sizeof( ( (T*)0 )[0] ) ) {
@@ -174,10 +176,10 @@ namespace Imelf
         }
 
         if ( valid ) {
-            ImGui::InputScalar( &dest, flags, &dest, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+            ImGui::InputScalar( label, flags, &dest, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
         } else {
             ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1.0f, 0.0f, 0.0f, 1.0f ) );
-            ImGui::InputScalar( &dest, flags, &dest, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+            ImGui::InputScalar( label, flags, &dest, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::PopStyleColor();
         }
     }
@@ -711,7 +713,7 @@ namespace Imelf
             ImGui::BeginTable( "elf program", 8, flags, ImVec2( 0, ImGui::GetTextLineHeightWithSpacing() * 1 ) );
             ImGui::TableSetupColumn( "Type", 0, 170.0 );
             ImGui::TableSetupColumn( "R W X", 0, 100.0 );
-            ImGui::TableSetupColumn( "Offset", 0, 100.0 );
+            ImGui::TableSetupColumn( "File Offset", 0, 150.0 );
             ImGui::TableSetupColumn( "Virtual Address", 0, 200.0 );
             ImGui::TableSetupColumn( "Physical Address", 0, 200.0 );
             ImGui::TableSetupColumn( "Segment File Size", 0, 200.0 );
@@ -721,7 +723,7 @@ namespace Imelf
             const char* descs[] = { "Identifies the type of the segment.", "Segment-dependent flags (RWX).", "Offset of the segment in the file image.", "Virtual address of the segment in memory.", "On systems where physical address is relevant, reserved for segment's physical address.", "Size in bytes of the segment in the file image. May be 0.", "Size in bytes of the segment in memory. May be 0.", "0 and 1 specify no alignment. Otherwise should be a positive, integral power of 2, with p_vaddr equating p_offset modulus p_align." };
 
             ImGui::TableNextRow( ImGuiTableRowFlags_Headers );
-            for ( int i = 0; i < 8; i++ ) {
+            for ( int i = 0; i < _countof(descs); i++ ) {
                 ImGui::TableSetColumnIndex( i );
                 const char* column_name = ImGui::TableGetColumnName( i ); // Retrieve name passed to TableSetupColumn()
                 ImGui::PushID( i );
@@ -751,7 +753,7 @@ namespace Imelf
                     Elf64_Phdr* phdr = reinterpret_cast< Elf64_Phdr* >( elf->get_prog_header( i ) );
                     ImGui::PushID( i );
                     auto type = PhdrTypeMap.get_val( phdr->p_type );
-                    type = type ? type : "UNKNOWN";
+                    type = type ? type : "";
                     if ( ImGui::BeginTabItem( type, nullptr, 0 ) ) {
                         ctx.display.idx = i;
                         InterpretData( phdr );
@@ -767,5 +769,115 @@ namespace Imelf
 
     namespace Shdr
     {
+		template<class T>
+        void TableRow( ELFReader* elf, T shdr, int idx )
+        {
+            ImGui::TableNextRow();
+            ImGui::Text( "%s", elf->get_section_name( idx ) );
+
+            ImGui::TableNextCell();
+            InputHex( "sh_type", shdr->sh_type );
+            if ( ImGui::IsItemHovered() ) {
+                auto name = elf->get_section_name( idx );
+            }
+
+			ImGui::TableNextCell();
+            InputHex( "sh_flags", shdr->sh_flags );
+
+			ImGui::TableNextCell();
+            InputHex( "sh_addr", shdr->sh_addr );
+
+            ImGui::TableNextCell();
+            InputHex( "sh_offset", shdr->sh_offset );
+
+            ImGui::TableNextCell();
+            InputHex( "sh_size", shdr->sh_size );
+
+            ImGui::TableNextCell();
+            InputHex( "sh_link", shdr->sh_link );
+
+            ImGui::TableNextCell();
+            InputHex( "sh_info", shdr->sh_info );
+
+            ImGui::TableNextCell();
+            InputHex( "sh_addralign", shdr->sh_addralign );
+
+            ImGui::TableNextCell();
+            InputHex( "sh_entsize", shdr->sh_entsize );
+        }
+
+        void Draw( ELFReader* elf )
+        {
+            ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_NoHostExtendY | ImGuiTableFlags_Scroll | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
+            ImGui::BeginTable( "elf sections", 10, flags, ImVec2( 0, -(ImGui::GetTextLineHeightWithSpacing() * 24) ) );
+            ImGui::TableSetupColumn( "Name", 0, 170.0 );
+            ImGui::TableSetupColumn( "Type", 0, 100.0 );
+            ImGui::TableSetupColumn( "Flags", 0, 100.0 );
+            ImGui::TableSetupColumn( "Virtual Address", 0, 180.0 );
+            ImGui::TableSetupColumn( "File Offset", 0, 150.0 );
+            ImGui::TableSetupColumn( "File Size", 0, 130.0 );
+            ImGui::TableSetupColumn( "Link", 0, 90.0 );
+            ImGui::TableSetupColumn( "Info", 0, 90.0 );
+            ImGui::TableSetupColumn( "Alignment", 0, 130.0 );
+            ImGui::TableSetupColumn( "Header Size", ImGuiTableColumnFlags_WidthStretch );
+
+            const char* descs[] = { 
+				"An offset to a string in the .shstrtab section that represents the name of this section",
+				"Identifies the type of this header.",
+				"Identifies the attributes of the section.",
+				"Virtual address of the section in memory, for sections that are loaded.",
+				"Offset of the section in the file image.",
+				"Size in bytes of the section in the file image. May be 0.",
+				"Contains the section index of an associated section. This field is used for several purposes, depending on the type of section.",
+				"Contains extra information about the section. This field is used for several purposes, depending on the type of section.",
+				"Contains the required alignment of the section. This field must be a power of two.",
+				"Contains the size, in bytes, of each entry, for sections that contain fixed-size entries. Otherwise, this field contains zero.",
+			};
+
+            ImGui::TableNextRow( ImGuiTableRowFlags_Headers );
+            for ( int i = 0; i < _countof(descs); i++ ) {
+                ImGui::TableSetColumnIndex( i );
+                const char* column_name = ImGui::TableGetColumnName( i ); // Retrieve name passed to TableSetupColumn()
+                ImGui::PushID( i );
+                ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 0, 0 ) );
+                HelpMarker( descs[i] );
+                ImGui::PopStyleVar();
+                ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
+                ImGui::TableHeader( column_name );
+                ImGui::PopID();
+            }
+            
+			Elf64_Ehdr* ehdr = reinterpret_cast< Elf64_Ehdr* >( elf->get_elf_header() );
+            for ( int i = 0; i < ehdr->e_shnum; i++ ) {
+                Elf64_Shdr* shdr = reinterpret_cast< Elf64_Shdr* >( elf->get_section_header( i ) );
+                ImGui::PushID( i );
+                TableRow( elf, shdr, i );
+                ImGui::PopID();
+            }
+
+			ImGui::EndTable();
+            ImGui::Separator();
+            ImGui::SetCursorPosY( ImGui::GetCursorPosY() + 10.0f );
+
+			/*
+            ImGuiTabBarFlags tflags = ImGuiTabBarFlags_FittingPolicyResizeDown;
+            if ( ImGui::BeginTabBar( "ShdrDataTabs", flags ) ) {
+                for ( int i = 0; i < ehdr->e_shnum; i++ ) {
+                    Elf64_Shdr* shdr = reinterpret_cast< Elf64_Shdr* >( elf->get_section_header( i ) );
+                    ImGui::PushID( i );
+                    const char* type = elf->get_section_name( i );
+                    type = type ? type : "";
+                    ImGuiTabItemFlags iflags = ImGuiTabItemFlags_NoCloseWithMiddleMouseButton;
+                    if ( ImGui::BeginTabItem( type, nullptr, iflags ) ) {
+                        ctx.display.idx = i;
+                        ImGui::Text( "%s", type );
+                        ImGui::EndTabItem();
+                    }
+                    ImGui::PopID();
+                }
+                ImGui::EndTabBar();
+            }
+			*/
+		}
     }
 }

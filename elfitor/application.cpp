@@ -22,17 +22,23 @@ std::vector< ELFReader* > elfs;
 MemoryEditor medit;
 CTX ctx;
 
+void ToolTip( const char* desc )
+{
+    ImGui::BeginTooltip();
+    ImGui::PushTextWrapPos( ImGui::GetFontSize() * 35.0f );
+    ImGui::TextUnformatted( desc );
+    ImGui::PopTextWrapPos();
+    ImGui::EndTooltip();
+}
+
 void HelpMarker( const char* desc )
 {
     ImGui::TextDisabled( "(?)" );
     if ( ImGui::IsItemHovered() ) {
-        ImGui::BeginTooltip();
-        ImGui::PushTextWrapPos( ImGui::GetFontSize() * 35.0f );
-        ImGui::TextUnformatted( desc );
-        ImGui::PopTextWrapPos();
-        ImGui::EndTooltip();
+        ToolTip( desc );
     }
 }
+
 
 void MenuItemAbout( void )
 {
@@ -180,15 +186,6 @@ void ShowNagivationWindow( void )
     ImGui::End();
 }
 
-void MainWindowSectionHeader64( void )
-{
-    if ( ctx.elf ) {
-        Elf64_Ehdr* ehdr = reinterpret_cast< Elf64_Ehdr* >( ctx.elf->get_elf_header() );
-        for ( int i = 0; i < ehdr->e_shnum; i++ ) {
-            ImGui::Text( "%s", ctx.elf->get_section_name( i ) );
-		}
-    }
-}
 
 void ShowMainWindow( void )
 {
@@ -205,7 +202,7 @@ void ShowMainWindow( void )
     } else if ( ctx.display.hdr == ctx.display.phdr ) {
         Imelf::Phdr::Draw( ctx.elf );
     } else if ( ctx.display.hdr == ctx.display.shdr ) {
-        MainWindowSectionHeader64();
+        Imelf::Shdr::Draw( ctx.elf );
     } else {
         ImGui::Text( "ELF Header for %s", ctx.elf->filepath() );
     }
@@ -219,13 +216,21 @@ void ShowHexEditorWindow( void )
         return;
     }
     if ( ctx.display.hdr == ctx.display.ehdr ) {
-        medit.DrawWindow( "medit", ctx.elf->get_elf_header(), ctx.elf->get_file_size() );        
+        medit.DrawWindow( "medit ehdr", ctx.elf->get_elf_header(), ctx.elf->get_file_size() );        
     } else if ( ctx.display.hdr == ctx.display.phdr ) {
         Elf64_Phdr* phdr = reinterpret_cast< Elf64_Phdr* >( ctx.elf->get_prog_header( ctx.display.idx ) );
         if ( phdr->p_offset < ctx.elf->get_file_size() ) {
-            medit.DrawWindow( "medit", ctx.elf->rva2va( phdr->p_offset ), phdr->p_memsz, phdr->p_offset );
+            medit.DrawWindow( "medit phdr", ctx.elf->rva2va( phdr->p_offset ), phdr->p_memsz, phdr->p_offset );
         }
-    }
+    } else if ( ctx.display.hdr == ctx.display.shdr ) {
+        Elf64_Shdr* shdr = reinterpret_cast< Elf64_Shdr* >( ctx.elf->get_section_header( ctx.display.idx ) );
+        if ( shdr->sh_offset < ctx.elf->get_file_size() ) {
+            medit.DrawWindow( "medit ehdr", ctx.elf->rva2va( shdr->sh_offset ), shdr->sh_size, shdr->sh_offset );
+        }
+	} else {
+		// should not reach
+        assert( false );
+	}
 }
 
 void ShowApplicationWindow( GLFWwindow* window )
