@@ -809,7 +809,7 @@ namespace Imelf
         void Draw( ELFReader* elf )
         {
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_NoHostExtendY | ImGuiTableFlags_Scroll | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
-            ImGui::BeginTable( "elf sections", 10, flags, ImVec2( 0, -(ImGui::GetTextLineHeightWithSpacing() * 24) ) );
+            ImGui::BeginTable( "elf sections", 10, flags, ImVec2( 0,  250.0f ) );
             ImGui::TableSetupColumn( "Name", 0, 170.0 );
             ImGui::TableSetupColumn( "Type", 0, 100.0 );
             ImGui::TableSetupColumn( "Flags", 0, 100.0 );
@@ -859,7 +859,6 @@ namespace Imelf
             ImGui::Separator();
             ImGui::SetCursorPosY( ImGui::GetCursorPosY() + 10.0f );
 
-			/*
             ImGuiTabBarFlags tflags = ImGuiTabBarFlags_FittingPolicyResizeDown;
             if ( ImGui::BeginTabBar( "ShdrDataTabs", flags ) ) {
                 for ( int i = 0; i < ehdr->e_shnum; i++ ) {
@@ -870,14 +869,13 @@ namespace Imelf
                     ImGuiTabItemFlags iflags = ImGuiTabItemFlags_NoCloseWithMiddleMouseButton;
                     if ( ImGui::BeginTabItem( type, nullptr, iflags ) ) {
                         ctx.display.idx = i;
-                        ImGui::Text( "%s", type );
+                        mViewer.HexViewer( shdr, sizeof( *shdr ) );
                         ImGui::EndTabItem();
                     }
                     ImGui::PopID();
                 }
                 ImGui::EndTabBar();
             }
-			*/
 		}
     }
 }
