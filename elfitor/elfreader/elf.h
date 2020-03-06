@@ -19,9 +19,6 @@
 #ifndef _ELF_H
 #define	_ELF_H 1
 
-#include <features.h>
-
-__BEGIN_DECLS
 
 /* Standard ELF types.  */
 
@@ -3929,6 +3926,5 @@ enum
 #define R_NDS32_TLS_TPOFF	102
 #define R_NDS32_TLS_DESC	119
 
-__END_DECLS
 
 #endif	/* elf.h */

@@ -18,11 +18,11 @@
 #include "imgui_memory_editor.h"
 
 
-std::vector< ELFReader* > elfs;
+std::vector< File* > files;
 MemoryEditor medit;
 CTX ctx;
 
-void ToolTip( const char* desc )
+void Tooltip( const char* desc )
 {
     ImGui::BeginTooltip();
     ImGui::PushTextWrapPos( ImGui::GetFontSize() * 35.0f );
@@ -31,12 +31,17 @@ void ToolTip( const char* desc )
     ImGui::EndTooltip();
 }
 
+void HoverTooltip( const char* desc )
+{
+    if ( ImGui::IsItemHovered() ) {
+        Tooltip( desc );
+    }
+}
+
 void HelpMarker( const char* desc )
 {
     ImGui::TextDisabled( "(?)" );
-    if ( ImGui::IsItemHovered() ) {
-        ToolTip( desc );
-    }
+    HoverTooltip( desc );
 }
 
 

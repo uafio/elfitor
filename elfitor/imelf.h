@@ -2,7 +2,7 @@
 #include "elfreader/ELFReader.h"
 
 typedef struct _CTX {
-    ELFReader* elf;
+    File* file;
     struct {
         enum {
             ehdr = 1,
@@ -18,14 +18,14 @@ namespace Imelf
 {
     namespace Ehdr
     {
-        void Draw( ELFReader* elf );
+        void Draw( File* elf );
     }
     namespace Phdr
     {
-        void Draw( ELFReader* elf );
+        void Draw( File* elf );
     }
     namespace Shdr
     {
-		void Draw( ELFReader* elf );
+		void Draw( File* elf );
     }
 }

@@ -136,6 +136,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="elfreader\elf.h" />
     <ClInclude Include="elfreader\ELFReader.h" />
     <ClInclude Include="imelf.h" />
     <ClInclude Include="imgui\imconfig.h" />

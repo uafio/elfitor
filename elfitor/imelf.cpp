@@ -7,7 +7,8 @@
 #pragma warning( disable : 4200 )
 
 extern void HelpMarker( const char* desc );
-extern void ToolTip( const char* desc );
+extern void Tooltip( const char* desc );
+extern void HoverTooltip( const char* desc );
 extern CTX ctx;
 
 typedef struct _ComboBoxMap {
@@ -16,7 +17,6 @@ typedef struct _ComboBoxMap {
         const uint32_t key;
         const char* const val;
     } kv[0];
-
 
     inline const char* get_val( uint32_t key ) const
     {
@@ -186,10 +186,12 @@ namespace Imelf
 
     namespace Ehdr
     {
-        void Ident( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Ident( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_ident[EI_MAG]" );
+            HoverTooltip( "0x7F followed by ELF(45 4c 46) in ASCII; these four bytes constitute the magic number." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_ident ) );
             ImGui::TableNextCell();
@@ -205,16 +207,14 @@ namespace Imelf
                 ImGui::PopStyleColor();
             }
             ImGui::TableNextCell();
-            HelpMarker( "0x7F followed by ELF(45 4c 46) in ASCII; these four bytes constitute the magic number." );
-        }
-        void Ident( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Class( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Class( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_ident[EI_CLASS]" );
+            HoverTooltip( "This byte is set to either 1 or 2 to signify 32-bit or 64-bit format, respectively." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_class ) );
             ImGui::TableNextCell();
@@ -230,16 +230,14 @@ namespace Imelf
             ImGui::TableNextCell();
             Imelf::ComboBox( ehdr->e_class, EhdrClassMap );
             ImGui::TableNextCell();
-            HelpMarker( "This byte is set to either 1 or 2 to signify 32-bit or 64-bit format, respectively." );
-        }
-        void Class( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Data( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Data( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_ident[EI_DATA]" );
+            HoverTooltip( "This byte is set to either 1 or 2 to signify little or big endianness, respectively. This affects interpretation of multi-byte fields starting with offset 0x10." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_data ) );
             ImGui::TableNextCell();
@@ -255,16 +253,14 @@ namespace Imelf
             ImGui::TableNextCell();
             Imelf::ComboBox( ehdr->e_data, EhdrDataMap );
             ImGui::TableNextCell();
-            HelpMarker( "This byte is set to either 1 or 2 to signify little or big endianness, respectively. This affects interpretation of multi-byte fields starting with offset 0x10." );
-        }
-        void Data( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void IdentVersion( Elf64_Ehdr* ehdr )
+        template< class T >
+        void IdentVersion( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_ident[EI_VERSION]" );
+            HoverTooltip( "Set to 1 for the original and current version of ELF." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_ver ) );
             ImGui::TableNextCell();
@@ -279,16 +275,14 @@ namespace Imelf
             }
             ImGui::TableNextCell();
             ImGui::TableNextCell();
-            HelpMarker( "Set to 1 for the original and current version of ELF." );
-        }
-        void IdentVersion( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Osabi( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Osabi( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_ident[EI_OSABI]" );
+            HoverTooltip( "Identifies the target operating system ABI. It is often set to 0 regardless of the target platform." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_osabi ) );
             ImGui::TableNextCell();
@@ -304,16 +298,15 @@ namespace Imelf
             ImGui::TableNextCell();
             Imelf::ComboBox( ehdr->e_osabi, EhdrOsabiMap );
             ImGui::TableNextCell();
-            HelpMarker( "Identifies the target operating system ABI. It is often set to 0 regardless of the target platform." );
-        }
-        void Osabi( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Abi( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Abi( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_ident[EI_ABIVERSION]" );
+            HoverTooltip( "Further specifies the ABI version. Its interpretation depends on the target ABI. "
+                          "Linux kernel (after at least 2.6) has no definition of it, so it is ignored for statically-linked executables." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_abiversion ) );
             ImGui::TableNextCell();
@@ -322,17 +315,14 @@ namespace Imelf
             ImGui::InputScalar( "ei_abiver_input", ImGuiDataType_U8, &ehdr->e_abiversion, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
-            HelpMarker( "Further specifies the ABI version. Its interpretation depends on the target ABI. "
-                        "Linux kernel (after at least 2.6) has no definition of it, so it is ignored for statically-linked executables." );
-        }
-        void Abi( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Type( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Type( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_type" );
+            HoverTooltip( "Identifies object file type." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_type ) );
             ImGui::TableNextCell();
@@ -349,16 +339,14 @@ namespace Imelf
             ImGui::TableNextCell();
             Imelf::ComboBox( ehdr->e_type, EhdrTypeMap );
             ImGui::TableNextCell();
-            HelpMarker( "Identifies object file type." );
-        }
-        void Type( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Machine( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Machine( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_machine" );
+            HoverTooltip( "Specifies target instruction set architecture." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_machine ) );
             ImGui::TableNextCell();
@@ -374,16 +362,14 @@ namespace Imelf
             ImGui::TableNextCell();
             Imelf::ComboBox( ehdr->e_machine, EhdrMachineMap );
             ImGui::TableNextCell();
-            HelpMarker( "Specifies target instruction set architecture." );
-        }
-        void Machine( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Version( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Version( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_version" );
+            HoverTooltip( "Set to 1 for the original version of ELF." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_version ) );
             ImGui::TableNextCell();
@@ -398,16 +384,14 @@ namespace Imelf
             }
             ImGui::TableNextCell();
             ImGui::TableNextCell();
-            HelpMarker( "Set to 1 for the original version of ELF." );
-        }
-        void Version( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Entry( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Entry( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_entry" );
+            HoverTooltip( "This is the memory address of the entry point from where the process starts executing." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_entry ) );
             ImGui::TableNextCell();
@@ -416,16 +400,14 @@ namespace Imelf
             ImGui::InputScalar( "e_entry_input", ImGuiDataType_U64, &ehdr->e_entry, NULL, NULL, "%llX", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
-            HelpMarker( "This is the memory address of the entry point from where the process starts executing." );
-        }
-        void Entry( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Phoff( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Phoff( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_phoff" );
+            HoverTooltip( "Points to the start of the program header table. It usually follows the file header immediately." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_phoff ) );
             ImGui::TableNextCell();
@@ -434,16 +416,14 @@ namespace Imelf
             ImGui::InputScalar( "e_phoff_input", ImGuiDataType_U64, &ehdr->e_phoff, NULL, NULL, "%llX", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
-            HelpMarker( "Points to the start of the program header table. It usually follows the file header immediately." );
-        }
-        void Phoff( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Shoff( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Shoff( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_shoff" );
+            HoverTooltip( "Points to the start of the section header table." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_shoff ) );
             ImGui::TableNextCell();
@@ -452,16 +432,14 @@ namespace Imelf
             ImGui::InputScalar( "e_shoff_input", ImGuiDataType_U64, &ehdr->e_shoff, NULL, NULL, "%llX", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
-            HelpMarker( "Points to the start of the section header table." );
-        }
-        void Shoff( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Flags( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Flags( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_flags" );
+            HoverTooltip( "Interpretation of this field depends on the target architecture." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_flags ) );
             ImGui::TableNextCell();
@@ -470,16 +448,14 @@ namespace Imelf
             ImGui::InputScalar( "e_flags_input", ImGuiDataType_U32, &ehdr->e_flags, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
-            HelpMarker( "Interpretation of this field depends on the target architecture." );
-        }
-        void Flags( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Ehsize( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Ehsize( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_ehsize" );
+            HoverTooltip( "Contains the size of this header, normally 64 Bytes for 64-bit and 52 Bytes for 32-bit format." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_ehsize ) );
             ImGui::TableNextCell();
@@ -488,16 +464,14 @@ namespace Imelf
             ImGui::InputScalar( "e_ehsize_input", ImGuiDataType_U16, &ehdr->e_ehsize, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
-            HelpMarker( "Contains the size of this header, normally 64 Bytes for 64-bit and 52 Bytes for 32-bit format." );
-        }
-        void Ehsize( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Phentsize( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Phentsize( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_phentsize" );
+            HoverTooltip( "Contains the size of a program header table entry." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_phentsize ) );
             ImGui::TableNextCell();
@@ -506,16 +480,14 @@ namespace Imelf
             ImGui::InputScalar( "e_phentsize_input", ImGuiDataType_U16, &ehdr->e_phentsize, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
-            HelpMarker( "Contains the size of a program header table entry." );
-        }
-        void Phentsize( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Phnum( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Phnum( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_phnum" );
+            HoverTooltip( "Contains the number of entries in the program header table." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_phnum ) );
             ImGui::TableNextCell();
@@ -524,16 +496,14 @@ namespace Imelf
             ImGui::InputScalar( "e_phnum_input", ImGuiDataType_U16, &ehdr->e_phnum, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
-            HelpMarker( "Contains the number of entries in the program header table." );
-        }
-        void Phnum( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Shentsize( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Shentsize( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_shentsize" );
+            HoverTooltip( "Contains the size of a section header table entry." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_shentsize ) );
             ImGui::TableNextCell();
@@ -542,16 +512,14 @@ namespace Imelf
             ImGui::InputScalar( "e_shentsize_input", ImGuiDataType_U16, &ehdr->e_shentsize, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
-            HelpMarker( "Contains the size of a section header table entry." );
-        }
-        void Shentsize( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Shnum( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Shnum( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_shnum" );
+            HoverTooltip( "Contains the number of entries in the section header table." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_shnum ) );
             ImGui::TableNextCell();
@@ -560,16 +528,14 @@ namespace Imelf
             ImGui::InputScalar( "e_shnum_input", ImGuiDataType_U16, &ehdr->e_shnum, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
-            HelpMarker( "Contains the number of entries in the section header table." );
-        }
-        void Shnum( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Shstrndx( Elf64_Ehdr* ehdr )
+        template< class T >
+        void Shstrndx( T ehdr )
         {
             ImGui::TableNextRow();
             ImGui::Text( "e_shstrndx" );
+            HoverTooltip( "Contains index of the section header table entry that contains the section names." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_shstrndx ) );
             ImGui::TableNextCell();
@@ -578,26 +544,21 @@ namespace Imelf
             ImGui::InputScalar( "e_shstrndx_input", ImGuiDataType_U16, &ehdr->e_shstrndx, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
-            HelpMarker( "Contains index of the section header table entry that contains the section names." );
-        }
-        void Shstrndx( Elf32_Ehdr* ehdr )
-        {
         }
 
-        void Draw( ELFReader* elf )
+        void Draw( File* elf )
         {
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
-            ImGui::BeginTable( "elf header", 6, flags, ImVec2( 0, ImGui::GetTextLineHeightWithSpacing() * 1 ) );
+            ImGui::BeginTable( "elf header", 5, flags, ImVec2( 0, ImGui::GetTextLineHeightWithSpacing() * 1 ) );
             ImGui::TableSetupColumn( "Member", 0, 220.0 );
             ImGui::TableSetupColumn( "Offset", 0, 100.0 );
-            ImGui::TableSetupColumn( "Size", 0, 100.0 );
-            ImGui::TableSetupColumn( "Value", 0, 150.0 );
-            ImGui::TableSetupColumn( "Meaning", 0, 200.0 );
-            ImGui::TableSetupColumn( "", ImGuiTableColumnFlags_WidthStretch );
+            ImGui::TableSetupColumn( "Size", 0, 60.0 );
+            ImGui::TableSetupColumn( "Value", 0, 100.0 );
+            ImGui::TableSetupColumn( "Meaning", ImGuiTableColumnFlags_WidthStretch );
             ImGui::TableAutoHeaders();
 
             if ( elf->is_32bit() ) {
-                Elf32_Ehdr* ehdr = reinterpret_cast< Elf32_Ehdr* >( elf->get_elf_header() );
+                Elf32_Ehdr* ehdr = dynamic_cast< Elf32* >( elf )->get_elf_header();
                 Ident( ehdr );
                 Class( ehdr );
                 Data( ehdr );
@@ -618,7 +579,7 @@ namespace Imelf
                 Shnum( ehdr );
                 Shstrndx( ehdr );
             } else {
-                Elf64_Ehdr* ehdr = reinterpret_cast< Elf64_Ehdr* >( elf->get_elf_header() );
+                Elf64_Ehdr* ehdr = dynamic_cast< Elf64* >( elf )->get_elf_header();
                 Ident( ehdr );
                 Class( ehdr );
                 Data( ehdr );
@@ -707,7 +668,7 @@ namespace Imelf
         }
 
 
-        void Draw( ELFReader* elf )
+        void Draw( File* elf )
         {
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
             ImGui::BeginTable( "elf program", 8, flags, ImVec2( 0, ImGui::GetTextLineHeightWithSpacing() * 1 ) );
@@ -735,7 +696,13 @@ namespace Imelf
                 ImGui::PopID();
             }
 
-            Elf64_Ehdr* ehdr = reinterpret_cast< Elf64_Ehdr* >( elf->get_elf_header() );
+            if ( elf->is_32bit() ) {
+                elf = dynamic_cast< Elf32* >( elf );
+            } else {
+                elf = dynamic_cast< Elf64* >( elf );            
+            }
+
+            Elf64_Ehdr* ehdr = elf->get_elf_header();
             for ( int i = 0; i < ehdr->e_phnum; i++ ) {
                 Elf64_Phdr* phdr = reinterpret_cast< Elf64_Phdr* >( elf->get_prog_header( i ) );
                 ImGui::PushID( i );
@@ -770,16 +737,13 @@ namespace Imelf
     namespace Shdr
     {
 		template<class T>
-        void TableRow( ELFReader* elf, T shdr, int idx )
+        void TableRow( File* elf, T shdr, int idx )
         {
             ImGui::TableNextRow();
             ImGui::Text( "%s", elf->get_section_name( idx ) );
 
             ImGui::TableNextCell();
             InputHex( "sh_type", shdr->sh_type );
-            if ( ImGui::IsItemHovered() ) {
-                auto name = elf->get_section_name( idx );
-            }
 
 			ImGui::TableNextCell();
             InputHex( "sh_flags", shdr->sh_flags );
@@ -806,7 +770,7 @@ namespace Imelf
             InputHex( "sh_entsize", shdr->sh_entsize );
         }
 
-        void Draw( ELFReader* elf )
+        void Draw( File* elf )
         {
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_NoHostExtendY | ImGuiTableFlags_Scroll | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
             ImGui::BeginTable( "elf sections", 10, flags, ImVec2( 0,  250.0f ) );
