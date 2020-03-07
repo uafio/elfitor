@@ -48,16 +48,23 @@ void MenuItemAbout( void )
 void MenuItemOpen( void )
 {
     OPENFILENAMEA ofile = { 0 };
-    char szFile[_MAX_PATH] = { 0 };
+    char fpath[_MAX_PATH] = { 0 };
 
     ofile.lStructSize = sizeof( ofile );
     ofile.hwndOwner = GetActiveWindow();
-    ofile.lpstrFile = szFile;
-    ofile.nMaxFile = sizeof( szFile );
+    ofile.lpstrFile = fpath;
+    ofile.nMaxFile = sizeof( fpath );
 
     if ( GetOpenFileNameA( &ofile ) ) {
-        ELFReader* newelf = new ELFReader( szFile );
-        if ( newelf->is_valid() ) {
+        FileFactory* factory = new FileFactory( fpath );
+        ELFReader* newelf = factory->build();
+        printf( "newelf: %p\n", newelf );
+        printf( "base: %p\n", newelf->get_elf_header() );
+        printf( "is_valid: %d\n", newelf->is_valid() );
+        if ( newelf && newelf->is_valid() ) {
+            //Context* ctx = newfile->get_context();
+            //State* state = State::instance();
+            //state->update( ctx );
             elfs.push_back( newelf );
             ctx.elf = newelf;
             ctx.display.hdr = ctx.display.ehdr;

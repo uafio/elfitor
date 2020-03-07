@@ -5,6 +5,7 @@
 
 extern std::vector< ELFReader* > elfs;
 
+/*
 ELFReader::ELFReader( const char* filename )
 {
     base = nullptr;
@@ -43,6 +44,15 @@ ELFReader::ELFReader( const char* filename )
         return;
     }
 }
+*/
+
+ELFReader::ELFReader( FileFactory* factory )
+{
+    base = factory->get_base();
+    size = factory->get_file_size();
+    path = factory->filepath();
+    fname = factory->filename();
+}
 
 ELFReader::~ELFReader( void )
 {
@@ -73,7 +83,6 @@ bool ELFReader::is_32bit( void )
 {
     return reinterpret_cast< Elf32_Ehdr* >( base )->e_ident[EI_CLASS] == ELFCLASS32;
 }
-
 
 bool ELFReader::save( const char* fname )
 {
@@ -169,4 +178,112 @@ char* ELFReader::get_section_name( int index )
         }
     }
     return result;
+}
+
+FileFactory::FileFactory( const char* filename )
+{
+    base = nullptr;
+    fpath = nullptr;
+    fname = nullptr;
+    size = 0;
+
+    std::fstream infile( filename, std::fstream::in | std::fstream::binary | std::fstream::ate );
+    if ( infile.is_open() == false ) {
+        std::perror( __FUNCTION__ );
+        return;
+    }
+
+    // TODO: Create logic for headers-only classes, optional for huge files
+    size = infile.tellg();
+    if ( size == 0 ) {
+        std::cout << "[-] Empty file." << std::endl;
+        return;
+    }
+
+    base = malloc( size );
+    if ( base == nullptr ) {
+        std::perror( __FUNCTION__ );
+        return;    
+    }
+
+    fpath = (char*)malloc( strlen( filename ) + 1 );
+    if ( fpath == nullptr ) {
+        free( base );
+        std::perror( __FUNCTION__ );
+        return;
+    }
+
+    strcpy( (char*)fpath, filename );
+    fname = strrchr( fpath, (char)std::experimental::filesystem::path::preferred_separator );
+    if ( fname )
+        fname++;
+
+    infile.seekg( std::fstream::beg );
+    infile.read( (char*)base, size );
+    infile.close();
+
+    type = get_type();
+    if ( !is_supported() ) {
+        free( base );
+        free( (void*)fpath );
+        base = nullptr, size = 0;
+        std::cout << "[-] Unsupported File." << std::endl;
+        return;
+    }
+
+}
+
+File_t FileFactory::get_type( void )
+{
+    if ( base ) {
+        if ( *(uint32_t*)base == *(uint32_t*)ELFMAG ) {
+            Elf32_Ehdr* ehdr = reinterpret_cast< Elf32_Ehdr* >( base );
+            if ( ehdr->e_ident[EI_CLASS] == ELFCLASS32 ) {
+                return elf32_t;
+            } else if ( ehdr->e_ident[EI_CLASS] == ELFCLASS64 ) {
+                return elf64_t;
+            }
+        }
+        // TODO: other supported classes
+    }
+    return unknown_t;
+}
+
+bool FileFactory::is_supported( void )
+{
+    return get_type() != unknown_t;
+}
+
+void* FileFactory::get_base( void )
+{
+    return base;
+}
+
+size_t FileFactory::get_file_size( void )
+{
+    return size;
+}
+
+char* FileFactory::filename( void )
+{
+    return fname;
+}
+
+char* FileFactory::filepath( void )
+{
+    return fpath;
+}
+
+ELFReader* FileFactory::build( void )
+{
+    switch ( type ) {
+        case elf32_t:
+            return new ELFReader( this );
+            break;
+        case elf64_t:
+            return new ELFReader( this );
+            break;
+        default:
+            return nullptr;
+    }
 }

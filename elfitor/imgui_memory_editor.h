@@ -51,6 +51,7 @@
 #endif
 #include <stdio.h>      // sprintf, scanf
 #include <stdint.h>     // uint8_t, etc.
+#include "imgui.h"
 
 #ifdef _MSC_VER
 #define _PRISizeT   "I"
