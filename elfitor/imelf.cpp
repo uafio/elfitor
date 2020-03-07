@@ -216,19 +216,19 @@ namespace Imelf
             ImGui::TableNextRow();
             ImGui::Text( "e_ident[EI_CLASS]" );
             ImGui::TableNextCell();
-            ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_class ) );
+            ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_ident[EI_CLASS] ) );
             ImGui::TableNextCell();
-            ImGui::Text( "%02x", sizeof( ehdr->e_class ) );
+            ImGui::Text( "%02x", sizeof( ehdr->e_ident[EI_CLASS] ) );
             ImGui::TableNextCell();
-            if ( EhdrClassMap.get_val( ehdr->e_class ) ) {
-                ImGui::InputScalar( "ei_class_input", ImGuiDataType_U8, &ehdr->e_class, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+            if ( EhdrClassMap.get_val( ehdr->e_ident[EI_CLASS] ) ) {
+                ImGui::InputScalar( "ei_class_input", ImGuiDataType_U8, &ehdr->e_ident[EI_CLASS], NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             } else {
                 ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1.0f, 0.0f, 0.0f, 1.0f ) );
-                ImGui::InputScalar( "ei_class_input", ImGuiDataType_U8, &ehdr->e_class, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+                ImGui::InputScalar( "ei_class_input", ImGuiDataType_U8, &ehdr->e_ident[EI_CLASS], NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
                 ImGui::PopStyleColor();
             }
             ImGui::TableNextCell();
-            Imelf::ComboBox( ehdr->e_class, EhdrClassMap );
+            Imelf::ComboBox( ehdr->e_ident[EI_CLASS], EhdrClassMap );
             ImGui::TableNextCell();
             HelpMarker( "This byte is set to either 1 or 2 to signify 32-bit or 64-bit format, respectively." );
         }
@@ -241,19 +241,19 @@ namespace Imelf
             ImGui::TableNextRow();
             ImGui::Text( "e_ident[EI_DATA]" );
             ImGui::TableNextCell();
-            ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_data ) );
+            ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_ident[EI_DATA] ) );
             ImGui::TableNextCell();
-            ImGui::Text( "%02x", sizeof( ehdr->e_data ) );
+            ImGui::Text( "%02x", sizeof( ehdr->e_ident[EI_DATA] ) );
             ImGui::TableNextCell();
-            if ( EhdrDataMap.get_val( ehdr->e_data ) ) {
-                ImGui::InputScalar( "ei_data_input", ImGuiDataType_U8, &ehdr->e_data, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+            if ( EhdrDataMap.get_val( ehdr->e_ident[EI_DATA] ) ) {
+                ImGui::InputScalar( "ei_data_input", ImGuiDataType_U8, &ehdr->e_ident[EI_DATA], NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             } else {
                 ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1.0f, 0.0f, 0.0f, 1.0f ) );
-                ImGui::InputScalar( "ei_data_input", ImGuiDataType_U8, &ehdr->e_data, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+                ImGui::InputScalar( "ei_data_input", ImGuiDataType_U8, &ehdr->e_ident[EI_DATA], NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
                 ImGui::PopStyleColor();
             }
             ImGui::TableNextCell();
-            Imelf::ComboBox( ehdr->e_data, EhdrDataMap );
+            Imelf::ComboBox( ehdr->e_ident[EI_DATA], EhdrDataMap );
             ImGui::TableNextCell();
             HelpMarker( "This byte is set to either 1 or 2 to signify little or big endianness, respectively. This affects interpretation of multi-byte fields starting with offset 0x10." );
         }
@@ -266,15 +266,15 @@ namespace Imelf
             ImGui::TableNextRow();
             ImGui::Text( "e_ident[EI_VERSION]" );
             ImGui::TableNextCell();
-            ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_ver ) );
+            ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_ident[EI_VERSION] ) );
             ImGui::TableNextCell();
-            ImGui::Text( "%02x", sizeof( ehdr->e_ver ) );
+            ImGui::Text( "%02x", sizeof( ehdr->e_ident[EI_VERSION] ) );
             ImGui::TableNextCell();
-            if ( ehdr->e_ver == 1 ) {
-                ImGui::InputScalar( "ei_version_input", ImGuiDataType_U8, &ehdr->e_ver, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+            if ( ehdr->e_ident[EI_VERSION] == 1 ) {
+                ImGui::InputScalar( "ei_version_input", ImGuiDataType_U8, &ehdr->e_ident[EI_VERSION], NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             } else {
                 ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1.0f, 0.0f, 0.0f, 1.0f ) );
-                ImGui::InputScalar( "ei_version_input", ImGuiDataType_U8, &ehdr->e_ver, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+                ImGui::InputScalar( "ei_version_input", ImGuiDataType_U8, &ehdr->e_ident[EI_VERSION], NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
                 ImGui::PopStyleColor();
             }
             ImGui::TableNextCell();
@@ -290,19 +290,19 @@ namespace Imelf
             ImGui::TableNextRow();
             ImGui::Text( "e_ident[EI_OSABI]" );
             ImGui::TableNextCell();
-            ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_osabi ) );
+            ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_ident[EI_OSABI] ) );
             ImGui::TableNextCell();
-            ImGui::Text( "%02x", sizeof( ehdr->e_osabi ) );
+            ImGui::Text( "%02x", sizeof( ehdr->e_ident[EI_OSABI] ) );
             ImGui::TableNextCell();
-            if ( EhdrOsabiMap.get_val( ehdr->e_osabi ) ) {
-                ImGui::InputScalar( "ei_osabi_input", ImGuiDataType_U8, &ehdr->e_osabi, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+            if ( EhdrOsabiMap.get_val( ehdr->e_ident[EI_OSABI] ) ) {
+                ImGui::InputScalar( "ei_osabi_input", ImGuiDataType_U8, &ehdr->e_ident[EI_OSABI], NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             } else {
                 ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1.0f, 0.0f, 0.0f, 1.0f ) );
-                ImGui::InputScalar( "ei_osabi_input", ImGuiDataType_U8, &ehdr->e_osabi, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+                ImGui::InputScalar( "ei_osabi_input", ImGuiDataType_U8, &ehdr->e_ident[EI_OSABI], NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
                 ImGui::PopStyleColor();
             }
             ImGui::TableNextCell();
-            Imelf::ComboBox( ehdr->e_osabi, EhdrOsabiMap );
+            Imelf::ComboBox( ehdr->e_ident[EI_OSABI], EhdrOsabiMap );
             ImGui::TableNextCell();
             HelpMarker( "Identifies the target operating system ABI. It is often set to 0 regardless of the target platform." );
         }
@@ -315,11 +315,11 @@ namespace Imelf
             ImGui::TableNextRow();
             ImGui::Text( "e_ident[EI_ABIVERSION]" );
             ImGui::TableNextCell();
-            ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_abiversion ) );
+            ImGui::Text( "%08x", offsetof( Elf64_Ehdr, e_ident[EI_ABIVERSION] ) );
             ImGui::TableNextCell();
-            ImGui::Text( "%02x", sizeof( ehdr->e_abiversion ) );
+            ImGui::Text( "%02x", sizeof( ehdr->e_ident[EI_ABIVERSION] ) );
             ImGui::TableNextCell();
-            ImGui::InputScalar( "ei_abiver_input", ImGuiDataType_U8, &ehdr->e_abiversion, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+            ImGui::InputScalar( "ei_abiver_input", ImGuiDataType_U8, &ehdr->e_ident[EI_ABIVERSION], NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
             HelpMarker( "Further specifies the ABI version. Its interpretation depends on the target ABI. "

@@ -92,5 +92,8 @@
     <ClInclude Include="imgui_memory_editor.h">
       <Filter>Source Files\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="elfreader\elf.h">
+      <Filter>Source Files\elfreader</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

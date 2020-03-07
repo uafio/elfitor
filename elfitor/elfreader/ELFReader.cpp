@@ -71,72 +71,9 @@ bool ELFReader::is_valid( void )
 
 bool ELFReader::is_32bit( void )
 {
-    return reinterpret_cast< Elf32_Ehdr* >( base )->e_class == 1;
+    return reinterpret_cast< Elf32_Ehdr* >( base )->e_ident[EI_CLASS] == ELFCLASS32;
 }
 
-void ELFReader::print_elf_header( void )
-{
-    if ( base == nullptr )
-        return;
-
-    union {
-        Elf32_Ehdr* hdr32;
-        Elf64_Ehdr* hdr64;
-    } hdr;
-    hdr.hdr32 = (Elf32_Ehdr*)base;
-
-    printf( "EI_MAG0      : %02x%c%c%c\n", hdr.hdr32->e_ident[0], hdr.hdr32->e_ident[1], hdr.hdr32->e_ident[2], hdr.hdr32->e_ident[3] );
-    printf( "EI_CLASS     : %d\n", hdr.hdr32->e_class );
-    printf( "EI_DATA      : %d\n", hdr.hdr32->e_data );
-    printf( "EI_VERSION   : %d\n", hdr.hdr32->e_ver );
-    printf( "EI_OSABI     : %d\n", hdr.hdr32->e_osabi );
-    printf( "EI_ABIVERSION: %d\n", hdr.hdr32->e_abiversion );
-    printf( "e_type       : %#hx\n", hdr.hdr32->e_type );
-    printf( "e_machine    : %#hx\n", hdr.hdr32->e_machine );
-    printf( "e_version    : %d\n", hdr.hdr32->e_version );
-    if ( is_32bit() ) {
-        printf( "e_entry      : %#x\n", hdr.hdr32->e_entry );
-        printf( "e_phoff      : %#x\n", hdr.hdr32->e_phoff );
-        printf( "e_shoff      : %#x\n", hdr.hdr32->e_shoff );
-        printf( "e_flags      : %#x\n", hdr.hdr32->e_flags );
-        printf( "e_ehsize     : %#hx\n", hdr.hdr32->e_ehsize );
-        printf( "e_phentsize  : %#hx\n", hdr.hdr32->e_phentsize );
-        printf( "e_phnum      : %d\n", hdr.hdr32->e_phnum );
-        printf( "e_shentsize  : %#hx\n", hdr.hdr32->e_shentsize );
-        printf( "e_shnum      : %#hx\n", hdr.hdr32->e_shnum );
-        printf( "e_shstrndx   : %#hx\n", hdr.hdr32->e_shstrndx );
-    } else {
-        printf( "e_entry      : %#llx\n", hdr.hdr64->e_entry );
-        printf( "e_phoff      : %#llx\n", hdr.hdr64->e_phoff );
-        printf( "e_shoff      : %#llx\n", hdr.hdr64->e_shoff );
-        printf( "e_flags      : %#x\n", hdr.hdr64->e_flags );
-        printf( "e_ehsize     : %#hx\n", hdr.hdr64->e_ehsize );
-        printf( "e_phentsize  : %#hx\n", hdr.hdr64->e_phentsize );
-        printf( "e_phnum      : %d\n", hdr.hdr64->e_phnum );
-        printf( "e_shentsize  : %#hx\n", hdr.hdr64->e_shentsize );
-        printf( "e_shnum      : %#hx\n", hdr.hdr64->e_shnum );
-        printf( "e_shstrndx   : %#hx\n", hdr.hdr64->e_shstrndx );
-    }
-}
-
-void ELFReader::print_section_header( void* shdr )
-{
-    if ( is_32bit() ) {
-        Elf32_Shdr* s = (Elf32_Shdr*)shdr;
-    } else {
-        Elf64_Shdr* s = (Elf64_Shdr*)shdr;
-        printf( "sh_name: %#x\n", s->sh_name );
-        printf( "sh_type: %#x\n", s->sh_type );
-        printf( "sh_flags: %#llx\n", s->sh_flags );
-        printf( "sh_addr: %#llx\n", s->sh_addr );
-        printf( "sh_offset: %#llx\n", s->sh_offset );
-        printf( "sh_size: %#llx\n", s->sh_size );
-        printf( "sh_link: %#x\n", s->sh_link );
-        printf( "sh_info: %#x\n", s->sh_info );
-        printf( "sh_addralign: %#llx\n", s->sh_addralign );
-        printf( "sh_entsize: %#llx\n", s->sh_entsize );
-    }
-}
 
 bool ELFReader::save( const char* fname )
 {
