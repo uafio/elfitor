@@ -1,15 +1,22 @@
-#include "elfreader/ELFReader.h"
 #include "imgui.h"
 #include "imelf.h"
-#include "imgui_memory_editor.h"
-#include <type_traits>
+#include "elfreader/ELFReader.h"
 
 #pragma warning( disable : 4200 )
+template void Imelf::Ehdr::Draw< Elf32_Ehdr* >( Elf32_Ehdr* );
+template void Imelf::Phdr::Draw< Elf32* >( class Elf32* );
+template void Imelf::Shdr::Draw< Elf32* >( class Elf32* );
+template void Imelf::Ehdr::Draw< Elf64_Ehdr* >( Elf64_Ehdr* );
+template void Imelf::Phdr::Draw< Elf64* >( Elf64* );
+template void Imelf::Shdr::Draw< Elf64* >( Elf64* );
 
 extern void HelpMarker( const char* desc );
 extern void Tooltip( const char* desc );
+<<<<<<< Updated upstream
 extern void HoverTooltip( const char* desc );
 extern CTX ctx;
+=======
+>>>>>>> Stashed changes
 
 typedef struct _ComboBoxMap {
     const int count;
@@ -129,11 +136,9 @@ const ComboBoxMap PhdrTypeMap = {
     },
 };
 
-MemoryEditor mViewer;
-
 namespace Imelf
 {
-    template< class T >
+    template< typename T >
     void ComboBox( T& dest, const ComboBoxMap& map )
     {
         const char* preview = "";
@@ -156,7 +161,7 @@ namespace Imelf
         }
     }
 
-    template< class T >
+    template< typename T >
     void InputHex( const char* label, T& dest, bool valid = true )
     {
         ImGuiDataType flags = ImGuiDataType_U8;
@@ -186,7 +191,11 @@ namespace Imelf
 
     namespace Ehdr
     {
+<<<<<<< Updated upstream
         template< class T >
+=======
+        template< typename T >
+>>>>>>> Stashed changes
         void Ident( T ehdr )
         {
             ImGui::TableNextRow();
@@ -207,9 +216,16 @@ namespace Imelf
                 ImGui::PopStyleColor();
             }
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "0x7F followed by ELF(45 4c 46) in ASCII; these four bytes constitute the magic number." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void Class( T ehdr )
         {
             ImGui::TableNextRow();
@@ -230,9 +246,16 @@ namespace Imelf
             ImGui::TableNextCell();
             Imelf::ComboBox( ehdr->e_class, EhdrClassMap );
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "This byte is set to either 1 or 2 to signify 32-bit or 64-bit format, respectively." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void Data( T ehdr )
         {
             ImGui::TableNextRow();
@@ -253,9 +276,16 @@ namespace Imelf
             ImGui::TableNextCell();
             Imelf::ComboBox( ehdr->e_data, EhdrDataMap );
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "This byte is set to either 1 or 2 to signify little or big endianness, respectively. This affects interpretation of multi-byte fields starting with offset 0x10." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void IdentVersion( T ehdr )
         {
             ImGui::TableNextRow();
@@ -275,9 +305,16 @@ namespace Imelf
             }
             ImGui::TableNextCell();
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "Set to 1 for the original and current version of ELF." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void Osabi( T ehdr )
         {
             ImGui::TableNextRow();
@@ -298,9 +335,16 @@ namespace Imelf
             ImGui::TableNextCell();
             Imelf::ComboBox( ehdr->e_osabi, EhdrOsabiMap );
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "Identifies the target operating system ABI. It is often set to 0 regardless of the target platform." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void Abi( T ehdr )
         {
             ImGui::TableNextRow();
@@ -315,9 +359,17 @@ namespace Imelf
             ImGui::InputScalar( "ei_abiver_input", ImGuiDataType_U8, &ehdr->e_abiversion, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "Further specifies the ABI version. Its interpretation depends on the target ABI. "
+                        "Linux kernel (after at least 2.6) has no definition of it, so it is ignored for statically-linked executables." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void Type( T ehdr )
         {
             ImGui::TableNextRow();
@@ -339,9 +391,16 @@ namespace Imelf
             ImGui::TableNextCell();
             Imelf::ComboBox( ehdr->e_type, EhdrTypeMap );
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "Identifies object file type." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void Machine( T ehdr )
         {
             ImGui::TableNextRow();
@@ -362,9 +421,16 @@ namespace Imelf
             ImGui::TableNextCell();
             Imelf::ComboBox( ehdr->e_machine, EhdrMachineMap );
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "Specifies target instruction set architecture." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void Version( T ehdr )
         {
             ImGui::TableNextRow();
@@ -384,9 +450,16 @@ namespace Imelf
             }
             ImGui::TableNextCell();
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "Set to 1 for the original version of ELF." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void Entry( T ehdr )
         {
             ImGui::TableNextRow();
@@ -400,9 +473,16 @@ namespace Imelf
             ImGui::InputScalar( "e_entry_input", ImGuiDataType_U64, &ehdr->e_entry, NULL, NULL, "%llX", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "This is the memory address of the entry point from where the process starts executing." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void Phoff( T ehdr )
         {
             ImGui::TableNextRow();
@@ -416,9 +496,16 @@ namespace Imelf
             ImGui::InputScalar( "e_phoff_input", ImGuiDataType_U64, &ehdr->e_phoff, NULL, NULL, "%llX", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "Points to the start of the program header table. It usually follows the file header immediately." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void Shoff( T ehdr )
         {
             ImGui::TableNextRow();
@@ -432,9 +519,16 @@ namespace Imelf
             ImGui::InputScalar( "e_shoff_input", ImGuiDataType_U64, &ehdr->e_shoff, NULL, NULL, "%llX", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "Points to the start of the section header table." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void Flags( T ehdr )
         {
             ImGui::TableNextRow();
@@ -448,9 +542,16 @@ namespace Imelf
             ImGui::InputScalar( "e_flags_input", ImGuiDataType_U32, &ehdr->e_flags, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "Interpretation of this field depends on the target architecture." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void Ehsize( T ehdr )
         {
             ImGui::TableNextRow();
@@ -464,9 +565,16 @@ namespace Imelf
             ImGui::InputScalar( "e_ehsize_input", ImGuiDataType_U16, &ehdr->e_ehsize, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "Contains the size of this header, normally 64 Bytes for 64-bit and 52 Bytes for 32-bit format." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void Phentsize( T ehdr )
         {
             ImGui::TableNextRow();
@@ -480,9 +588,16 @@ namespace Imelf
             ImGui::InputScalar( "e_phentsize_input", ImGuiDataType_U16, &ehdr->e_phentsize, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "Contains the size of a program header table entry." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void Phnum( T ehdr )
         {
             ImGui::TableNextRow();
@@ -496,9 +611,16 @@ namespace Imelf
             ImGui::InputScalar( "e_phnum_input", ImGuiDataType_U16, &ehdr->e_phnum, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "Contains the number of entries in the program header table." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void Shentsize( T ehdr )
         {
             ImGui::TableNextRow();
@@ -512,9 +634,16 @@ namespace Imelf
             ImGui::InputScalar( "e_shentsize_input", ImGuiDataType_U16, &ehdr->e_shentsize, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "Contains the size of a section header table entry." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void Shnum( T ehdr )
         {
             ImGui::TableNextRow();
@@ -528,9 +657,16 @@ namespace Imelf
             ImGui::InputScalar( "e_shnum_input", ImGuiDataType_U16, &ehdr->e_shnum, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         template< class T >
+=======
+            HelpMarker( "Contains the number of entries in the section header table." );
+        }
+
+        template< typename T >
+>>>>>>> Stashed changes
         void Shstrndx( T ehdr )
         {
             ImGui::TableNextRow();
@@ -544,9 +680,17 @@ namespace Imelf
             ImGui::InputScalar( "e_shstrndx_input", ImGuiDataType_U16, &ehdr->e_shstrndx, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
+<<<<<<< Updated upstream
         }
 
         void Draw( File* elf )
+=======
+            HelpMarker( "Contains index of the section header table entry that contains the section names." );
+        }
+
+        template< typename T >
+        void Draw( T ehdr )
+>>>>>>> Stashed changes
         {
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
             ImGui::BeginTable( "elf header", 5, flags, ImVec2( 0, ImGui::GetTextLineHeightWithSpacing() * 1 ) );
@@ -557,6 +701,7 @@ namespace Imelf
             ImGui::TableSetupColumn( "Meaning", ImGuiTableColumnFlags_WidthStretch );
             ImGui::TableAutoHeaders();
 
+<<<<<<< Updated upstream
             if ( elf->is_32bit() ) {
                 Elf32_Ehdr* ehdr = dynamic_cast< Elf32* >( elf )->get_elf_header();
                 Ident( ehdr );
@@ -600,6 +745,27 @@ namespace Imelf
                 Shnum( ehdr );
                 Shstrndx( ehdr );
             }
+=======
+            Ident( ehdr );
+            Class( ehdr );
+            Data( ehdr );
+            IdentVersion( ehdr );
+            Osabi( ehdr );
+            Abi( ehdr );
+            Type( ehdr );
+            Machine( ehdr );
+            Version( ehdr );
+            Entry( ehdr );
+            Phoff( ehdr );
+            Shoff( ehdr );
+            Flags( ehdr );
+            Ehsize( ehdr );
+            Phentsize( ehdr );
+            Phnum( ehdr );
+            Shentsize( ehdr );
+            Shnum( ehdr );
+            Shstrndx( ehdr );
+>>>>>>> Stashed changes
 
             ImGui::EndTable();
         }
@@ -607,7 +773,7 @@ namespace Imelf
 
     namespace Phdr
     {
-        template<class T>
+        template< typename T >
         void Flags( T& perm )
         {
             bool read, write, exec;
@@ -628,8 +794,8 @@ namespace Imelf
             }
         }
 
-        template<class T>
-        void TableRow( T* phdr )
+        template< typename T >
+        void TableRow( T phdr )
         {
             ImGui::TableNextRow();
             Imelf::ComboBox( phdr->p_type, PhdrTypeMap );
@@ -656,19 +822,24 @@ namespace Imelf
             ImGui::InputScalar( "##memsz", ImGuiDataType_U64, &phdr->p_align, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
         }
 
-        //template<class T>
-        void InterpretData( Elf64_Phdr* phdr )
+        template< typename T >
+        void InterpretData( T phdr )
         {
             if ( phdr->p_type == 2 ) {
                 // PT_DYNAMIC
 
             } else {
-                mViewer.HexViewer( phdr, sizeof( *phdr ) );
+                //mViewer.HexViewer( phdr, sizeof( *phdr ) );
             }
         }
 
+<<<<<<< Updated upstream
 
         void Draw( File* elf )
+=======
+        template< typename T >
+        void Draw( T elf )
+>>>>>>> Stashed changes
         {
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
             ImGui::BeginTable( "elf program", 8, flags, ImVec2( 0, ImGui::GetTextLineHeightWithSpacing() * 1 ) );
@@ -696,6 +867,7 @@ namespace Imelf
                 ImGui::PopID();
             }
 
+<<<<<<< Updated upstream
             if ( elf->is_32bit() ) {
                 elf = dynamic_cast< Elf32* >( elf );
             } else {
@@ -703,8 +875,12 @@ namespace Imelf
             }
 
             Elf64_Ehdr* ehdr = elf->get_elf_header();
+=======
+
+            auto ehdr = elf->get_elf_header();
+>>>>>>> Stashed changes
             for ( int i = 0; i < ehdr->e_phnum; i++ ) {
-                Elf64_Phdr* phdr = reinterpret_cast< Elf64_Phdr* >( elf->get_prog_header( i ) );
+                auto phdr = elf->get_prog_header( i );
                 ImGui::PushID( i );
                 TableRow( phdr );
                 ImGui::PopID();
@@ -714,15 +890,17 @@ namespace Imelf
             ImGui::Separator();
             ImGui::SetCursorPosY( ImGui::GetCursorPosY() + 10.0f );
 
+            auto ctx = elf->get_ctx();
+
             ImGuiTabBarFlags tflags = ImGuiTabBarFlags_NoCloseWithMiddleMouseButton | ImGuiTabBarFlags_TabListPopupButton;
             if ( ImGui::BeginTabBar( "PhdrDataTabs", flags ) ) {
                 for ( int i = 0; i < ehdr->e_phnum; i++ ) {
-                    Elf64_Phdr* phdr = reinterpret_cast< Elf64_Phdr* >( elf->get_prog_header( i ) );
+                    auto phdr = elf->get_prog_header( i );
                     ImGui::PushID( i );
                     auto type = PhdrTypeMap.get_val( phdr->p_type );
                     type = type ? type : "";
                     if ( ImGui::BeginTabItem( type, nullptr, 0 ) ) {
-                        ctx.display.idx = i;
+                        ctx.idx = i;
                         InterpretData( phdr );
                         ImGui::EndTabItem();
                     }
@@ -733,11 +911,17 @@ namespace Imelf
 
         }
     }
+    
 
     namespace Shdr
     {
+<<<<<<< Updated upstream
 		template<class T>
         void TableRow( File* elf, T shdr, int idx )
+=======
+		template<typename O, typename T>
+        void TableRow( O elf, T shdr, int idx )
+>>>>>>> Stashed changes
         {
             ImGui::TableNextRow();
             ImGui::Text( "%s", elf->get_section_name( idx ) );
@@ -770,7 +954,12 @@ namespace Imelf
             InputHex( "sh_entsize", shdr->sh_entsize );
         }
 
+<<<<<<< Updated upstream
         void Draw( File* elf )
+=======
+        template< typename T >
+        void Draw( T elf )
+>>>>>>> Stashed changes
         {
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_NoHostExtendY | ImGuiTableFlags_Scroll | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
             ImGui::BeginTable( "elf sections", 10, flags, ImVec2( 0,  250.0f ) );
@@ -811,9 +1000,9 @@ namespace Imelf
                 ImGui::PopID();
             }
             
-			Elf64_Ehdr* ehdr = reinterpret_cast< Elf64_Ehdr* >( elf->get_elf_header() );
+			auto ehdr = elf->get_elf_header();
             for ( int i = 0; i < ehdr->e_shnum; i++ ) {
-                Elf64_Shdr* shdr = reinterpret_cast< Elf64_Shdr* >( elf->get_section_header( i ) );
+                auto shdr = elf->get_section_header( i );
                 ImGui::PushID( i );
                 TableRow( elf, shdr, i );
                 ImGui::PopID();
@@ -823,17 +1012,19 @@ namespace Imelf
             ImGui::Separator();
             ImGui::SetCursorPosY( ImGui::GetCursorPosY() + 10.0f );
 
+            auto ctx = elf->get_ctx();
+
             ImGuiTabBarFlags tflags = ImGuiTabBarFlags_FittingPolicyResizeDown;
             if ( ImGui::BeginTabBar( "ShdrDataTabs", flags ) ) {
                 for ( int i = 0; i < ehdr->e_shnum; i++ ) {
-                    Elf64_Shdr* shdr = reinterpret_cast< Elf64_Shdr* >( elf->get_section_header( i ) );
+                    auto shdr = elf->get_section_header( i );
                     ImGui::PushID( i );
                     const char* type = elf->get_section_name( i );
                     type = type ? type : "";
                     ImGuiTabItemFlags iflags = ImGuiTabItemFlags_NoCloseWithMiddleMouseButton;
                     if ( ImGui::BeginTabItem( type, nullptr, iflags ) ) {
-                        ctx.display.idx = i;
-                        mViewer.HexViewer( shdr, sizeof( *shdr ) );
+                        ctx.idx = i;
+                        //mViewer.HexViewer( shdr, sizeof( *shdr ) );
                         ImGui::EndTabItem();
                     }
                     ImGui::PopID();
@@ -843,3 +1034,4 @@ namespace Imelf
 		}
     }
 }
+

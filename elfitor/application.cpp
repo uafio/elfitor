@@ -15,13 +15,15 @@
 
 #include "elfreader/ELFReader.h"
 #include "imelf.h"
-#include "imgui_memory_editor.h"
 
 
+<<<<<<< Updated upstream
 std::vector< File* > files;
 MemoryEditor medit;
 CTX ctx;
 
+=======
+>>>>>>> Stashed changes
 void Tooltip( const char* desc )
 {
     ImGui::BeginTooltip();
@@ -38,12 +40,21 @@ void HoverTooltip( const char* desc )
     }
 }
 
+<<<<<<< Updated upstream
 void HelpMarker( const char* desc )
 {
     ImGui::TextDisabled( "(?)" );
     HoverTooltip( desc );
 }
 
+=======
+void HoverTooltip( const char* desc )
+{
+    if ( ImGui::IsItemHovered() ) {
+        Tooltip( desc );
+    }
+}
+>>>>>>> Stashed changes
 
 void MenuItemAbout( void )
 {
@@ -61,12 +72,19 @@ void MenuItemOpen( void )
     ofile.nMaxFile = sizeof( szFile );
 
     if ( GetOpenFileNameA( &ofile ) ) {
+<<<<<<< Updated upstream
         ELFReader* newelf = new ELFReader( szFile );
         if ( newelf->is_valid() ) {
             elfs.push_back( newelf );
             ctx.elf = newelf;
             ctx.display.hdr = ctx.display.ehdr;
             ctx.display.idx = 0;
+=======
+        FileFactory* factory = new FileFactory( fpath );
+        File* newfile = factory->build();
+        if ( newfile ) {
+            State::instance()->add( newfile );
+>>>>>>> Stashed changes
         }
     }
 }
@@ -74,16 +92,17 @@ void MenuItemOpen( void )
 void MenuItemSave( void )
 {
     printf( "Pressed Save\n" );
-    if ( ctx.elf == nullptr )
+    if ( State::instance()->get_ctx_file() == nullptr )
         return;
 
-    ctx.elf->save( ctx.elf->filepath() );
+    auto state = State::instance();
+    state->get_ctx_file()->save( state->get_ctx_file()->filepath() );
 }
 
 void MenuItemSaveAs( void )
 {
     puts( "Pressed Save As" );
-    if ( ctx.elf == nullptr )
+    if ( State::instance()->get_ctx_file() == nullptr )
         return;
 
     OPENFILENAMEA ofile = { 0 };
@@ -94,127 +113,16 @@ void MenuItemSaveAs( void )
     ofile.nMaxFile = sizeof( szFile );
 
     if ( GetSaveFileNameA( &ofile ) ) {
-        ctx.elf->save( szFile );
+        State::instance()->get_ctx_file()->save( szFile );
     }
 }
 
 void MenuItemClose( void )
 {
-    if ( ctx.elf ) {
-        for ( auto elf = elfs.begin(); elf != elfs.end(); elf++ ) {
-            if ( *elf == ctx.elf ) {
-                elfs.erase( elf );
-                break;
-            }
-        }
-        ctx = { 0 };
-    }
+    State::instance()->close();
 }
 
-void ElfHeaderNavigation64( ELFReader* elf )
-{
-    ImGuiTreeNodeFlags flags = 0;
-    flags |= ImGuiTreeNodeFlags_NoTreePushOnOpen;
-    flags |= ImGuiTreeNodeFlags_Leaf;
-
-    if ( ctx.elf == elf && ctx.display.hdr == ctx.display.ehdr ) {
-        ImGui::TreeNodeEx( "ELF Header Leaf", flags | ImGuiTreeNodeFlags_Selected, "ELF Header" );
-    } else {
-        ImGui::TreeNodeEx( "ELF Header Leaf", flags, "ELF Header" );
-    }
-    if ( ImGui::IsItemClicked() ) {
-        ctx.elf = elf;
-        ctx.display.hdr = ctx.display.ehdr;
-    }
-
-    if ( ctx.elf == elf && ctx.display.hdr == ctx.display.phdr ) {
-        ImGui::TreeNodeEx( elf->get_prog_header( 0 ), flags | ImGuiTreeNodeFlags_Selected, "Program Headers" );
-    } else {
-        ImGui::TreeNodeEx( elf->get_prog_header( 0 ), flags, "Program Headers" );
-    }
-    if ( ImGui::IsItemClicked() ) {
-        ctx.elf = elf;
-        ctx.display.hdr = ctx.display.phdr;
-    }
-
-    if ( ctx.elf == elf && ctx.display.hdr == ctx.display.shdr ) {
-        ImGui::TreeNodeEx( elf->get_section_header( 0 ), flags | ImGuiTreeNodeFlags_Selected, "Section Headers" );
-    } else {
-        ImGui::TreeNodeEx( elf->get_section_header( 0 ), flags, "Section Headers" );
-    }
-    if ( ImGui::IsItemClicked() ) {
-        ctx.elf = elf;
-        ctx.display.hdr = ctx.display.shdr;
-    }
-}
-
-void ElfHeaderNavigation32( ELFReader* elf )
-{
-}
-
-void ShowNagivationWindow( void )
-{
-    ImGuiWindowFlags flags = 0;
-    flags |= ImGuiWindowFlags_NoTitleBar;
-    flags |= ImGuiWindowFlags_NoMove;
-    flags |= ImGuiWindowFlags_NoResize;
-    flags |= ImGuiWindowFlags_NoCollapse;
-    flags |= ImGuiWindowFlags_NoNav;
-
-    ImGui::Begin( "Navigation", NULL, flags );
-
-    if ( elfs.size() ) {
-        for ( auto elf = elfs.begin(); elf != elfs.end(); ) {
-            char label[_MAX_PATH];
-            snprintf( label, sizeof( label ), "%s##%zd", ( *elf )->filename(), std::distance( elfs.begin(), elf ) );
-
-            bool close = true;
-            if ( ImGui::CollapsingHeader( label, &close, ImGuiTreeNodeFlags_DefaultOpen ) ) {
-                if ( ( *elf )->is_32bit() ) {
-                    ElfHeaderNavigation32( *elf );
-                } else {
-                    ElfHeaderNavigation64( *elf );
-                }
-            }
-            if ( close == false ) {
-                if ( *elf == ctx.elf ) {
-                    ctx = { 0 };
-                }
-                delete *elf;
-                elfs.erase( elf );
-            } else {
-                ++elf;
-            }
-        }
-    }
-
-    ImGui::End();
-}
-
-
-void ShowMainWindow( void )
-{
-    ImGuiWindowFlags wflags = 0;
-    wflags |= ImGuiWindowFlags_NoMove;
-    wflags |= ImGuiWindowFlags_NoResize;
-    wflags |= ImGuiWindowFlags_NoCollapse;
-
-    ImGui::Begin( "MainWindow", NULL, wflags );
-    if ( ctx.elf == nullptr ) {
-        ImGui::Text( "ELF Editor" );
-    } else if ( ctx.display.hdr == ctx.display.ehdr ) {
-        Imelf::Ehdr::Draw( ctx.elf );
-    } else if ( ctx.display.hdr == ctx.display.phdr ) {
-        Imelf::Phdr::Draw( ctx.elf );
-    } else if ( ctx.display.hdr == ctx.display.shdr ) {
-        Imelf::Shdr::Draw( ctx.elf );
-    } else {
-        ImGui::Text( "ELF Header for %s", ctx.elf->filepath() );
-    }
-
-    ImGui::End();
-}
-
+/*
 void ShowHexEditorWindow( void )
 {
     if ( ctx.elf == nullptr ) {
@@ -234,9 +142,10 @@ void ShowHexEditorWindow( void )
         }
 	} else {
 		// should not reach
-        assert( false );
+        //assert( false );
 	}
 }
+*/
 
 void ShowApplicationWindow( GLFWwindow* window )
 {
@@ -266,8 +175,8 @@ void ShowApplicationWindow( GLFWwindow* window )
         ImGui::EndMainMenuBar();
     }
 
-    ShowNagivationWindow();
-    ShowMainWindow();
-    ShowHexEditorWindow();
+    State::instance()->ShowNavigation();
+    State::instance()->ShowMainWindow();
+    //ShowHexEditorWindow();
     //ImGui::ShowMetricsWindow();
 }
