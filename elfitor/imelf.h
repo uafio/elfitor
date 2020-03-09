@@ -1,31 +1,25 @@
 #pragma once
 #include "elfreader/ELFReader.h"
 
-typedef struct _CTX {
-    ELFReader* elf;
-    struct {
-        enum {
-            ehdr = 1,
-            phdr,
-            shdr,
-        } hdr;
-        int idx;
-    } display;
-} CTX;
-
+void HelpMarker( const char* desc );
+void Tooltip( const char* desc );
+void HoverTooltip( const char* desc );
 
 namespace Imelf
 {
     namespace Ehdr
     {
-        void Draw( ELFReader* elf );
+        template< typename T >
+        void Draw( T );
     }
     namespace Phdr
     {
-        void Draw( ELFReader* elf );
+        template< typename T >
+        void Draw( T elf );
     }
     namespace Shdr
     {
-		void Draw( ELFReader* elf );
+        template< typename T >
+		void Draw( T elf );
     }
 }
