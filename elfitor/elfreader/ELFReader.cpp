@@ -58,6 +58,7 @@ void State::remove( File* file )
 
 void State::draw( void )
 {
+	// Draw the Main Window
     int index = -1;
     ImGui::Begin( "MainWindow" );
     ImGuiTabBarFlags tflags = ImGuiTabBarFlags_FittingPolicyResizeDown;
@@ -85,16 +86,24 @@ void State::draw( void )
     }
     ImGui::End();
 
-    if ( index >= 0 )
-        remove( files[index] );
 
+	// Draw other optional windows
+	if ( ctx_file )
+        ctx_file->other_windows();
+
+
+	// Draw navigational left panel
     ImGui::Begin( "Navigation" );
     if ( ctx_file ) {
-        ctx_file->other_windows();
         ctx_file->show_nav();
     }
     ImGui::End();
     
+
+	// The end
+    if ( index >= 0 )
+        remove( files[index] );
+
 }
 
 // ==========================================================================================================
