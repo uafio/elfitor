@@ -142,6 +142,11 @@ void* File::rva2va( size_t rva )
     return (char*)base + rva;
 }
 
+uint64_t File::va2rva( void* va )
+{
+    return (char*)va - (char*)base;
+}
+
 bool File::save( const char* filename )
 {
     std::fstream out( fname, std::fstream::binary | std::fstream::out );

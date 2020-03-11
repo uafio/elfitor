@@ -666,6 +666,25 @@ namespace Imelf
             }
         }
 
+        template< typename O, typename T >
+        void Type( O* elf, T* phdr )
+        {
+            ImGui::TableNextRow();        
+            ImGui::Text( "p_type" );
+            Tooltip( "Identifies the type of the segment." );
+            ImGui::TableNextCell();
+            ImGui::Text( "%08x", elf->va2rva( &phdr->p_type ) );
+            ImGui::TableNextCell();
+            ImGui::Text( "%02x", sizeof( phdr->p_type ) );
+            ImGui::TableNextCell();
+            InputHex( "phdr_p_type", phdr->p_type );
+            ImGui::TableNextCell();
+            ComboBox( phdr->p_type, PhdrTypeMap );
+            ImGui::TableNextCell();
+
+
+        }
+
         template< typename T >
         void Draw( T elf )
         {
@@ -683,11 +702,11 @@ namespace Imelf
 
             for ( int i = 0; i < ehdr->e_phnum; i++ ) {
                 auto phdr = elf->get_prog_header( i );
-                ImGui::TableNextRow();
+                ImGui::PushID( i );
 
-                ImGui::Text( "p_type" );
+                Type( elf, phdr );
 
-
+                ImGui::PopID();
                 ImGui::Separator();
             }
             ImGui::EndTable();

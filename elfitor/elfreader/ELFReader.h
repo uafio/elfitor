@@ -98,6 +98,8 @@ public:
     // Relative Virtual Address to Virtual Address
     void* rva2va( size_t rva );
 
+    uint64_t va2rva( void* va );
+
     // Saves File on disk
     virtual bool save( const char* fname );
 
