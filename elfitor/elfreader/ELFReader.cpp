@@ -61,29 +61,30 @@ void State::draw( void )
 	// Draw the Main Window
     int index = -1;
     ImGui::Begin( "MainWindow" );
-    ImGuiTabBarFlags tflags = ImGuiTabBarFlags_FittingPolicyResizeDown;
-    if ( ImGui::BeginTabBar( "FileTabs", tflags ) ) {
 
-        for ( int i = 0; i < files.size(); i++ ) {
+    if ( !files.empty() ) {
+        ImGuiTabBarFlags tflags = ImGuiTabBarFlags_FittingPolicyResizeDown;
+        if ( ImGui::BeginTabBar( "FileTabs", tflags ) ) {
+            for ( int i = 0; i < files.size(); i++ ) {
+                auto cur = files[i];
+                ImGuiTabItemFlags iflags = ImGuiTabItemFlags_NoCloseWithMiddleMouseButton;
+                bool closed = true;
 
-            auto cur = files[i];
-            ImGuiTabItemFlags iflags = ImGuiTabItemFlags_NoCloseWithMiddleMouseButton;
-            bool closed = true;
+                ImGui::PushID( i );
+                if ( ImGui::BeginTabItem( cur->filename(), &closed, iflags ) ) {
+                    ctx_file = cur;
+                    cur->show_main();
+                    ImGui::EndTabItem();
+                }
+                ImGui::PopID();
 
-            ImGui::PushID( i );
-            if ( ImGui::BeginTabItem( cur->filename(), &closed, iflags ) ) {
-                ctx_file = cur;
-                cur->show_main();
-                ImGui::EndTabItem();
+                if ( !closed )
+                    index = i;
             }
-            ImGui::PopID();
-
-            if ( !closed )
-                index = i;
-
+            ImGui::EndTabBar();
         }
-        ImGui::EndTabBar();
     }
+
     ImGui::End();
 
 
