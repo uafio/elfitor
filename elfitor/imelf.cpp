@@ -1,8 +1,7 @@
-#include "imgui.h"
+﻿#include "imgui.h"
 #include "imelf.h"
 #include "elfreader/ELFReader.h"
 
-#pragma warning( disable : 4200 )
 template void Imelf::Ehdr::Draw< Elf32_Ehdr* >( Elf32_Ehdr* );
 template void Imelf::Ehdr::Draw< Elf64_Ehdr* >( Elf64_Ehdr* );
 
@@ -11,25 +10,6 @@ template void Imelf::Phdr::Draw< Elf64* >( Elf64* );
 
 template void Imelf::Shdr::Draw< Elf64* >( Elf64* );
 template void Imelf::Shdr::Draw< Elf32* >( Elf32* );
-
-typedef struct _ComboBoxMap {
-    const int count;
-    const struct {
-        const uint32_t key;
-        const char* const val;
-    } kv[0];
-
-
-    inline const char* get_val( uint32_t key ) const
-    {
-        for ( int i = 0; i < count; i++ ) {
-            if ( key == kv[i].key ) {
-                return kv[i].val;
-            }
-        }
-        return nullptr;
-    }
-} ComboBoxMap;
 
 
 void HelpMarker( const char* desc )
@@ -41,6 +21,17 @@ void HelpMarker( const char* desc )
 void Tooltip( const char* desc )
 {
     if ( ImGui::IsItemHovered() ) {
+        ImGui::BeginTooltip();
+        ImGui::PushTextWrapPos( ImGui::GetFontSize() * 35.0f );
+        ImGui::TextUnformatted( desc );
+        ImGui::PopTextWrapPos();
+        ImGui::EndTooltip();
+    }
+}
+
+void FocusTooltip( const char* desc )
+{
+    if ( ImGui::IsItemFocused() ) {
         ImGui::BeginTooltip();
         ImGui::PushTextWrapPos( ImGui::GetFontSize() * 35.0f );
         ImGui::TextUnformatted( desc );
@@ -150,7 +141,18 @@ const ComboBoxMap PhdrTypeMap = {
     },
 };
 
-#include <typeinfo>
+const ComboBoxMap PhdrTypeFlags = {
+    7,
+    {
+        1, "  X",
+        2, " W ",
+        3, " WX",
+        4, "R  ",
+        5, "R X",
+        6, "RW ",
+        7, "RWX",
+    }
+};
 
 namespace Imelf
 {
@@ -418,7 +420,7 @@ namespace Imelf
             ImGui::TableNextCell();
             ImGui::Text( "%02x", sizeof( ehdr->e_entry ) );
             ImGui::TableNextCell();
-            ImGui::InputScalar( "e_entry_input", ImGuiDataType_U64, &ehdr->e_entry, NULL, NULL, "%llX", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+            InputHex( "ehdr_e_entry", ehdr->e_entry );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
         }
@@ -434,7 +436,7 @@ namespace Imelf
             ImGui::TableNextCell();
             ImGui::Text( "%02x", sizeof( ehdr->e_phoff ) );
             ImGui::TableNextCell();
-            ImGui::InputScalar( "e_phoff_input", ImGuiDataType_U64, &ehdr->e_phoff, NULL, NULL, "%llX", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+            InputHex( "ehdr_e_phoff", ehdr->e_phoff );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
         }
@@ -450,7 +452,7 @@ namespace Imelf
             ImGui::TableNextCell();
             ImGui::Text( "%02x", sizeof( ehdr->e_shoff ) );
             ImGui::TableNextCell();
-            ImGui::InputScalar( "e_shoff_input", ImGuiDataType_U64, &ehdr->e_shoff, NULL, NULL, "%llX", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
+            InputHex( "ehdr_e_shoff", ehdr->e_shoff );
             ImGui::TableNextCell();
             ImGui::TableNextCell();
         }
@@ -607,7 +609,7 @@ namespace Imelf
     namespace Phdr
     {
         template< typename T >
-        void Flags( T& perm )
+        void Perms( T& perm )
         {
             bool read, write, exec;
             read = true ? perm & 4 : false;
@@ -634,7 +636,7 @@ namespace Imelf
             Imelf::ComboBox( phdr->p_type, PhdrTypeMap );
 
             ImGui::TableNextCell();
-            Imelf::Phdr::Flags( phdr->p_flags );
+            Imelf::Phdr::Perms( phdr->p_flags );
 
             ImGui::TableNextCell();
             ImGui::InputScalar( "##offset", ImGuiDataType_U64, &phdr->p_offset, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
@@ -655,16 +657,6 @@ namespace Imelf
             ImGui::InputScalar( "##memsz", ImGuiDataType_U64, &phdr->p_align, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
         }
 
-        template< typename T >
-        void InterpretData( T* phdr )
-        {
-            if ( phdr->p_type == 2 ) {
-                // PT_DYNAMIC
-
-            } else {
-                //mViewer.HexViewer( phdr, sizeof( *phdr ) );
-            }
-        }
 
         template< typename O, typename T >
         void Type( O* elf, T* phdr )
@@ -680,13 +672,116 @@ namespace Imelf
             InputHex( "phdr_p_type", phdr->p_type );
             ImGui::TableNextCell();
             ComboBox( phdr->p_type, PhdrTypeMap );
+        }
+
+        template< typename O, typename T>
+        void Flags( O* elf, T* phdr )
+        {
+            ImGui::TableNextRow();
+            ImGui::Text( "p_flags" );
+            Tooltip( "Segment-dependent flags." );
             ImGui::TableNextCell();
+            ImGui::Text( "%08x", elf->va2rva( &phdr->p_flags ) );
+            ImGui::TableNextCell();
+            ImGui::Text( "%02x", sizeof( phdr->p_flags ) );
+            ImGui::TableNextCell();
+            InputHex( "phdr_p_flags", phdr->p_flags );
+            ImGui::TableNextCell();
+            ImGui::Text( "%s", PhdrTypeFlags.get_val( phdr->p_flags ) );
+        }
 
+        template< typename O, typename T>
+        void Offset( O* elf, T* phdr )
+        {
+            ImGui::TableNextRow();
+            ImGui::Text( "p_offset" );
+            Tooltip( "Offset of the segment in the file image." );
+            ImGui::TableNextCell();
+            ImGui::Text( "%08x", elf->va2rva( &phdr->p_offset ) );
+            ImGui::TableNextCell();
+            ImGui::Text( "%02x", sizeof( phdr->p_offset ) );
+            ImGui::TableNextCell();
+            InputHex( "phdr_p_offset", phdr->p_offset );            
+        }
 
+        template< typename O, typename T >
+        void Vaddr( O* elf, T* phdr )
+        {
+            ImGui::TableNextRow();
+            ImGui::Text( "p_vaddr" );
+            Tooltip( "Virtual address of the segment in memory." );
+            ImGui::TableNextCell();
+            ImGui::Text( "%08x", elf->va2rva( &phdr->p_vaddr ) );
+            ImGui::TableNextCell();
+            ImGui::Text( "%02x", sizeof( phdr->p_vaddr ) );
+            ImGui::TableNextCell();
+            InputHex( "phdr_p_vaddr", phdr->p_vaddr );
+        }
+
+        template<typename O, typename T>
+        void Paddr( O* elf, T* phdr )
+        {
+            ImGui::TableNextRow();
+            ImGui::Text( "p_paddr" );
+            Tooltip( "On systems where physical address is relevant, reserved for segment's physical address." );
+            ImGui::TableNextCell();
+            ImGui::Text( "%08x", elf->va2rva( &phdr->p_paddr ) );
+            ImGui::TableNextCell();
+            ImGui::Text( "%02x", sizeof( phdr->p_paddr ) );
+            ImGui::TableNextCell();
+            InputHex( "phdr_p_paddr", phdr->p_paddr );        
+        }
+
+        template<typename O, typename T>
+        void Filesz( O* elf, T* phdr )
+        {
+            ImGui::TableNextRow();
+            ImGui::Text( "p_filesz" );
+            Tooltip( "Size in bytes of the segment in the file image." );
+            ImGui::TableNextCell();
+            ImGui::Text( "%08x", elf->va2rva( &phdr->p_filesz ) );
+            ImGui::TableNextCell();
+            ImGui::Text( "%02x", sizeof( phdr->p_filesz ) );
+            ImGui::TableNextCell();
+            InputHex( "phdr_p_filesz", phdr->p_filesz );
+        }
+
+        template< typename O, typename T >
+        void Memsz( O* elf, T* phdr )
+        {
+            ImGui::TableNextRow();
+            ImGui::Text( "p_memsz" );
+            Tooltip( "Size in bytes of the segment in memory." );
+            ImGui::TableNextCell();
+            ImGui::Text( "%08x", elf->va2rva( &phdr->p_memsz ) );
+            ImGui::TableNextCell();
+            ImGui::Text( "%02x", sizeof( phdr->p_memsz ) );
+            ImGui::TableNextCell();
+            InputHex( "phdr_p_memsz", phdr->p_memsz );
+        }
+
+        template< typename O, typename T >
+        void Align( O* elf, T* phdr )
+        {
+            ImGui::TableNextRow();
+            ImGui::Text( "p_align" );
+            Tooltip( "This member holds the value to which the segments are\n"
+                "aligned in memory and in the file.  Loadable process seg-\n"
+                "ments must have congruent values for p_vaddr and p_offset,\n"
+                "modulo the page size.  Values of zero and one mean no\n"
+                "alignment is required.  Otherwise, p_align should be a pos-\n"
+                "itive, integral power of two, and p_vaddr should equal\n"
+                "p_offset, modulo p_align." );
+            ImGui::TableNextCell();
+            ImGui::Text( "%08x", elf->va2rva( &phdr->p_align ) );
+            ImGui::TableNextCell();
+            ImGui::Text( "%02x", sizeof( phdr->p_align ) );
+            ImGui::TableNextCell();
+            InputHex( "phdr_p_align", phdr->p_align );
         }
 
         template< typename T >
-        void Draw( T elf )
+        void DrawPhdr( T* elf )
         {
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
             ImGui::BeginTable( "program header", 6, flags, ImVec2( 0, ImGui::GetTextLineHeightWithSpacing() * 1 ) );
@@ -699,83 +794,41 @@ namespace Imelf
             ImGui::TableAutoHeaders();
 
             auto ehdr = elf->get_elf_header();
-
             for ( int i = 0; i < ehdr->e_phnum; i++ ) {
                 auto phdr = elf->get_prog_header( i );
                 ImGui::PushID( i );
+                if ( i ) {
+                    ImGui::TableNextRow();
+                    ImGui::Text( "" );
+                }
 
                 Type( elf, phdr );
+                if ( elf->get_type() == elf64_t )
+                    Flags( elf, phdr );
+                Offset( elf, phdr );
+                Vaddr( elf, phdr );
+                Paddr( elf, phdr );
+                Filesz( elf, phdr );
+                Memsz( elf, phdr );
+                if ( elf->get_type() == elf32_t )
+                    Flags( elf, phdr );
+                Align( elf, phdr );
 
                 ImGui::PopID();
-                ImGui::Separator();
             }
-            ImGui::EndTable();
+            ImGui::EndTable();        
         }
 
-        /*
         template< typename T >
         void Draw( T elf )
         {
-
-            ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
-            ImGui::BeginTable( "elf program", 8, flags, ImVec2( 0, ImGui::GetTextLineHeightWithSpacing() * 1 ) );
-            ImGui::TableSetupColumn( "Type", 0, 170.0 );
-            ImGui::TableSetupColumn( "R W X", 0, 100.0 );
-            ImGui::TableSetupColumn( "File Offset", 0, 150.0 );
-            ImGui::TableSetupColumn( "Virtual Address", 0, 200.0 );
-            ImGui::TableSetupColumn( "Physical Address", 0, 200.0 );
-            ImGui::TableSetupColumn( "Segment File Size", 0, 200.0 );
-            ImGui::TableSetupColumn( "Segment Virtual Size", 0, 220.0 );
-            ImGui::TableSetupColumn( "Alignment", ImGuiTableColumnFlags_WidthStretch );
-
-            const char* descs[] = { "Identifies the type of the segment.", "Segment-dependent flags (RWX).", "Offset of the segment in the file image.", "Virtual address of the segment in memory.", "On systems where physical address is relevant, reserved for segment's physical address.", "Size in bytes of the segment in the file image. May be 0.", "Size in bytes of the segment in memory. May be 0.", "0 and 1 specify no alignment. Otherwise should be a positive, integral power of 2, with p_vaddr equating p_offset modulus p_align." };
-
-            ImGui::TableNextRow( ImGuiTableRowFlags_Headers );
-            for ( int i = 0; i < _countof(descs); i++ ) {
-                ImGui::TableSetColumnIndex( i );
-                const char* column_name = ImGui::TableGetColumnName( i ); // Retrieve name passed to TableSetupColumn()
-                ImGui::PushID( i );
-                ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 0, 0 ) );
-                HelpMarker( descs[i] );
-                ImGui::PopStyleVar();
-                ImGui::SameLine( 0.0f, ImGui::GetStyle().ItemInnerSpacing.x );
-                ImGui::TableHeader( column_name );
-                ImGui::PopID();
-            }
-
-
-            auto ehdr = elf->get_elf_header();
-            for ( int i = 0; i < ehdr->e_phnum; i++ ) {
-                auto phdr = elf->get_prog_header( i );
-                ImGui::PushID( i );
-                TableRow( phdr );
-                ImGui::PopID();
-            }
-            ImGui::EndTable();
-
-            ImGui::Separator();
-            ImGui::SetCursorPosY( ImGui::GetCursorPosY() + 10.0f );
-
-            auto ctx = elf->get_ctx();
-
-            ImGuiTabBarFlags tflags = ImGuiTabBarFlags_NoCloseWithMiddleMouseButton | ImGuiTabBarFlags_TabListPopupButton;
-            if ( ImGui::BeginTabBar( "PhdrDataTabs", flags ) ) {
-                for ( int i = 0; i < ehdr->e_phnum; i++ ) {
-                    auto phdr = elf->get_prog_header( i );
-                    ImGui::PushID( i );
-                    auto type = PhdrTypeMap.get_val( phdr->p_type );
-                    type = type ? type : "";
-                    if ( ImGui::BeginTabItem( type, nullptr, 0 ) ) {
-                        ctx.idx = i;
-                        InterpretData( phdr );
-                        ImGui::EndTabItem();
-                    }
-                    ImGui::PopID();
-                }
-                ImGui::EndTabBar();
+            ElfCTX& ctx = elf->get_ctx();
+            switch ( ctx.idx ) {
+                case 0:
+                    DrawPhdr( elf );
+                    break;
             }
         }
-        */
     }
     
     namespace Shdr

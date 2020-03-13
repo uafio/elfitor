@@ -7,6 +7,28 @@
 
 State* State::state;
 
+template< typename T >
+int list_prog_headers( T* elf )
+{
+    auto ehdr = elf->get_elf_header();
+    auto ctx = elf->get_ctx();
+    int result = 0;
+    for ( int i = 1; i <= ehdr->e_phnum; i++ ) {
+        auto phdr = elf->get_prog_header( i - 1 );
+        const char* p_type = PhdrTypeMap.get_val( phdr->p_type );
+        if ( ctx.idx == i ) {
+            ImGui::TreeNodeEx( p_type, ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Selected, p_type );
+        } else {
+            ImGui::TreeNodeEx( p_type, ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf, p_type );
+        }
+        if ( ImGui::IsItemClicked() ) {
+            result = i;
+        }
+    }
+    return result;
+}
+
+
 // ==========================================================================================================
 
 State* State::instance( void )
@@ -64,18 +86,22 @@ void State::draw( void )
 
     if ( !files.empty() ) {
         ImGuiTabBarFlags tflags = ImGuiTabBarFlags_FittingPolicyResizeDown;
+        tflags |= ImGuiTabBarFlags_NoTooltip;
         if ( ImGui::BeginTabBar( "FileTabs", tflags ) ) {
             for ( int i = 0; i < files.size(); i++ ) {
                 auto cur = files[i];
                 ImGuiTabItemFlags iflags = ImGuiTabItemFlags_NoCloseWithMiddleMouseButton;
                 bool closed = true;
-
                 ImGui::PushID( i );
-                if ( ImGui::BeginTabItem( cur->filename(), &closed, iflags ) ) {
+
+                bool tab = ImGui::BeginTabItem( cur->filename(), &closed, iflags );
+                FocusTooltip( cur->filepath() );
+                if ( tab ) {
                     ctx_file = cur;
                     cur->show_main();
                     ImGui::EndTabItem();
                 }
+
                 ImGui::PopID();
 
                 if ( !closed )
@@ -361,6 +387,16 @@ void Elf32::show_nav( void )
         }
         if ( ImGui::IsItemClicked() ) {
             ctx.hdr = static_cast<ElfCTX::_hdr>( i );
+            ctx.idx = 0;
+        }
+        if ( i == ctx.phdr ) {
+            ImGui::Indent();
+            int idx = list_prog_headers( this );
+            if ( idx ) {
+                ctx.idx = idx;
+                ctx.hdr = ctx.phdr;
+            }
+            ImGui::Unindent();
         }
     }
 
@@ -463,16 +499,25 @@ void Elf64::show_nav( void )
     };
 
     for ( int i = 0; i < _countof( leafs ); i++ ) {
-        if ( i == ctx.hdr ) {
+        if ( ctx.hdr == i ) {
             ImGui::TreeNodeEx( leafs[i], ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Selected, (char*)leafs[i] );
         } else {
             ImGui::TreeNodeEx( leafs[i], ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf, (char*)leafs[i] );
         }
         if ( ImGui::IsItemClicked() ) {
             ctx.hdr = static_cast< ElfCTX::_hdr >( i );
+            ctx.idx = 0;
+        }
+        if ( i == ctx.phdr ) {
+            ImGui::Indent();
+            int idx = list_prog_headers( this );
+            if ( idx ) {
+                ctx.idx = idx;
+                ctx.hdr = ctx.phdr;
+            }
+            ImGui::Unindent();
         }
     }
-
 }
 
 void Elf64::show_main( void )
