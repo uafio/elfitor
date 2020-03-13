@@ -218,7 +218,7 @@ namespace Imelf
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( T, e_ident ));
             ImGui::TableNextCell();
-            ImGui::Text( "%02x", sizeof( ehdr->e_ident ) );
+            ImGui::Text( "%02x", 4 );
             ImGui::TableNextCell();
             ImGui::InputScalar( "ei_ident_input", ImGuiDataType_U32, ehdr->e_ident, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::TableNextCell();
