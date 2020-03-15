@@ -73,9 +73,10 @@ protected:
     size_t size;
     char* fname;
     char* fpath;
-    MemoryEditor mViewer;
 
 public:
+    // Hex Editor
+    MemoryEditor mViewer;
 
     // Construct the base object
     File( void );

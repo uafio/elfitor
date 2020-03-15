@@ -44,113 +44,113 @@ void FocusTooltip( const char* desc )
 const ComboBoxMap EhdrMachineMap = {
     16,
     {
-        0, "NONE", 
-        1, "AT&T WE 32100", 
-        2, "SPARC", 
-        3, "x86", 
-        4, "Motorola 68000", 
-        5, "Motorola 88000", 
-        7, "Intel 80860", 
-        8, "MIPS", 
-        0x14, "PowerPC", 
-        0x16, "S390", 
-        0x28, "ARM", 
-        0x2a, "SuperH", 
-        0x32, "IA-64", 
-        0x3e, "amd64", 
-        0xb7, "AArch64", 
-        0xf3, "RISC-V"
+        0, "NONE", "", 
+        1, "AT&T WE 32100", "", 
+        2, "SPARC", "", 
+        3, "x86", "", 
+        4, "Motorola 68000", "", 
+        5, "Motorola 88000", "", 
+        7, "Intel 80860", "", 
+        8, "MIPS", "", 
+        0x14, "PowerPC", "", 
+        0x16, "S390", "", 
+        0x28, "ARM", "", 
+        0x2a, "SuperH", "", 
+        0x32, "IA-64", "", 
+        0x3e, "amd64", "", 
+        0xb7, "AArch64", "", 
+        0xf3, "RISC-V", "", 
     }
 };
 
 const ComboBoxMap EhdrClassMap = {
     2,
     { 
-        1, "32-bit",
-        2, "64-bit"
+        1, "32-bit", "",
+        2, "64-bit", ""
     }
 };
 
 const ComboBoxMap EhdrDataMap = {
     2,
     {
-        1, "little-endian", 
-        2, "big-endian"
+        1, "little-endian", "", 
+        2, "big-endian", ""
     }
 };
 
 const ComboBoxMap EhdrOsabiMap = {
     17,
     {
-        0, "System V",
-        1, "HP-UX",
-        2, "NetBSD",
-        3, "Linux",
-        4, "GNU Hurd",
-        6, "Solaris",
-        7, "AIX",
-        8, "IRIX",
-        9, "FreeBSD",
-        0xa, "Tru64",
-        0xb, "Novell Modesto",
-        0xc, "OpenBSD",
-        0xd, "OpenVMS",
-        0xe, "NonStop Kernel",
-        0xf, "AROS",
-        0x10, "Fenix OS",
-        0x11, "Cloud ABI",
+        0, "System V", "", 
+        1, "HP-UX", "", 
+        2, "NetBSD", "",
+        3, "Linux", "", 
+        4, "GNU Hurd", "", 
+        6, "Solaris", "", 
+        7, "AIX", "", 
+        8, "IRIX", "", 
+        9, "FreeBSD", "", 
+        0xa, "Tru64", "", 
+        0xb, "Novell Modesto", "",
+        0xc, "OpenBSD", "",
+        0xd, "OpenVMS", "",
+        0xe, "NonStop Kernel", "",
+        0xf, "AROS", "",
+        0x10, "Fenix OS", "",
+        0x11, "Cloud ABI", ""
     }
 };
 
 const ComboBoxMap EhdrTypeMap = {
     9,
     {
-        0, "ET_NONE", 
-        1, "ET_REL", 
-        2, "ET_EXEC", 
-        3, "ET_DYN", 
-        4, "ET_CORE", 
-        0xfe00, "ET_LOOS", 
-        0xfeff, "ET_HIOS", 
-        0xff00, "ET_LOPROC", 
-        0xffff, "ET_HIPROC"
+        0, "ET_NONE", "",
+        1, "ET_REL", "",
+        2, "ET_EXEC", "",
+        3, "ET_DYN", "",
+        4, "ET_CORE", "",
+        0xfe00, "ET_LOOS", "", 
+        0xfeff, "ET_HIOS", "",
+        0xff00, "ET_LOPROC", "",
+        0xffff, "ET_HIPROC", "",
     },
 };
 
 const ComboBoxMap PhdrTypeMap = {
     18,
     {
-        0, "PT_NULL", 
-        1, "PT_LOAD", 
-        2, "PT_DYNAMIC", 
-        3, "PT_INTERP", 
-        4, "PT_NOTE", 
-        5, "PT_SHLIB", 
-        6, "PT_PHDR", 
-        7, "PT_TLS", 
-        8, "PT_NUM", 
-        0x60000000, "PT_LOOS", 
-        0x6474e550, "PT_GNU_EH_FRAME",
-        0x6474e551, "PT_GNU_STACK",
-        0x6474e552, "PT_GNU_RELRO",
-        0x6ffffffa, "PT_SUNWSTACK", 
-        0x6ffffffb, "PT_SUNWBSS",
-        0x6fffffff, "PT_HISUNW",
-        0x70000000, "PT_LOPROC",
-        0x7fffffff, "PT_HIPROC"
+        0, "PT_NULL", "",
+        1, "PT_LOAD", "",
+        2, "PT_DYNAMIC", "",
+        3, "PT_INTERP", "",
+        4, "PT_NOTE", "",
+        5, "PT_SHLIB", "",
+        6, "PT_PHDR", "",
+        7, "PT_TLS", "",
+        8, "PT_NUM", "",
+        0x60000000, "PT_LOOS", "",
+        0x6474e550, "PT_GNU_EH_FRAME", "",
+        0x6474e551, "PT_GNU_STACK", "",
+        0x6474e552, "PT_GNU_RELRO", "",
+        0x6ffffffa, "PT_SUNWSTACK", "",
+        0x6ffffffb, "PT_SUNWBSS", "",
+        0x6fffffff, "PT_HISUNW", "",
+        0x70000000, "PT_LOPROC", "",
+        0x7fffffff, "PT_HIPROC", ""
     },
 };
 
 const ComboBoxMap PhdrTypeFlags = {
     7,
     {
-        1, "  X",
-        2, " W ",
-        3, " WX",
-        4, "R  ",
-        5, "R X",
-        6, "RW ",
-        7, "RWX",
+        1, "  X", "",
+        2, " W ", "",
+        3, " WX", "",
+        4, "R  ", "",
+        5, "R X", "",
+        6, "RW ", "",
+        7, "RWX", "",
     }
 };
 
@@ -205,6 +205,14 @@ namespace Imelf
             ImGui::InputScalar( label, flags, &dest, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
             ImGui::PopStyleColor();
         }
+    }
+
+    void* AlignUp( void* ptr, uint32_t alignment )
+    {
+        uint32_t rem = (uintptr_t)ptr % alignment;
+        if ( rem )
+            return reinterpret_cast< void* >( (uintptr_t)ptr + alignment - rem );
+        return ptr;
     }
 
     namespace Ehdr
@@ -701,7 +709,7 @@ namespace Imelf
             ImGui::TableNextCell();
             ImGui::Text( "%02x", sizeof( phdr->p_offset ) );
             ImGui::TableNextCell();
-            InputHex( "phdr_p_offset", phdr->p_offset );            
+            InputHex( "phdr_p_offset", phdr->p_offset, phdr->p_offset < elf->get_file_size() );            
         }
 
         template< typename O, typename T >
@@ -820,13 +828,133 @@ namespace Imelf
         }
 
         template< typename T >
+        void DrawPhdrNote( T* elf, size_t start, size_t size )
+        {
+            ImGui::NewLine();
+            ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
+            ImGui::BeginTable( "PT_NOTE", 5, flags, ImVec2( 0, ImGui::GetTextLineHeightWithSpacing() * 1 ) );
+            ImGui::TableSetupColumn( "namesc", 0, 100.0 );
+            ImGui::TableSetupColumn( "descsz", 0, 100.0 );
+            ImGui::TableSetupColumn( "type", 0, 100.0 );
+            ImGui::TableSetupColumn( "name", 0, 150.0 );
+            ImGui::TableSetupColumn( "desc", ImGuiTableColumnFlags_WidthStretch );
+            ImGui::TableAutoHeaders();
+
+            size_t offset = 0;
+            int id = 0;
+            do {
+                Elf64_Nhdr* note = reinterpret_cast< Elf64_Nhdr* >( elf->rva2va( start + offset ) );
+                char* name = (char*)note + sizeof( *note );
+                unsigned char* desc = reinterpret_cast< unsigned char* >( AlignUp( name + note->n_namesz, 4 ) );
+                offset += ((uintptr_t)AlignUp(desc + note->n_descsz, 4) - (uintptr_t)note);
+
+                ImGui::PushID( id );
+                ImGui::TableNextRow();
+                ImGui::Text( "%X", note->n_namesz );
+                ImGui::TableNextCell();
+                ImGui::Text( "%X", note->n_descsz );
+                ImGui::TableNextCell();
+                ImGui::Text( "%X", note->n_type );
+                ImGui::TableNextCell();
+                ImGui::Text( "%s", name );
+                ImGui::TableNextCell();
+
+                char buf[256];
+                char* cur = buf;
+                for ( uint32_t i = 0; i < note->n_descsz; i++ ) {
+                    sprintf( cur, "%02X", desc[i] );
+                    cur += 2;
+                    if ( cur >= buf + 256 ) {
+                        break;
+                    }
+                }
+                ImGui::Text( "%s", buf );
+                /*
+                ImGui::Text( "namesz: %#x", note->n_namesz );
+                ImGui::Text( "descsz: %#x", note->n_descsz );
+                ImGui::Text( "type: %#x", note->n_type );
+                ImGui::Text( "name: %p: %s", name, name );
+                ImGui::Text( "desc: %p: %#llx", desc, desc );
+                */
+                ImGui::PopID();
+                ++id;
+            } while ( offset < size );
+
+            ImGui::EndTable();
+            ImGui::NewLine();
+        }
+
+        template < typename T, typename H >
+        void DrawPhdrType( T* elf, H* phdr )
+        {
+            ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
+            ImGui::BeginTable( "program header", 6, flags, ImVec2( 0, ImGui::GetTextLineHeightWithSpacing() * 1 ) );
+            ImGui::TableSetupColumn( "Member", 0, 220.0 );
+            ImGui::TableSetupColumn( "Offset", 0, 100.0 );
+            ImGui::TableSetupColumn( "Size", 0, 100.0 );
+            ImGui::TableSetupColumn( "Value", 0, 150.0 );
+            ImGui::TableSetupColumn( "Meaning", 0, 200.0 );
+            ImGui::TableSetupColumn( "", ImGuiTableColumnFlags_WidthStretch );
+            ImGui::TableAutoHeaders();
+
+            Type( elf, phdr );
+            if ( elf->get_type() == elf64_t )
+                Flags( elf, phdr );
+            Offset( elf, phdr );
+            Vaddr( elf, phdr );
+            Paddr( elf, phdr );
+            Filesz( elf, phdr );
+            Memsz( elf, phdr );
+            if ( elf->get_type() == elf32_t )
+                Flags( elf, phdr );
+            Align( elf, phdr );
+
+            ImGui::EndTable();
+
+            const char* title = PhdrTypeMap.get_val( phdr->p_type );
+            size_t offset = phdr->p_offset < elf->get_file_size() ? phdr->p_offset : 0;
+            size_t size = ( offset + phdr->p_filesz < elf->get_file_size() ) ? phdr->p_filesz : ( elf->get_file_size() - offset );
+
+            switch ( phdr->p_type ) {
+                case PT_NULL:
+                    break;
+                case PT_LOAD:
+                    elf->mViewer.DrawChildWindow( title, elf->rva2va( offset ), size, offset );
+                    break;
+                case PT_DYNAMIC:
+                    break;
+                case PT_INTERP:
+                    elf->mViewer.DrawChildWindow( title, elf->rva2va( offset ), size, offset );
+                    break;
+                case PT_NOTE:
+                    DrawPhdrNote( elf, offset, size );
+                    elf->mViewer.DrawChildWindow( title, elf->rva2va( offset ), size, offset );
+                    break;
+                case PT_SHLIB:
+                case PT_PHDR:
+                case PT_TLS:
+                case PT_NUM:
+                case PT_LOOS:
+                case PT_GNU_EH_FRAME:
+                case PT_GNU_STACK:
+                case PT_GNU_RELRO:
+                case PT_LOSUNW:
+                case PT_HISUNW:
+                case PT_LOPROC:
+                case PT_HIPROC:
+                default:
+                    break;
+            }
+        }
+
+        template< typename T >
         void Draw( T elf )
         {
             ElfCTX& ctx = elf->get_ctx();
-            switch ( ctx.idx ) {
-                case 0:
-                    DrawPhdr( elf );
-                    break;
+            if ( ctx.idx == 0 ) {
+                DrawPhdr( elf );
+            } else {
+                DrawPhdrType( elf, elf->get_prog_header( ctx.idx - 1) );
             }
         }
     }
@@ -868,10 +996,10 @@ namespace Imelf
         }
 
         template< typename T >
-        void Draw( T elf )
+        void DrawShr( T* elf )
         {
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_NoHostExtendY | ImGuiTableFlags_Scroll | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
-            ImGui::BeginTable( "elf sections", 10, flags, ImVec2( 0,  250.0f ) );
+            ImGui::BeginTable( "elf sections", 10, flags, ImVec2( 0, 250.0f ) );
             ImGui::TableSetupColumn( "Name", 0, 170.0 );
             ImGui::TableSetupColumn( "Type", 0, 100.0 );
             ImGui::TableSetupColumn( "Flags", 0, 100.0 );
@@ -883,21 +1011,21 @@ namespace Imelf
             ImGui::TableSetupColumn( "Alignment", 0, 130.0 );
             ImGui::TableSetupColumn( "Header Size", ImGuiTableColumnFlags_WidthStretch );
 
-            const char* descs[] = { 
-				"An offset to a string in the .shstrtab section that represents the name of this section",
-				"Identifies the type of this header.",
-				"Identifies the attributes of the section.",
-				"Virtual address of the section in memory, for sections that are loaded.",
-				"Offset of the section in the file image.",
-				"Size in bytes of the section in the file image. May be 0.",
-				"Contains the section index of an associated section. This field is used for several purposes, depending on the type of section.",
-				"Contains extra information about the section. This field is used for several purposes, depending on the type of section.",
-				"Contains the required alignment of the section. This field must be a power of two.",
-				"Contains the size, in bytes, of each entry, for sections that contain fixed-size entries. Otherwise, this field contains zero.",
-			};
+            const char* descs[] = {
+                "An offset to a string in the .shstrtab section that represents the name of this section",
+                "Identifies the type of this header.",
+                "Identifies the attributes of the section.",
+                "Virtual address of the section in memory, for sections that are loaded.",
+                "Offset of the section in the file image.",
+                "Size in bytes of the section in the file image. May be 0.",
+                "Contains the section index of an associated section. This field is used for several purposes, depending on the type of section.",
+                "Contains extra information about the section. This field is used for several purposes, depending on the type of section.",
+                "Contains the required alignment of the section. This field must be a power of two.",
+                "Contains the size, in bytes, of each entry, for sections that contain fixed-size entries. Otherwise, this field contains zero.",
+            };
 
             ImGui::TableNextRow( ImGuiTableRowFlags_Headers );
-            for ( int i = 0; i < _countof(descs); i++ ) {
+            for ( int i = 0; i < _countof( descs ); i++ ) {
                 ImGui::TableSetColumnIndex( i );
                 const char* column_name = ImGui::TableGetColumnName( i ); // Retrieve name passed to TableSetupColumn()
                 ImGui::PushID( i );
@@ -908,8 +1036,8 @@ namespace Imelf
                 ImGui::TableHeader( column_name );
                 ImGui::PopID();
             }
-            
-			auto ehdr = elf->get_elf_header();
+
+            auto ehdr = elf->get_elf_header();
             for ( int i = 0; i < ehdr->e_shnum; i++ ) {
                 auto shdr = elf->get_section_header( i );
                 ImGui::PushID( i );
@@ -917,29 +1045,22 @@ namespace Imelf
                 ImGui::PopID();
             }
 
-			ImGui::EndTable();
+            ImGui::EndTable();
+        }
+
+        template< typename T >
+        void Draw( T elf )
+        {
+            ElfCTX& ctx = elf->get_ctx();
+            switch ( ctx.idx ) {
+                case 0:
+                    DrawShr( elf );
+                    break;
+            }
+
             ImGui::Separator();
             ImGui::SetCursorPosY( ImGui::GetCursorPosY() + 10.0f );
 
-            auto ctx = elf->get_ctx();
-
-            ImGuiTabBarFlags tflags = ImGuiTabBarFlags_FittingPolicyResizeDown;
-            if ( ImGui::BeginTabBar( "ShdrDataTabs", tflags ) ) {
-                for ( int i = 0; i < ehdr->e_shnum; i++ ) {
-                    auto shdr = elf->get_section_header( i );
-                    ImGui::PushID( i );
-                    const char* type = elf->get_section_name( i );
-                    type = type ? type : "";
-                    ImGuiTabItemFlags iflags = ImGuiTabItemFlags_NoCloseWithMiddleMouseButton;
-                    if ( ImGui::BeginTabItem( type, nullptr, iflags ) ) {
-                        ctx.idx = i;
-                        //mViewer.HexViewer( shdr, sizeof( *shdr ) );
-                        ImGui::EndTabItem();
-                    }
-                    ImGui::PopID();
-                }
-                ImGui::EndTabBar();
-            }
 		}
     }
 }

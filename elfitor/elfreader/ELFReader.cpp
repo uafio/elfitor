@@ -28,6 +28,26 @@ int list_prog_headers( T* elf )
     return result;
 }
 
+template< typename T >
+int list_section_headers( T* elf )
+{
+    auto ehdr = elf->get_elf_header();
+    auto ctx = elf->get_ctx();
+    int result = 0;
+    for ( int i = 1; i <= ehdr->e_shnum; i++ ) {
+        const char* s_name = elf->get_section_name( i - 1 );
+        if ( ctx.idx == i ) {
+            ImGui::TreeNodeEx( s_name, ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Selected, s_name );
+        } else {
+            ImGui::TreeNodeEx( s_name, ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf, s_name );
+        }
+        if ( ImGui::IsItemClicked() ) {
+            result = i;
+        }
+    }
+    return result;
+}
+
 
 // ==========================================================================================================
 
@@ -95,7 +115,7 @@ void State::draw( void )
                 ImGui::PushID( i );
 
                 bool tab = ImGui::BeginTabItem( cur->filename(), &closed, iflags );
-                FocusTooltip( cur->filepath() );
+                Tooltip( cur->filepath() );
                 if ( tab ) {
                     ctx_file = cur;
                     cur->show_main();
@@ -508,14 +528,21 @@ void Elf64::show_nav( void )
             ctx.hdr = static_cast< ElfCTX::_hdr >( i );
             ctx.idx = 0;
         }
-        if ( i == ctx.phdr ) {
+        if ( i == ctx.hdr && ctx.hdr == ctx.phdr ) {
             ImGui::Indent();
             int idx = list_prog_headers( this );
             if ( idx ) {
                 ctx.idx = idx;
-                ctx.hdr = ctx.phdr;
             }
             ImGui::Unindent();
+        }
+        if ( i == ctx.hdr && ctx.hdr == ctx.shdr ) {
+            ImGui::Indent();
+            int idx = list_section_headers( this );
+            if ( idx ) {
+                ctx.idx = idx;
+            }
+            ImGui::Unindent();        
         }
     }
 }
@@ -541,6 +568,5 @@ ElfCTX& Elf64::get_ctx( void )
 {
     return ctx;
 }
-
 
 // ==========================================================================================================

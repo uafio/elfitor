@@ -197,6 +197,16 @@ struct MemoryEditor
         ImGui::End();
     }
 
+    void DrawChildWindow( const char* title, void* mem_data, size_t mem_size, size_t base_display_addr = 0x0000 )
+    {
+        Sizes size;
+        CalcSizes( size, mem_size, base_display_addr );
+        if ( ImGui::BeginChild( title, ImVec2(0, 0), true, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar ) ) {
+            DrawContents( mem_data, mem_size, base_display_addr );
+        }
+        ImGui::EndChild();
+    }
+
     // Memory Editor contents only
     void DrawContents(void* mem_data_void_ptr, size_t mem_size, size_t base_display_addr = 0x0000)
     {
