@@ -444,6 +444,17 @@ void Elf32::show_main( void )
     }
 }
 
+Elf32_Dyn* Elf32::get_dyn( void )
+{
+    for ( int i = 0; i < get_elf_header()->e_phnum; i++ ) {
+        auto phdr = get_prog_header( i );
+        if ( phdr->p_type == PT_DYNAMIC ) {
+            return (Elf32_Dyn*)rva2va( phdr->p_offset );
+        }
+    }
+    return nullptr;
+}
+
 
 // ==========================================================================================================
 
@@ -567,6 +578,17 @@ void Elf64::show_main( void )
 ElfCTX& Elf64::get_ctx( void )
 {
     return ctx;
+}
+
+Elf64_Dyn* Elf64::get_dyn( void )
+{
+    for ( int i = 0; i < this->get_elf_header()->e_phnum; i++ ) {
+        auto phdr = get_prog_header( i );
+        if ( phdr->p_type == PT_DYNAMIC ) {
+            return (Elf64_Dyn*)rva2va( phdr->p_offset );
+        }
+    }
+    return nullptr;
 }
 
 // ==========================================================================================================

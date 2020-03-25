@@ -137,6 +137,7 @@ public:
     Elf32_Shdr* get_section_header( int index );
     char* get_section_name( int index );
     ElfCTX& get_ctx( void );
+    Elf32_Dyn* get_dyn( void );
 };
 
 class Elf64 : public File
@@ -155,4 +156,5 @@ public:
     Elf64_Shdr* get_section_header( int index );
     char* get_section_name( int index );
     ElfCTX& get_ctx( void );
+    Elf64_Dyn* get_dyn( void );
 };

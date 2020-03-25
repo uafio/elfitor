@@ -215,6 +215,26 @@ namespace Imelf
         return ptr;
     }
 
+    template< typename T >
+    void DrawDynamic( T* dyn )
+    {
+        ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
+        ImGui::BeginTable( ".dynamic", 2, flags, ImVec2( 0, ImGui::GetTextLineHeightWithSpacing() * 1 ) );
+        ImGui::TableSetupColumn( "Tag", 0, 220.0 );
+        ImGui::TableSetupColumn( "Value", ImGuiTableColumnFlags_WidthStretch );
+        ImGui::TableAutoHeaders();
+
+        while ( dyn->d_tag ) {
+            ImGui::TableNextRow();
+            ImGui::Text( "%#llx", dyn->d_tag );
+            ImGui::TableNextCell();
+            ImGui::Text( "%#llx", dyn->d_un.d_val );
+            dyn++;
+        }
+
+        ImGui::EndTable();
+    }
+
     namespace Ehdr
     {
         template< typename T >
@@ -862,20 +882,13 @@ namespace Imelf
                 char buf[256];
                 char* cur = buf;
                 for ( uint32_t i = 0; i < note->n_descsz; i++ ) {
-                    sprintf( cur, "%02X", desc[i] );
+                    sprintf( cur, "%02X ", desc[i] );
                     cur += 2;
-                    if ( cur >= buf + 256 ) {
+                    if ( cur >= buf + sizeof( buf ) ) {
                         break;
                     }
                 }
                 ImGui::Text( "%s", buf );
-                /*
-                ImGui::Text( "namesz: %#x", note->n_namesz );
-                ImGui::Text( "descsz: %#x", note->n_descsz );
-                ImGui::Text( "type: %#x", note->n_type );
-                ImGui::Text( "name: %p: %s", name, name );
-                ImGui::Text( "desc: %p: %#llx", desc, desc );
-                */
                 ImGui::PopID();
                 ++id;
             } while ( offset < size );
@@ -919,16 +932,13 @@ namespace Imelf
                 case PT_NULL:
                     break;
                 case PT_LOAD:
-                    elf->mViewer.DrawChildWindow( title, elf->rva2va( offset ), size, offset );
                     break;
                 case PT_DYNAMIC:
                     break;
                 case PT_INTERP:
-                    elf->mViewer.DrawChildWindow( title, elf->rva2va( offset ), size, offset );
                     break;
                 case PT_NOTE:
                     DrawPhdrNote( elf, offset, size );
-                    elf->mViewer.DrawChildWindow( title, elf->rva2va( offset ), size, offset );
                     break;
                 case PT_SHLIB:
                 case PT_PHDR:
@@ -945,6 +955,7 @@ namespace Imelf
                 default:
                     break;
             }
+            elf->mViewer.DrawChildWindow( title, elf->rva2va( offset ), size, offset );
         }
 
         template< typename T >
@@ -1048,18 +1059,63 @@ namespace Imelf
             ImGui::EndTable();
         }
 
+        template< typename T, typename H>
+        void DrawShrType( T* elf, H* shdr )
+        {
+            const char* title = elf->get_section_name( elf->get_ctx().idx - 1 );
+            size_t offset = shdr->sh_offset;
+            size_t size = shdr->sh_size;
+
+            switch ( shdr->sh_type ) {
+                case SHT_NULL:
+                case SHT_PROGBITS:
+                case SHT_SYMTAB:
+                case SHT_STRTAB:
+                case SHT_RELA:
+                case SHT_HASH:
+                case SHT_DYNAMIC:
+                    DrawDynamic( elf->get_dyn() );
+                    break;
+                case SHT_NOTE:
+                case SHT_NOBITS:
+                case SHT_REL:
+                case SHT_SHLIB:
+                case SHT_DYNSYM:
+                case SHT_INIT_ARRAY:
+                case SHT_FINI_ARRAY:
+                case SHT_PREINIT_ARRAY:
+                case SHT_GROUP:
+                case SHT_SYMTAB_SHNDX:
+                case SHT_NUM:
+                case SHT_LOOS:
+                case SHT_GNU_ATTRIBUTES:
+                case SHT_GNU_HASH:
+                case SHT_GNU_LIBLIST:
+                case SHT_CHECKSUM:
+                case SHT_SUNW_move:
+                case SHT_SUNW_COMDAT:
+                case SHT_SUNW_syminfo:
+                case SHT_GNU_verdef:
+                case SHT_GNU_verneed:
+                case SHT_GNU_versym:
+                case SHT_LOPROC:
+                case SHT_HIPROC:
+                case SHT_LOUSER:
+                case SHT_HIUSER:
+                default:
+                    elf->mViewer.DrawChildWindow( title, elf->rva2va( offset ), size, offset );
+            }
+        }
+
         template< typename T >
         void Draw( T elf )
         {
             ElfCTX& ctx = elf->get_ctx();
-            switch ( ctx.idx ) {
-                case 0:
-                    DrawShr( elf );
-                    break;
+            if ( ctx.idx == 0 ) {
+                DrawShr( elf );
+            } else {
+                DrawShrType( elf, elf->get_section_header( ctx.idx - 1 ) );
             }
-
-            ImGui::Separator();
-            ImGui::SetCursorPosY( ImGui::GetCursorPosY() + 10.0f );
 
 		}
     }
