@@ -154,6 +154,45 @@ const ComboBoxMap PhdrTypeFlags = {
     }
 };
 
+const ComboBoxMap ShdrTypeMap = {
+    33,
+    { 
+        0, "SHT_NULL", "Section header table entry unused",
+        1, "SHT_PROGBITS", "Program data",
+        2, "SHT_SYMTAB", "Symbol table",
+        3, "SHT_STRTAB", "String table",
+        4, "SHT_RELA", "Relocation entries with addends",
+        5, "SHT_HASH", "Symbol hash table",
+        6, "SHT_DYNAMIC", "Dynamic linking information",
+        7, "SHT_NOTE", "Notes",
+        8, "SHT_NOBITS", "Program space with no data (bss)",
+        9, "SHT_REL", "Relocation entries, no addends",
+        10, "SHT_SHLIB", "Reserved",
+        11, "SHT_DYNSYM", "Dynamic linker symbol table",
+        14, "SHT_INIT_ARRAY", "Array of constructors",
+        15, "SHT_FINI_ARRAY", "Array of destructors",
+        16, "SHT_PREINIT_ARRAY", "Array of pre-constructors",
+        17, "SHT_GROUP", "Section group",
+        18, "SHT_SYMTAB_SHNDX", "Extended section indeces",
+        19, "SHT_NUM", "Number of defined types",
+        0x60000000, "SHT_LOOS", "Start OS-specific",
+        0x6ffffff5, "SHT_GNU_ATTRIBUTES", "Object attributes",
+        0x6ffffff6, "SHT_GNU_HASH", "GNU-style hash table",
+        0x6ffffff7, "SHT_GNU_LIBLIST", "Prelink library list",
+        0x6ffffff8, "SHT_CHECKSUM", "Checksum for DSO content",
+        0x6ffffffa, "SHT_SUNW_move", "Sun-specific low bound",
+        0x6ffffffb, "SHT_SUNW_COMDAT", "",
+        0x6ffffffc, "SHT_SUNW_syminfo", "",
+        0x6ffffffd, "SHT_GNU_verdef", "Version definition section",
+        0x6ffffffe, "SHT_GNU_verneed", "Version needs section",
+        0x6fffffff, "SHT_GNU_versym", "Version symbol table",
+        0x70000000, "SHT_LOPROC", "Start of processor-specific",
+        0x7fffffff, "SHT_HIPROC", "End of processor-specific",
+        0x80000000, "SHT_LOUSER", "Start of application-specific",
+        0x8fffffff, "SHT_HIUSER", "End of application-specific",
+    }
+};
+
 namespace Imelf
 {
     template< typename T >
@@ -979,7 +1018,7 @@ namespace Imelf
             ImGui::Text( "%s", elf->get_section_name( idx ) );
 
             ImGui::TableNextCell();
-            InputHex( "sh_type", shdr->sh_type );
+            ComboBox( shdr->sh_type, ShdrTypeMap );
 
 			ImGui::TableNextCell();
             InputHex( "sh_flags", shdr->sh_flags );
@@ -1010,7 +1049,7 @@ namespace Imelf
         void DrawShr( T* elf )
         {
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_NoHostExtendY | ImGuiTableFlags_Scroll | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
-            ImGui::BeginTable( "elf sections", 10, flags, ImVec2( 0, 250.0f ) );
+            ImGui::BeginTable( "elf sections", 10, flags );
             ImGui::TableSetupColumn( "Name", 0, 170.0 );
             ImGui::TableSetupColumn( "Type", 0, 100.0 );
             ImGui::TableSetupColumn( "Flags", 0, 100.0 );
@@ -1068,14 +1107,19 @@ namespace Imelf
 
             switch ( shdr->sh_type ) {
                 case SHT_NULL:
-                case SHT_PROGBITS:
-                case SHT_SYMTAB:
-                case SHT_STRTAB:
-                case SHT_RELA:
-                case SHT_HASH:
-                case SHT_DYNAMIC:
-                    DrawDynamic( elf->get_dyn() );
                     break;
+                case SHT_PROGBITS:
+                    break;
+                case SHT_SYMTAB:
+                    break;
+                case SHT_STRTAB:
+                    break;
+                case SHT_RELA:
+                    break;
+                case SHT_HASH:
+                    break;
+                case SHT_DYNAMIC:
+                    return DrawDynamic( elf->get_dyn() );
                 case SHT_NOTE:
                 case SHT_NOBITS:
                 case SHT_REL:
@@ -1102,9 +1146,9 @@ namespace Imelf
                 case SHT_HIPROC:
                 case SHT_LOUSER:
                 case SHT_HIUSER:
-                default:
-                    elf->mViewer.DrawChildWindow( title, elf->rva2va( offset ), size, offset );
+                    break;
             }
+            elf->mViewer.DrawChildWindow( title, elf->rva2va( offset ), size, offset );
         }
 
         template< typename T >

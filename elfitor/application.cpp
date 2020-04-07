@@ -74,31 +74,6 @@ void MenuItemClose( void )
     State::instance()->close();
 }
 
-/*
-void ShowHexEditorWindow( void )
-{
-    if ( ctx.elf == nullptr ) {
-        return;
-    }
-    if ( ctx.display.hdr == ctx.display.ehdr ) {
-        medit.DrawWindow( "medit", ctx.elf->get_elf_header(), ctx.elf->get_file_size() );        
-    } else if ( ctx.display.hdr == ctx.display.phdr ) {
-        Elf64_Phdr* phdr = reinterpret_cast< Elf64_Phdr* >( ctx.elf->get_prog_header( ctx.display.idx ) );
-        if ( phdr->p_offset + phdr->p_filesz < ctx.elf->get_file_size() ) {
-            medit.DrawWindow( "medit", ctx.elf->rva2va( phdr->p_offset ), phdr->p_memsz, phdr->p_offset );
-        }
-    } else if ( ctx.display.hdr == ctx.display.shdr ) {
-        Elf64_Shdr* shdr = reinterpret_cast< Elf64_Shdr* >( ctx.elf->get_section_header( ctx.display.idx ) );
-        if ( shdr->sh_offset + shdr->sh_size < ctx.elf->get_file_size() ) {
-            medit.DrawWindow( "medit", ctx.elf->rva2va( shdr->sh_offset ), shdr->sh_size, shdr->sh_offset );
-        }
-	} else {
-		// should not reach
-        //assert( false );
-	}
-}
-*/
-
 void ShowApplicationWindow( GLFWwindow* window )
 {
     if ( ImGui::BeginMainMenuBar() ) {
