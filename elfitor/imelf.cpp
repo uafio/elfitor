@@ -41,157 +41,323 @@ void FocusTooltip( const char* desc )
 }
 
 
-const ComboBoxMap EhdrMachineMap = {
-    16,
-    {
-        0, "NONE", "", 
-        1, "AT&T WE 32100", "", 
-        2, "SPARC", "", 
-        3, "x86", "", 
-        4, "Motorola 68000", "", 
-        5, "Motorola 88000", "", 
-        7, "Intel 80860", "", 
-        8, "MIPS", "", 
-        0x14, "PowerPC", "", 
-        0x16, "S390", "", 
-        0x28, "ARM", "", 
-        0x2a, "SuperH", "", 
-        0x32, "IA-64", "", 
-        0x3e, "amd64", "", 
-        0xb7, "AArch64", "", 
-        0xf3, "RISC-V", "", 
-    }
-};
-
 const ComboBoxMap EhdrClassMap = {
     2,
     { 
-        1, "32-bit", "",
-        2, "64-bit", ""
+        ELFCLASS32, "32-bit", "",
+        ELFCLASS64, "64-bit", ""
     }
 };
 
 const ComboBoxMap EhdrDataMap = {
     2,
     {
-        1, "little-endian", "", 
-        2, "big-endian", ""
+        ELFDATA2LSB, "little-endian", "", 
+        ELFDATA2MSB, "big-endian", ""
     }
 };
 
 const ComboBoxMap EhdrOsabiMap = {
-    17,
+    20,
     {
-        0, "System V", "", 
-        1, "HP-UX", "", 
-        2, "NetBSD", "",
-        3, "Linux", "", 
+        ELFOSABI_SYSV, "System V", "", 
+        ELFOSABI_HPUX, "HP-UX", "", 
+        ELFOSABI_NETBSD, "NetBSD", "",
+        ELFOSABI_LINUX, "Linux", "", 
         4, "GNU Hurd", "", 
-        6, "Solaris", "", 
-        7, "AIX", "", 
-        8, "IRIX", "", 
-        9, "FreeBSD", "", 
-        0xa, "Tru64", "", 
-        0xb, "Novell Modesto", "",
-        0xc, "OpenBSD", "",
+        ELFOSABI_SOLARIS, "Solaris", "", 
+        ELFOSABI_AIX, "AIX", "", 
+        ELFOSABI_IRIX, "IRIX", "", 
+        ELFOSABI_FREEBSD, "FreeBSD", "", 
+        ELFOSABI_TRU64, "Tru64", "", 
+        ELFOSABI_MODESTO, "Novell Modesto", "",
+        ELFOSABI_OPENBSD, "OpenBSD", "",
         0xd, "OpenVMS", "",
         0xe, "NonStop Kernel", "",
         0xf, "AROS", "",
         0x10, "Fenix OS", "",
-        0x11, "Cloud ABI", ""
+        0x11, "Cloud ABI", "",
+        ELFOSABI_ARM_AEABI, "ARM EABI", "",
+        ELFOSABI_ARM, "ARM", "",
+        ELFOSABI_STANDALONE, "Embedded Application", ""
     }
 };
 
 const ComboBoxMap EhdrTypeMap = {
     9,
     {
-        0, "ET_NONE", "",
-        1, "ET_REL", "",
-        2, "ET_EXEC", "",
-        3, "ET_DYN", "",
-        4, "ET_CORE", "",
-        0xfe00, "ET_LOOS", "", 
-        0xfeff, "ET_HIOS", "",
-        0xff00, "ET_LOPROC", "",
-        0xffff, "ET_HIPROC", "",
+        ET_NONE, "ET_NONE", "",
+        ET_REL, "ET_REL", "",
+        ET_EXEC, "ET_EXEC", "",
+        ET_DYN, "ET_DYN", "",
+        ET_CORE, "ET_CORE", "",
+        ET_LOOS, "ET_LOOS", "", 
+        ET_HIOS, "ET_HIOS", "",
+        ET_LOPROC, "ET_LOPROC", "",
+        ET_HIPROC, "ET_HIPROC", "",
     },
+};
+
+const ComboBoxMap EhdrMachineMap = {
+    178,
+    {
+        EM_NONE, "EM_NONE", "",
+        EM_M32, "EM_M32", "",
+        EM_SPARC, "EM_SPARC", "",
+        EM_386, "EM_386", "",
+        EM_68K, "EM_68K", "",
+        EM_88K, "EM_88K", "",
+        EM_IAMCU, "EM_IAMCU", "",
+        EM_860, "EM_860", "",
+        EM_MIPS, "EM_MIPS", "",
+        EM_S370, "EM_S370", "",
+        EM_MIPS_RS3_LE, "EM_MIPS_RS3_LE", "",
+        EM_PARISC, "EM_PARISC", "",
+        EM_VPP500, "EM_VPP500", "",
+        EM_SPARC32PLUS, "EM_SPARC32PLUS", "",
+        EM_960, "EM_960", "",
+        EM_PPC, "EM_PPC", "",
+        EM_PPC64, "EM_PPC64", "",
+        EM_S390, "EM_S390", "",
+        EM_SPU, "EM_SPU", "",
+        EM_V800, "EM_V800", "",
+        EM_FR20, "EM_FR20", "",
+        EM_RH32, "EM_RH32", "",
+        EM_RCE, "EM_RCE", "",
+        EM_ARM, "EM_ARM", "",
+        EM_FAKE_ALPHA, "EM_FAKE_ALPHA", "",
+        EM_SH, "EM_SH", "",
+        EM_SPARCV9, "EM_SPARCV9", "",
+        EM_TRICORE, "EM_TRICORE", "",
+        EM_ARC, "EM_ARC", "",
+        EM_H8_300, "EM_H8_300", "",
+        EM_H8_300H, "EM_H8_300H", "",
+        EM_H8S, "EM_H8S", "",
+        EM_H8_500, "EM_H8_500", "",
+        EM_IA_64, "EM_IA_64", "",
+        EM_MIPS_X, "EM_MIPS_X", "",
+        EM_COLDFIRE, "EM_COLDFIRE", "",
+        EM_68HC12, "EM_68HC12", "",
+        EM_MMA, "EM_MMA", "",
+        EM_PCP, "EM_PCP", "",
+        EM_NCPU, "EM_NCPU", "",
+        EM_NDR1, "EM_NDR1", "",
+        EM_STARCORE, "EM_STARCORE", "",
+        EM_ME16, "EM_ME16", "",
+        EM_ST100, "EM_ST100", "",
+        EM_TINYJ, "EM_TINYJ", "",
+        EM_X86_64, "EM_X86_64", "",
+        EM_PDSP, "EM_PDSP", "",
+        EM_PDP10, "EM_PDP10", "",
+        EM_PDP11, "EM_PDP11", "",
+        EM_FX66, "EM_FX66", "",
+        EM_ST9PLUS, "EM_ST9PLUS", "",
+        EM_ST7, "EM_ST7", "",
+        EM_68HC16, "EM_68HC16", "",
+        EM_68HC11, "EM_68HC11", "",
+        EM_68HC08, "EM_68HC08", "",
+        EM_68HC05, "EM_68HC05", "",
+        EM_SVX, "EM_SVX", "",
+        EM_ST19, "EM_ST19", "",
+        EM_VAX, "EM_VAX", "",
+        EM_CRIS, "EM_CRIS", "",
+        EM_JAVELIN, "EM_JAVELIN", "",
+        EM_FIREPATH, "EM_FIREPATH", "",
+        EM_ZSP, "EM_ZSP", "",
+        EM_MMIX, "EM_MMIX", "",
+        EM_HUANY, "EM_HUANY", "",
+        EM_PRISM, "EM_PRISM", "",
+        EM_AVR, "EM_AVR", "",
+        EM_FR30, "EM_FR30", "",
+        EM_D10V, "EM_D10V", "",
+        EM_D30V, "EM_D30V", "",
+        EM_V850, "EM_V850", "",
+        EM_M32R, "EM_M32R", "",
+        EM_MN10300, "EM_MN10300", "",
+        EM_MN10200, "EM_MN10200", "",
+        EM_PJ, "EM_PJ", "",
+        EM_OPENRISC, "EM_OPENRISC", "",
+        EM_ARC_COMPACT, "EM_ARC_COMPACT", "",
+        EM_XTENSA, "EM_XTENSA", "",
+        EM_VIDEOCORE, "EM_VIDEOCORE", "",
+        EM_TMM_GPP, "EM_TMM_GPP", "",
+        EM_NS32K, "EM_NS32K", "",
+        EM_TPC, "EM_TPC", "",
+        EM_SNP1K, "EM_SNP1K", "",
+        EM_ST200, "EM_ST200", "",
+        EM_IP2K, "EM_IP2K", "",
+        EM_MAX, "EM_MAX", "",
+        EM_CR, "EM_CR", "",
+        EM_F2MC16, "EM_F2MC16", "",
+        EM_MSP430, "EM_MSP430", "",
+        EM_BLACKFIN, "EM_BLACKFIN", "",
+        EM_SE_C33, "EM_SE_C33", "",
+        EM_SEP, "EM_SEP", "",
+        EM_ARCA, "EM_ARCA", "",
+        EM_UNICORE, "EM_UNICORE", "",
+        EM_EXCESS, "EM_EXCESS", "",
+        EM_DXP, "EM_DXP", "",
+        EM_ALTERA_NIOS2, "EM_ALTERA_NIOS2", "",
+        EM_CRX, "EM_CRX", "",
+        EM_XGATE, "EM_XGATE", "",
+        EM_C166, "EM_C166", "",
+        EM_M16C, "EM_M16C", "",
+        EM_DSPIC30F, "EM_DSPIC30F", "",
+        EM_CE, "EM_CE", "",
+        EM_M32C, "EM_M32C", "",
+        EM_TSK3000, "EM_TSK3000", "",
+        EM_RS08, "EM_RS08", "",
+        EM_SHARC, "EM_SHARC", "",
+        EM_ECOG2, "EM_ECOG2", "",
+        EM_SCORE7, "EM_SCORE7", "",
+        EM_DSP24, "EM_DSP24", "",
+        EM_VIDEOCORE3, "EM_VIDEOCORE3", "",
+        EM_LATTICEMICO32, "EM_LATTICEMICO32", "",
+        EM_SE_C17, "EM_SE_C17", "",
+        EM_TI_C6000, "EM_TI_C6000", "",
+        EM_TI_C2000, "EM_TI_C2000", "",
+        EM_TI_C5500, "EM_TI_C5500", "",
+        EM_TI_ARP32, "EM_TI_ARP32", "",
+        EM_TI_PRU, "EM_TI_PRU", "",
+        EM_MMDSP_PLUS, "EM_MMDSP_PLUS", "",
+        EM_CYPRESS_M8C, "EM_CYPRESS_M8C", "",
+        EM_R32C, "EM_R32C", "",
+        EM_TRIMEDIA, "EM_TRIMEDIA", "",
+        EM_QDSP6, "EM_QDSP6", "",
+        EM_8051, "EM_8051", "",
+        EM_STXP7X, "EM_STXP7X", "",
+        EM_NDS32, "EM_NDS32", "",
+        EM_ECOG1X, "EM_ECOG1X", "",
+        EM_MAXQ30, "EM_MAXQ30", "",
+        EM_XIMO16, "EM_XIMO16", "",
+        EM_MANIK, "EM_MANIK", "",
+        EM_CRAYNV2, "EM_CRAYNV2", "",
+        EM_RX, "EM_RX", "",
+        EM_METAG, "EM_METAG", "",
+        EM_MCST_ELBRUS, "EM_MCST_ELBRUS", "",
+        EM_ECOG16, "EM_ECOG16", "",
+        EM_CR16, "EM_CR16", "",
+        EM_ETPU, "EM_ETPU", "",
+        EM_SLE9X, "EM_SLE9X", "",
+        EM_L10M, "EM_L10M", "",
+        EM_K10M, "EM_K10M", "",
+        EM_AARCH64, "EM_AARCH64", "",
+        EM_AVR32, "EM_AVR32", "",
+        EM_STM8, "EM_STM8", "",
+        EM_TILE64, "EM_TILE64", "",
+        EM_TILEPRO, "EM_TILEPRO", "",
+        EM_MICROBLAZE, "EM_MICROBLAZE", "",
+        EM_CUDA, "EM_CUDA", "",
+        EM_TILEGX, "EM_TILEGX", "",
+        EM_CLOUDSHIELD, "EM_CLOUDSHIELD", "",
+        EM_COREA_1ST, "EM_COREA_1ST", "",
+        EM_COREA_2ND, "EM_COREA_2ND", "",
+        EM_ARC_COMPACT2, "EM_ARC_COMPACT2", "",
+        EM_OPEN8, "EM_OPEN8", "",
+        EM_RL78, "EM_RL78", "",
+        EM_VIDEOCORE5, "EM_VIDEOCORE5", "",
+        EM_78KOR, "EM_78KOR", "",
+        EM_56800EX, "EM_56800EX", "",
+        EM_BA1, "EM_BA1", "",
+        EM_BA2, "EM_BA2", "",
+        EM_XCORE, "EM_XCORE", "",
+        EM_MCHP_PIC, "EM_MCHP_PIC", "",
+        EM_KM32, "EM_KM32", "",
+        EM_KMX32, "EM_KMX32", "",
+        EM_EMX16, "EM_EMX16", "",
+        EM_EMX8, "EM_EMX8", "",
+        EM_KVARC, "EM_KVARC", "",
+        EM_CDP, "EM_CDP", "",
+        EM_COGE, "EM_COGE", "",
+        EM_COOL, "EM_COOL", "",
+        EM_NORC, "EM_NORC", "",
+        EM_CSR_KALIMBA, "EM_CSR_KALIMBA", "",
+        EM_Z80, "EM_Z80", "",
+        EM_VISIUM, "EM_VISIUM", "",
+        EM_FT32, "EM_FT32", "",
+        EM_MOXIE, "EM_MOXIE", "",
+        EM_AMDGPU, "EM_AMDGPU", "",
+        EM_RISCV, "EM_RISCV", "",
+        EM_BPF, "EM_BPF", "",
+    }
 };
 
 const ComboBoxMap PhdrTypeMap = {
     18,
     {
-        0, "PT_NULL", "",
-        1, "PT_LOAD", "",
-        2, "PT_DYNAMIC", "",
-        3, "PT_INTERP", "",
-        4, "PT_NOTE", "",
-        5, "PT_SHLIB", "",
-        6, "PT_PHDR", "",
-        7, "PT_TLS", "",
-        8, "PT_NUM", "",
-        0x60000000, "PT_LOOS", "",
-        0x6474e550, "PT_GNU_EH_FRAME", "",
-        0x6474e551, "PT_GNU_STACK", "",
-        0x6474e552, "PT_GNU_RELRO", "",
-        0x6ffffffa, "PT_SUNWSTACK", "",
-        0x6ffffffb, "PT_SUNWBSS", "",
-        0x6fffffff, "PT_HISUNW", "",
-        0x70000000, "PT_LOPROC", "",
-        0x7fffffff, "PT_HIPROC", ""
+        PT_NULL, "PT_NULL", "",
+        PT_LOAD, "PT_LOAD", "",
+        PT_DYNAMIC, "PT_DYNAMIC", "",
+        PT_INTERP, "PT_INTERP", "",
+        PT_NOTE, "PT_NOTE", "",
+        PT_SHLIB, "PT_SHLIB", "",
+        PT_PHDR, "PT_PHDR", "",
+        PT_TLS, "PT_TLS", "",
+        PT_NUM, "PT_NUM", "",
+        PT_LOOS, "PT_LOOS", "",
+        PT_GNU_EH_FRAME, "PT_GNU_EH_FRAME", "",
+        PT_GNU_STACK, "PT_GNU_STACK", "",
+        PT_GNU_RELRO, "PT_GNU_RELRO", "",
+        PT_SUNWBSS, "PT_SUNWBSS", "",
+        PT_SUNWSTACK, "PT_SUNWSTACK", "",
+        PT_HISUNW, "PT_HISUNW", "",
+        PT_LOPROC, "PT_LOPROC", "",
+        PT_HIPROC, "PT_HIPROC", ""
     },
 };
 
 const ComboBoxMap PhdrTypeFlags = {
     7,
     {
-        1, "  X", "",
-        2, " W ", "",
-        3, " WX", "",
-        4, "R  ", "",
-        5, "R X", "",
-        6, "RW ", "",
-        7, "RWX", "",
+        PF_X, "  X", "",
+        PF_W, " W ", "",
+        PF_W | PF_X, " WX", "",
+        PF_R, "R  ", "",
+        PF_R | PF_X, "R X", "",
+        PF_R | PF_X, "RW ", "",
+        PF_R | PF_W | PF_X, "RWX", "",
     }
 };
 
 const ComboBoxMap ShdrTypeMap = {
     33,
     { 
-        0, "SHT_NULL", "Section header table entry unused",
-        1, "SHT_PROGBITS", "Program data",
-        2, "SHT_SYMTAB", "Symbol table",
-        3, "SHT_STRTAB", "String table",
-        4, "SHT_RELA", "Relocation entries with addends",
-        5, "SHT_HASH", "Symbol hash table",
-        6, "SHT_DYNAMIC", "Dynamic linking information",
-        7, "SHT_NOTE", "Notes",
-        8, "SHT_NOBITS", "Program space with no data (bss)",
-        9, "SHT_REL", "Relocation entries, no addends",
-        10, "SHT_SHLIB", "Reserved",
-        11, "SHT_DYNSYM", "Dynamic linker symbol table",
-        14, "SHT_INIT_ARRAY", "Array of constructors",
-        15, "SHT_FINI_ARRAY", "Array of destructors",
-        16, "SHT_PREINIT_ARRAY", "Array of pre-constructors",
-        17, "SHT_GROUP", "Section group",
-        18, "SHT_SYMTAB_SHNDX", "Extended section indeces",
-        19, "SHT_NUM", "Number of defined types",
-        0x60000000, "SHT_LOOS", "Start OS-specific",
-        0x6ffffff5, "SHT_GNU_ATTRIBUTES", "Object attributes",
-        0x6ffffff6, "SHT_GNU_HASH", "GNU-style hash table",
-        0x6ffffff7, "SHT_GNU_LIBLIST", "Prelink library list",
-        0x6ffffff8, "SHT_CHECKSUM", "Checksum for DSO content",
-        0x6ffffffa, "SHT_SUNW_move", "Sun-specific low bound",
-        0x6ffffffb, "SHT_SUNW_COMDAT", "",
-        0x6ffffffc, "SHT_SUNW_syminfo", "",
-        0x6ffffffd, "SHT_GNU_verdef", "Version definition section",
-        0x6ffffffe, "SHT_GNU_verneed", "Version needs section",
-        0x6fffffff, "SHT_GNU_versym", "Version symbol table",
-        0x70000000, "SHT_LOPROC", "Start of processor-specific",
-        0x7fffffff, "SHT_HIPROC", "End of processor-specific",
-        0x80000000, "SHT_LOUSER", "Start of application-specific",
-        0x8fffffff, "SHT_HIUSER", "End of application-specific",
+        SHT_NULL, "SHT_NULL", "Section header table entry unused",
+        SHT_PROGBITS, "SHT_PROGBITS", "Program data",
+        SHT_SYMTAB, "SHT_SYMTAB", "Symbol table",
+        SHT_STRTAB, "SHT_STRTAB", "String table",
+        SHT_RELA, "SHT_RELA", "Relocation entries with addends",
+        SHT_HASH, "SHT_HASH", "Symbol hash table",
+        SHT_DYNAMIC, "SHT_DYNAMIC", "Dynamic linking information",
+        SHT_NOTE, "SHT_NOTE", "Notes",
+        SHT_NOBITS, "SHT_NOBITS", "Program space with no data (bss)",
+        SHT_REL, "SHT_REL", "Relocation entries, no addends",
+        SHT_SHLIB, "SHT_SHLIB", "Reserved",
+        SHT_DYNSYM, "SHT_DYNSYM", "Dynamic linker symbol table",
+        SHT_INIT_ARRAY, "SHT_INIT_ARRAY", "Array of constructors",
+        SHT_FINI_ARRAY, "SHT_FINI_ARRAY", "Array of destructors",
+        SHT_PREINIT_ARRAY, "SHT_PREINIT_ARRAY", "Array of pre-constructors",
+        SHT_GROUP, "SHT_GROUP", "Section group",
+        SHT_SYMTAB_SHNDX, "SHT_SYMTAB_SHNDX", "Extended section indeces",
+        SHT_NUM, "SHT_NUM", "Number of defined types",
+        SHT_LOOS, "SHT_LOOS", "Start OS-specific",
+        SHT_GNU_ATTRIBUTES, "SHT_GNU_ATTRIBUTES", "Object attributes",
+        SHT_GNU_HASH, "SHT_GNU_HASH", "GNU-style hash table",
+        SHT_GNU_LIBLIST, "SHT_GNU_LIBLIST", "Prelink library list",
+        SHT_CHECKSUM, "SHT_CHECKSUM", "Checksum for DSO content",
+        SHT_SUNW_move, "SHT_SUNW_move", "Sun-specific low bound",
+        SHT_SUNW_COMDAT, "SHT_SUNW_COMDAT", "",
+        SHT_SUNW_syminfo, "SHT_SUNW_syminfo", "",
+        SHT_GNU_verdef, "SHT_GNU_verdef", "Version definition section",
+        SHT_GNU_verneed, "SHT_GNU_verneed", "Version needs section",
+        SHT_GNU_versym, "SHT_GNU_versym", "Version symbol table",
+        SHT_LOPROC, "SHT_LOPROC", "Start of processor-specific",
+        SHT_HIPROC, "SHT_HIPROC", "End of processor-specific",
+        SHT_LOUSER, "SHT_LOUSER", "Start of application-specific",
+        SHT_HIUSER, "SHT_HIUSER", "End of application-specific",
     }
 };
+
 
 namespace Imelf
 {
@@ -1021,7 +1187,42 @@ namespace Imelf
             ComboBox( shdr->sh_type, ShdrTypeMap );
 
 			ImGui::TableNextCell();
-            InputHex( "sh_flags", shdr->sh_flags );
+            char cflags[16];
+            sprintf_s( cflags, sizeof( cflags ), "% 8X", (uint32_t)shdr->sh_flags );
+            static uint32_t flags;
+            if ( ImGui::Button( cflags ) ) {
+                flags = (uint32_t)shdr->sh_flags;
+                ImGui::OpenPopup( "Section Header Flags" );
+            }
+            bool close = true;
+            if ( ImGui::BeginPopupModal( "Section Header Flags", &close, ImGuiWindowFlags_AlwaysAutoResize ) ) {
+                ImGui::CheckboxFlags( "Writable", &flags, SHF_WRITE );
+                ImGui::CheckboxFlags( "Occupies memory", &flags, SHF_ALLOC );
+                ImGui::CheckboxFlags( "Executable", &flags, SHF_EXECINSTR );
+                ImGui::CheckboxFlags( "Merge", &flags, SHF_MERGE );
+                ImGui::CheckboxFlags( "Contains nul-terminated strings", &flags, SHF_STRINGS );
+                ImGui::CheckboxFlags( "sh_info field holds a section header table index", &flags, SHF_INFO_LINK );
+                ImGui::CheckboxFlags( "Preserve order after combining", &flags, SHF_LINK_ORDER );
+                ImGui::CheckboxFlags( "Non-standard OS specific handling", &flags, SHF_OS_NONCONFORMING );
+                ImGui::CheckboxFlags( "Section is member of a group", &flags, SHF_GROUP );
+                ImGui::CheckboxFlags( "Section hold thread-local data", &flags, SHF_TLS );
+                ImGui::CheckboxFlags( "Compressed data", &flags, SHF_COMPRESSED );
+                ImGui::CheckboxFlags( "OS-specific", &flags, SHF_MASKOS );
+                ImGui::CheckboxFlags( "Processor-specific", &flags, SHF_MASKPROC );
+                ImGui::CheckboxFlags( "Special ordering requirement", &flags, SHF_ORDERED );
+                ImGui::CheckboxFlags( "Excluded", &flags, SHF_EXCLUDE );
+                bool save = ImGui::SmallButton( "Save" );
+                ImGui::SameLine();
+                bool cancel = ImGui::SmallButton( "Cancel" );
+                if ( save ) {
+                    shdr->sh_flags = flags;
+                    ImGui::CloseCurrentPopup();
+                } else if ( cancel ) {
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::EndPopup();
+            }
 
 			ImGui::TableNextCell();
             InputHex( "sh_addr", shdr->sh_addr );
@@ -1051,7 +1252,7 @@ namespace Imelf
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_NoHostExtendY | ImGuiTableFlags_Scroll | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
             ImGui::BeginTable( "elf sections", 10, flags );
             ImGui::TableSetupColumn( "Name", 0, 170.0 );
-            ImGui::TableSetupColumn( "Type", 0, 100.0 );
+            ImGui::TableSetupColumn( "Type", 0, 150.0 );
             ImGui::TableSetupColumn( "Flags", 0, 100.0 );
             ImGui::TableSetupColumn( "Virtual Address", 0, 180.0 );
             ImGui::TableSetupColumn( "File Offset", 0, 150.0 );
