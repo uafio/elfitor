@@ -890,7 +890,6 @@ namespace Imelf
             ImGui::InputScalar( "##memsz", ImGuiDataType_U64, &phdr->p_align, NULL, NULL, "%X", ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase );
         }
 
-
         template< typename O, typename T >
         void Type( O* elf, T* phdr )
         {
@@ -1300,6 +1299,38 @@ namespace Imelf
         }
 
         template< typename T, typename H>
+        void DrawStrTab( T* elf, H* shdr )
+        {
+            assert( shdr->sh_type == SHT_STRTAB );
+
+            ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
+            ImGui::BeginTable( "SHT_STRTAB", 3, flags, ImVec2( 0, ImGui::GetTextLineHeightWithSpacing() * 15 ) );
+            ImGui::TableSetupColumn( "File Offset", 0, 100.0 );
+            ImGui::TableSetupColumn( "Index", 0, 100.0 );
+            ImGui::TableSetupColumn( "String", ImGuiTableColumnFlags_WidthStretch );
+            ImGui::TableAutoHeaders();
+
+            const char* string = reinterpret_cast< char* >( elf->rva2va( shdr->sh_offset ) );
+            size_t index = 1;
+
+            while ( index < shdr->sh_size && string[index] ) {
+
+                ImGui::TableNextRow();
+                ImGui::Text( "%x", shdr->sh_offset + index );
+
+                ImGui::TableNextCell();
+                ImGui::Text( "%x", index );
+
+                ImGui::TableNextCell();
+                ImGui::Text( "%s", &string[index] );
+
+                index += strlen( &string[index++] );
+            }
+
+            ImGui::EndTable();
+        }
+
+        template< typename T, typename H>
         void DrawShrType( T* elf, H* shdr )
         {
             const char* title = elf->get_section_name( elf->get_ctx().idx - 1 );
@@ -1314,7 +1345,7 @@ namespace Imelf
                 case SHT_SYMTAB:
                     break;
                 case SHT_STRTAB:
-                    break;
+                    return DrawStrTab( elf, shdr );
                 case SHT_RELA:
                     break;
                 case SHT_HASH:
@@ -1322,7 +1353,9 @@ namespace Imelf
                 case SHT_DYNAMIC:
                     return DrawDynamic( elf->get_dyn() );
                 case SHT_NOTE:
+                    break;
                 case SHT_NOBITS:
+                    return;
                 case SHT_REL:
                 case SHT_SHLIB:
                 case SHT_DYNSYM:
