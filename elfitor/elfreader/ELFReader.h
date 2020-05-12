@@ -132,15 +132,17 @@ public:
     virtual File_t get_type_group( void );
     virtual void show_nav( void );
     virtual void show_main( void );
+    ElfCTX& get_ctx( void );
     Elf32_Ehdr* get_elf_header( void );
     Elf32_Phdr* get_prog_header( int index );
     Elf32_Shdr* get_section_header( int index );
     char* get_section_name( int index );
     char* get_section_name( Elf32_Shdr* section );
-    ElfCTX& get_ctx( void );
+    char* get_strtab( void );
     Elf32_Dyn* get_dyn( void );
     Elf32_Rela* get_rela( Elf32_Shdr* shdr, int index = 0 );
     Elf32_Rel* get_rel( Elf32_Shdr* shdr, int index = 0 );
+    Elf32_Sym* get_sym( Elf32_Shdr* shdr, int index = 0 );
     Elf32_Shdr* va2section( size_t va );
 };
 
@@ -155,14 +157,16 @@ public:
     virtual File_t get_type_group( void );
     virtual void show_nav( void );
     virtual void show_main( void );
+    ElfCTX& get_ctx( void );
     Elf64_Ehdr* get_elf_header( void );
     Elf64_Phdr* get_prog_header( int index );
     Elf64_Shdr* get_section_header( int index );
     char* get_section_name( int index );
     char* get_section_name( Elf64_Shdr* section );
-    ElfCTX& get_ctx( void );
+    char* get_strtab( void );
     Elf64_Dyn* get_dyn( void );
     Elf64_Rela* get_rela( Elf64_Shdr* shdr, int index = 0 );
     Elf64_Rel* get_rel( Elf64_Shdr* shdr, int index = 0 );
+    Elf64_Sym* get_sym( Elf64_Shdr* shdr, int index = 0 );
     Elf64_Shdr* va2section( size_t va );
 };

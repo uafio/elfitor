@@ -376,7 +376,60 @@ const ComboBoxMap ShdrRelaType = {
     }
 };
 
+const ComboBoxMap ShdrStrTabOther = {
+    4,
+    { 
+        STV_DEFAULT, "STV_DEFAULT", "The visibility of symbols with the STV_DEFAULT attribute is as specified by the symbol's binding type. That is, global and weak symbols are visible outside of their defining component (executable file or shared object). Local symbols are hidden, as described below. Global and weak symbols are also preemptable, that is, they may by preempted by definitions of the same name in another component.",
+        STV_INTERNAL, "STV_INTERNAL", "Processor specific hidden class",
+        STV_HIDDEN, "STV_HIDDEN", "Sym unavailable in other modules",
+        STV_PROTECTED, "STV_PROTECTED", "A symbol defined in the current component is protected if it is visible in other components but not preemptable, meaning that any reference to such a symbol from within the defining component must be resolved to the definition in that component, even if there is a definition in another component that would preempt by the default rules. ",
+    }
+};
 
+const ComboBoxMap ShdrStrTabBind = {
+    7,
+    {
+        STB_LOCAL, "STB_LOCAL", "Local symbols are not visible outside the object file containing their definition. Local symbols of the same name may exist in multiple files without interfering with each other.",
+        STB_GLOBAL, "STB_GLOBAL", "Global symbols are visible to all object files being combined. One file's definition of a global symbol will satisfy another file's undefined reference to the same global symbol.",
+        STB_WEAK, "STB_WEAK", "Weak symbols resemble global symbols, but their definitions have lower precedence.",
+        STB_LOOS, "STB_LOOS", "Values in this inclusive range are reserved for operating system-specific semantics.",
+        STB_HIOS, "STB_HIOS", "Values in this inclusive range are reserved for operating system-specific semantics.",
+        STB_LOPROC, "STB_LOPROC", "Values in this inclusive range are reserved for processor-specific semantics. If meanings are specified, the processor supplement explains them.",
+        STB_HIPROC, "STB_HIPROC", "Values in this inclusive range are reserved for processor-specific semantics. If meanings are specified, the processor supplement explains them.",
+    }
+};
+
+const ComboBoxMap ShdrStrTabType = {
+    11,
+    {
+        STT_NOTYPE, "STT_NOTYPE", "The symbol's type is not specified.",
+        STT_OBJECT, "STT_OBJECT", "The symbol is associated with a data object, such as a variable, an array, and so on.",
+        STT_FUNC, "STT_FUNC", "The symbol is associated with a function or other executable code.",
+        STT_SECTION, "STT_SECTION", "The symbol is associated with a section. Symbol table entries of this type exist primarily for relocation and normally have STB_LOCAL binding.",
+        STT_FILE, "STT_FILE", "Conventionally, the symbol's name gives the name of the source file associated with the object file. A file symbol has STB_LOCAL binding, its section index is SHN_ABS, and it precedes the other STB_LOCAL symbols for the file, if it is present.",
+        STT_COMMON, "STT_COMMON", "The symbol labels an uninitialized common block.",
+        STT_TLS, "STT_TLS", "The symbol specifies a Thread-Local Storage entity. When defined, it gives the assigned offset for the symbol, not the actual address. Symbols of type STT_TLS can be referenced by only special thread-local storage relocations and thread-local storage relocations can only reference symbols with type STT_TLS. Implementation need not support thread-local storage.",
+        STT_LOOS, "STT_LOOS", "Values in this inclusive range are reserved for operating system-specific semantics.",
+        STT_HIOS, "STT_HIOS", "Values in this inclusive range are reserved for operating system-specific semantics.",
+        STT_LOPROC, "STT_LOPROC", "Values in this inclusive range are reserved for processor-specific semantics. If meanings are specified, the processor supplement explains them.",
+        STT_HIPROC, "STT_HIPROC", "Values in this inclusive range are reserved for processor-specific semantics. If meanings are specified, the processor supplement explains them.",
+    }
+};
+
+const ComboBoxMap ShdrStrTabSndx = {
+    9,
+    {
+        SHN_UNDEF, "SHN_UNDEF", "Undefined section",
+        SHN_LOPROC, "SHN_LOPROC", "Start of processor-specific",
+        SHN_AFTER, "SHN_AFTER", "Order section after all others",
+        SHN_HIPROC, "SHN_HIPROC", "End of processor-specific",
+        SHN_LOOS, "SHN_LOOS", "Start of OS-specific",
+        SHN_HIOS, "SHN_HIOS", "End of OS-specific",
+        SHN_ABS, "SHN_ABS", "Associated symbol is absolute",
+        SHN_COMMON, "SHN_COMMON", "Associated symbol is common",
+        SHN_XINDEX, "SHN_XINDEX", "Index is in extra table",
+    }
+};
 
 namespace Imelf
 {
@@ -1323,7 +1376,7 @@ namespace Imelf
             assert( shdr->sh_type == SHT_STRTAB );
 
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
-            ImGui::BeginTable( "SHT_STRTAB", 3, flags, ImVec2( 0, ImGui::GetTextLineHeightWithSpacing() * 15 ) );
+            ImGui::BeginTable( "SHT_STRTAB", 3, flags, ImVec2( 0, 0 ) );
             ImGui::TableSetupColumn( "File Offset", 0, 100.0 );
             ImGui::TableSetupColumn( "Index", 0, 100.0 );
             ImGui::TableSetupColumn( "String", ImGuiTableColumnFlags_WidthStretch );
@@ -1415,7 +1468,7 @@ namespace Imelf
         void DrawRel( T* elf, H* shdr )
         {
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Scroll;
-            ImGui::BeginTable( ".rela", 4, flags, ImVec2( 0, 0 ) );
+            ImGui::BeginTable( ".rel", 4, flags, ImVec2( 0, 0 ) );
 
             if ( elf->get_elf_header()->e_type == ET_EXEC || elf->get_elf_header()->e_type == ET_DYN ) {
                 ImGui::TableSetupColumn( "Virtual Address", 0, 200.0 );
@@ -1468,6 +1521,68 @@ namespace Imelf
             ImGui::EndTable();
         }
 
+        template< typename T, typename H >
+        void DrawSymTab( T* elf, H* shdr )
+        {
+            ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Scroll;
+            ImGui::BeginTable( "##.symtab", 7, flags, ImVec2( 0, 0 ) );
+
+            ImGui::TableSetupColumn( "name", 0, 400.0 );
+            ImGui::TableSetupColumn( "bind", 0, 170.0 );
+            ImGui::TableSetupColumn( "type", 0, 150.0 );
+            ImGui::TableSetupColumn( "other", 0, 170.0 );
+
+            ImGui::TableSetupColumn( "shndx", 0, 200.0 );
+            ImGui::TableSetupColumn( "value", 0, 100.0 );
+
+            ImGui::TableSetupColumn( "size", ImGuiTableColumnFlags_WidthStretch );
+            ImGui::TableAutoHeaders();
+
+            auto symtab = elf->get_sym( shdr );
+            auto cur = symtab;
+
+            while ( (char*)cur < (char*)symtab + shdr->sh_size ) {
+                ImGui::TableNextRow();
+
+                ImGui::Text( "%s", elf->get_strtab() + cur->st_name );
+                ImGui::TableNextCell();
+
+                ImGui::Text( "%s", ShdrStrTabBind.get_val( ELF64_ST_BIND( cur->st_info ) ) );
+                Tooltip( ShdrStrTabBind.get_desc( ELF64_ST_BIND( cur->st_info ) ) );
+                ImGui::TableNextCell();
+
+                ImGui::Text( "%s", ShdrStrTabType.get_val( ELF64_ST_TYPE( cur->st_info ) ) );
+                Tooltip( ShdrStrTabType.get_desc( ELF64_ST_TYPE( cur->st_info ) ) );
+                ImGui::TableNextCell();
+
+                ImGui::Text( "%s", ShdrStrTabOther.get_val( cur->st_other ) );
+                Tooltip( ShdrStrTabOther.get_desc( cur->st_other ) );
+                ImGui::TableNextCell();
+
+                if ( cur->st_shndx && cur->st_shndx < elf->get_elf_header()->e_shnum ) {
+                    ImGui::Text( "%s", elf->get_section_name( cur->st_shndx ) );
+                } else {
+                    const char* val = ShdrStrTabSndx.get_val( cur->st_shndx );
+                    if ( val ) {
+                        ImGui::Text( "%s", val );
+                        Tooltip( ShdrStrTabSndx.get_desc( cur->st_shndx ) );
+                    } else {
+                        ImGui::Text( "%x", cur->st_shndx );
+                    }
+                }
+                ImGui::TableNextCell();
+
+                ImGui::Text( "%llx", cur->st_value );
+                ImGui::TableNextCell();
+
+                ImGui::Text( "%llx", cur->st_size );
+
+                cur++;
+            }
+
+            ImGui::EndTable();
+        }
+
         template< typename T, typename H>
         void DrawShrType( T* elf, H* shdr )
         {
@@ -1481,7 +1596,7 @@ namespace Imelf
                 case SHT_PROGBITS:
                     break;
                 case SHT_SYMTAB:
-                    break;  // TODO: compile elf with symbols for testing this
+                    return DrawSymTab( elf, shdr );
                 case SHT_STRTAB:
                     return DrawStrTab( elf, shdr );
                 case SHT_RELA:
