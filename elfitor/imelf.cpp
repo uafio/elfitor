@@ -314,7 +314,7 @@ const ComboBoxMap PhdrTypeFlags = {
         PF_W | PF_X, " WX", "",
         PF_R, "R  ", "",
         PF_R | PF_X, "R X", "",
-        PF_R | PF_X, "RW ", "",
+        PF_R | PF_W, "RW ", "",
         PF_R | PF_W | PF_X, "RWX", "",
     }
 };
@@ -357,6 +357,25 @@ const ComboBoxMap ShdrTypeMap = {
         SHT_HIUSER, "SHT_HIUSER", "End of application-specific",
     }
 };
+
+const ComboBoxMap ShdrRelaType = {
+    12,
+    { 
+        R_386_NONE, "R_386_NONE", "Calculation: NONE",
+        R_386_32, "R_386_32", "Calculation: SYM + ADDEND",
+        R_386_PC32, "R_386_PC32", "Calculation: SYM + ADDEND - SECTION OFFSET",
+        R_386_GOT32, "R_386_GOT32", "Calculation: GOT + ADDEND",
+        R_386_PLT32, "R_386_PLT32", "Calculation: PLT + ADDEND - SECTION OFFSET",
+        R_386_COPY, "R_386_COPY", "Calculation: NONE",
+        R_386_GLOB_DAT, "R_386_GLOB_DAT", "Calculation: SYM",
+        R_386_JMP_SLOT, "R_386_JMP_SLOT", "Calculation: SYM",
+        R_386_RELATIVE, "R_386_RELATIVE", "Calculation: BASE + ADDEND",
+        R_386_GOTOFF, "R_386_GOTOFF", "Calculation: SYM + ADDEND - GOT",
+        R_386_GOTPC, "R_386_GOTPC", "Calculation: GOT + ADDEND - SECTION OFFSET",
+        R_386_32PLT, "R_386_32PLT", "Calculation: PLT + ADDEND"
+    }
+};
+
 
 
 namespace Imelf
@@ -1330,6 +1349,68 @@ namespace Imelf
             ImGui::EndTable();
         }
 
+        template< typename T, typename H >
+        void DrawRela( T* elf, H* shdr )
+        {
+            ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Scroll;
+            ImGui::BeginTable( ".rela", 5, flags, ImVec2( 0, 0 ) );
+
+            if ( elf->get_elf_header()->e_type == ET_EXEC || elf->get_elf_header()->e_type == ET_DYN ) {
+                ImGui::TableSetupColumn( "Virtual Address", 0, 200.0 );            
+            } else if ( elf->get_elf_header()->e_type == ET_REL ) {
+                ImGui::TableSetupColumn( "Section Offset", 0, 200.0 );
+            } else {
+                ImGui::TableSetupColumn( "r_offset", 0, 200.0 );
+            }
+
+            ImGui::TableSetupColumn( "R_SYM", 0, 100.0 );
+            ImGui::TableSetupColumn( "R_TYPE", 0, 300.0 );
+
+            ImGui::TableSetupColumn( "r_addend", 0, 100.0 );
+
+            ImGui::TableSetupColumn( "Section", ImGuiTableColumnFlags_WidthStretch );
+            ImGui::TableAutoHeaders();
+
+            auto rela = elf->get_rela( shdr );
+            auto cur = rela;
+
+            while ( (char*)cur < (char*)rela + shdr->sh_size ) {
+                ImGui::TableNextRow();
+                ImGui::Text( "%llx", cur->r_offset );
+                ImGui::TableNextCell();
+
+                size_t val = cur->r_info;
+
+                if ( elf->get_elf_header()->e_ident[EI_CLASS] == ELFCLASS32 ) {
+                    ImGui::Text( "%x", ELF32_R_SYM( val ) );                
+                    ImGui::TableNextCell();
+
+                    ImGui::Text( "%s", ShdrRelaType.get_val( ELF32_R_TYPE( val ) ) );
+                    Tooltip( ShdrRelaType.get_desc( ELF32_R_TYPE( val ) ) );
+                } else {
+                    ImGui::Text( "%x", ELF64_R_SYM( val ) );
+                    ImGui::TableNextCell();
+
+                    ImGui::Text( "%s", ShdrRelaType.get_val( ELF64_R_TYPE( val ) ) );
+                    Tooltip( ShdrRelaType.get_desc( ELF64_R_TYPE( val ) ) );
+                }
+
+                ImGui::TableNextCell();
+                ImGui::Text( "%llx", cur->r_addend );
+
+                ImGui::TableNextCell();
+                if ( elf->get_elf_header()->e_type == ET_REL ) {
+                    ImGui::Text( "%s", elf->get_section_name( shdr->sh_info ) );
+                } else {
+                    ImGui::Text( "%s", elf->get_section_name( elf->va2section( cur->r_offset ) ) );
+                }
+
+                cur++;
+            }
+
+            ImGui::EndTable();
+        }
+
         template< typename T, typename H>
         void DrawShrType( T* elf, H* shdr )
         {
@@ -1343,11 +1424,11 @@ namespace Imelf
                 case SHT_PROGBITS:
                     break;
                 case SHT_SYMTAB:
-                    break;
+                    break;  // TODO: compile elf with symbols for testing this
                 case SHT_STRTAB:
                     return DrawStrTab( elf, shdr );
                 case SHT_RELA:
-                    break;
+                    return DrawRela( elf, shdr );
                 case SHT_HASH:
                     break;
                 case SHT_DYNAMIC:

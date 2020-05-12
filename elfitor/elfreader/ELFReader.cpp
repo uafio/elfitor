@@ -456,6 +456,43 @@ Elf32_Dyn* Elf32::get_dyn( void )
 }
 
 
+Elf32_Rela* Elf32::get_rela( Elf32_Shdr* shdr, int index )
+{
+    assert( shdr->sh_type == SHT_RELA );
+    return reinterpret_cast< Elf32_Rela* >( (char*)base + shdr->sh_offset ) + index;
+}
+
+
+char* Elf32::get_section_name( Elf32_Shdr* section )
+{
+    char* result = nullptr;
+    auto ehdr = get_elf_header();
+    auto shstrtab = get_section_header( ehdr->e_shstrndx );
+    char* strtab = (char*)base + shstrtab->sh_offset;
+    if ( section && shstrtab ) {
+        if ( section->sh_name == 0 ) {
+            result = (char*)shstrtab;
+        } else {
+            result = (char*)strtab + section->sh_name;
+        }
+    }
+    return result;
+}
+
+
+Elf32_Shdr* Elf32::va2section( size_t va )
+{
+    for ( int i = 0; i < get_elf_header()->e_shnum; i++ ) {
+        Elf32_Shdr* shdr = get_section_header( i );
+        if ( va >= shdr->sh_addr && va < shdr->sh_addr + shdr->sh_size ) {
+            return shdr;
+        }
+    }
+
+    return nullptr;
+}
+
+
 // ==========================================================================================================
 
 
@@ -590,5 +627,43 @@ Elf64_Dyn* Elf64::get_dyn( void )
     }
     return nullptr;
 }
+
+
+Elf64_Rela* Elf64::get_rela( Elf64_Shdr* shdr, int index )
+{
+    assert( shdr->sh_type == SHT_RELA );
+    return reinterpret_cast< Elf64_Rela* >( (char*)base + shdr->sh_offset ) + index;
+}
+
+
+char* Elf64::get_section_name( Elf64_Shdr* section )
+{
+    char* result = nullptr;
+    auto ehdr = get_elf_header();
+    auto shstrtab = get_section_header( ehdr->e_shstrndx );
+    char* strtab = (char*)base + shstrtab->sh_offset;
+    if ( section && shstrtab ) {
+        if ( section->sh_name == 0 ) {
+            result = (char*)shstrtab;
+        } else {
+            result = (char*)strtab + section->sh_name;
+        }
+    }
+    return result;
+}
+
+
+Elf64_Shdr* Elf64::va2section( size_t va )
+{
+    for ( int i = 0; i < get_elf_header()->e_shnum; i++ ) {
+        Elf64_Shdr* shdr = get_section_header( i );
+        if ( va >= shdr->sh_addr && va < shdr->sh_addr + shdr->sh_size ) {
+            return shdr;
+        }
+    }
+
+    return nullptr;
+}
+
 
 // ==========================================================================================================
