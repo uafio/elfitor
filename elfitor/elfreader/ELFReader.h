@@ -140,6 +140,7 @@ public:
     ElfCTX& get_ctx( void );
     Elf32_Dyn* get_dyn( void );
     Elf32_Rela* get_rela( Elf32_Shdr* shdr, int index = 0 );
+    Elf32_Rel* get_rel( Elf32_Shdr* shdr, int index = 0 );
     Elf32_Shdr* va2section( size_t va );
 };
 
@@ -162,5 +163,6 @@ public:
     ElfCTX& get_ctx( void );
     Elf64_Dyn* get_dyn( void );
     Elf64_Rela* get_rela( Elf64_Shdr* shdr, int index = 0 );
+    Elf64_Rel* get_rel( Elf64_Shdr* shdr, int index = 0 );
     Elf64_Shdr* va2section( size_t va );
 };

@@ -1411,6 +1411,63 @@ namespace Imelf
             ImGui::EndTable();
         }
 
+        template< typename T, typename H >
+        void DrawRel( T* elf, H* shdr )
+        {
+            ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Scroll;
+            ImGui::BeginTable( ".rela", 4, flags, ImVec2( 0, 0 ) );
+
+            if ( elf->get_elf_header()->e_type == ET_EXEC || elf->get_elf_header()->e_type == ET_DYN ) {
+                ImGui::TableSetupColumn( "Virtual Address", 0, 200.0 );
+            } else if ( elf->get_elf_header()->e_type == ET_REL ) {
+                ImGui::TableSetupColumn( "Section Offset", 0, 200.0 );
+            } else {
+                ImGui::TableSetupColumn( "r_offset", 0, 200.0 );
+            }
+
+            ImGui::TableSetupColumn( "R_SYM", 0, 100.0 );
+            ImGui::TableSetupColumn( "R_TYPE", 0, 300.0 );
+
+            ImGui::TableSetupColumn( "Section", ImGuiTableColumnFlags_WidthStretch );
+            ImGui::TableAutoHeaders();
+
+            auto rel = elf->get_rel( shdr );
+            auto cur = rel;
+
+            while ( (char*)cur < (char*)rel + shdr->sh_size ) {
+                ImGui::TableNextRow();
+                ImGui::Text( "%llx", cur->r_offset );
+                ImGui::TableNextCell();
+
+                size_t val = cur->r_info;
+
+                if ( elf->get_elf_header()->e_ident[EI_CLASS] == ELFCLASS32 ) {
+                    ImGui::Text( "%x", ELF32_R_SYM( val ) );
+                    ImGui::TableNextCell();
+
+                    ImGui::Text( "%s", ShdrRelaType.get_val( ELF32_R_TYPE( val ) ) );
+                    Tooltip( ShdrRelaType.get_desc( ELF32_R_TYPE( val ) ) );
+                } else {
+                    ImGui::Text( "%x", ELF64_R_SYM( val ) );
+                    ImGui::TableNextCell();
+
+                    ImGui::Text( "%s", ShdrRelaType.get_val( ELF64_R_TYPE( val ) ) );
+                    Tooltip( ShdrRelaType.get_desc( ELF64_R_TYPE( val ) ) );
+                }
+
+                ImGui::TableNextCell();
+                if ( elf->get_elf_header()->e_type == ET_REL ) {
+                    ImGui::Text( "%s", elf->get_section_name( shdr->sh_info ) );
+                } else {
+                    ImGui::Text( "%s", elf->get_section_name( elf->va2section( cur->r_offset ) ) );
+                }
+
+                cur++;
+            }
+
+            ImGui::EndTable();
+        }
+
         template< typename T, typename H>
         void DrawShrType( T* elf, H* shdr )
         {
@@ -1438,6 +1495,7 @@ namespace Imelf
                 case SHT_NOBITS:
                     return;
                 case SHT_REL:
+                    return DrawRel( elf, shdr );
                 case SHT_SHLIB:
                 case SHT_DYNSYM:
                 case SHT_INIT_ARRAY:

@@ -493,6 +493,13 @@ Elf32_Shdr* Elf32::va2section( size_t va )
 }
 
 
+Elf32_Rel* Elf32::get_rel( Elf32_Shdr* shdr, int index )
+{
+    assert( shdr->sh_type == SHT_RELA );
+    return reinterpret_cast< Elf32_Rel* >( (char*)base + shdr->sh_offset ) + index;
+}
+
+
 // ==========================================================================================================
 
 
@@ -665,5 +672,11 @@ Elf64_Shdr* Elf64::va2section( size_t va )
     return nullptr;
 }
 
+
+Elf64_Rel* Elf64::get_rel( Elf64_Shdr* shdr, int index )
+{
+    assert( shdr->sh_type == SHT_RELA );
+    return reinterpret_cast< Elf64_Rel* >( (char*)base + shdr->sh_offset ) + index;
+}
 
 // ==========================================================================================================
