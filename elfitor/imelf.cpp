@@ -11,7 +11,6 @@ template void Imelf::Phdr::Draw< Elf64* >( Elf64* );
 template void Imelf::Shdr::Draw< Elf64* >( Elf64* );
 template void Imelf::Shdr::Draw< Elf32* >( Elf32* );
 
-
 void HelpMarker( const char* desc )
 {
     ImGui::TextDisabled( "(?)" );
@@ -40,394 +39,850 @@ void FocusTooltip( const char* desc )
     }
 }
 
-
 const ComboBoxMap EhdrClassMap = {
     2,
-    { 
-        ELFCLASS32, "32-bit", "",
-        ELFCLASS64, "64-bit", ""
-    }
+    { ELFCLASS32, "32-bit", "", ELFCLASS64, "64-bit", "" }
 };
 
 const ComboBoxMap EhdrDataMap = {
     2,
-    {
-        ELFDATA2LSB, "little-endian", "", 
-        ELFDATA2MSB, "big-endian", ""
-    }
+    { ELFDATA2LSB, "little-endian", "", ELFDATA2MSB, "big-endian", "" }
 };
 
 const ComboBoxMap EhdrOsabiMap = {
     20,
-    {
-        ELFOSABI_SYSV, "System V", "", 
-        ELFOSABI_HPUX, "HP-UX", "", 
-        ELFOSABI_NETBSD, "NetBSD", "",
-        ELFOSABI_LINUX, "Linux", "", 
-        4, "GNU Hurd", "", 
-        ELFOSABI_SOLARIS, "Solaris", "", 
-        ELFOSABI_AIX, "AIX", "", 
-        ELFOSABI_IRIX, "IRIX", "", 
-        ELFOSABI_FREEBSD, "FreeBSD", "", 
-        ELFOSABI_TRU64, "Tru64", "", 
-        ELFOSABI_MODESTO, "Novell Modesto", "",
-        ELFOSABI_OPENBSD, "OpenBSD", "",
-        0xd, "OpenVMS", "",
-        0xe, "NonStop Kernel", "",
-        0xf, "AROS", "",
-        0x10, "Fenix OS", "",
-        0x11, "Cloud ABI", "",
-        ELFOSABI_ARM_AEABI, "ARM EABI", "",
-        ELFOSABI_ARM, "ARM", "",
-        ELFOSABI_STANDALONE, "Embedded Application", ""
-    }
+    { ELFOSABI_SYSV, "System V", "", ELFOSABI_HPUX, "HP-UX", "", ELFOSABI_NETBSD, "NetBSD", "", ELFOSABI_LINUX, "Linux", "", 4, "GNU Hurd", "", ELFOSABI_SOLARIS, "Solaris", "", ELFOSABI_AIX, "AIX", "", ELFOSABI_IRIX, "IRIX", "", ELFOSABI_FREEBSD, "FreeBSD", "", ELFOSABI_TRU64, "Tru64", "", ELFOSABI_MODESTO, "Novell Modesto", "", ELFOSABI_OPENBSD, "OpenBSD", "", 0xd, "OpenVMS", "", 0xe, "NonStop Kernel", "", 0xf, "AROS", "", 0x10, "Fenix OS", "", 0x11, "Cloud ABI", "", ELFOSABI_ARM_AEABI, "ARM EABI", "", ELFOSABI_ARM, "ARM", "", ELFOSABI_STANDALONE, "Embedded Application", "" }
 };
 
 const ComboBoxMap EhdrTypeMap = {
     9,
     {
-        ET_NONE, "ET_NONE", "",
-        ET_REL, "ET_REL", "",
-        ET_EXEC, "ET_EXEC", "",
-        ET_DYN, "ET_DYN", "",
-        ET_CORE, "ET_CORE", "",
-        ET_LOOS, "ET_LOOS", "", 
-        ET_HIOS, "ET_HIOS", "",
-        ET_LOPROC, "ET_LOPROC", "",
-        ET_HIPROC, "ET_HIPROC", "",
+      ET_NONE,
+      "ET_NONE",
+      "",
+      ET_REL,
+      "ET_REL",
+      "",
+      ET_EXEC,
+      "ET_EXEC",
+      "",
+      ET_DYN,
+      "ET_DYN",
+      "",
+      ET_CORE,
+      "ET_CORE",
+      "",
+      ET_LOOS,
+      "ET_LOOS",
+      "",
+      ET_HIOS,
+      "ET_HIOS",
+      "",
+      ET_LOPROC,
+      "ET_LOPROC",
+      "",
+      ET_HIPROC,
+      "ET_HIPROC",
+      "",
     },
 };
 
 const ComboBoxMap EhdrMachineMap = {
     178,
     {
-        EM_NONE, "EM_NONE", "",
-        EM_M32, "EM_M32", "",
-        EM_SPARC, "EM_SPARC", "",
-        EM_386, "EM_386", "",
-        EM_68K, "EM_68K", "",
-        EM_88K, "EM_88K", "",
-        EM_IAMCU, "EM_IAMCU", "",
-        EM_860, "EM_860", "",
-        EM_MIPS, "EM_MIPS", "",
-        EM_S370, "EM_S370", "",
-        EM_MIPS_RS3_LE, "EM_MIPS_RS3_LE", "",
-        EM_PARISC, "EM_PARISC", "",
-        EM_VPP500, "EM_VPP500", "",
-        EM_SPARC32PLUS, "EM_SPARC32PLUS", "",
-        EM_960, "EM_960", "",
-        EM_PPC, "EM_PPC", "",
-        EM_PPC64, "EM_PPC64", "",
-        EM_S390, "EM_S390", "",
-        EM_SPU, "EM_SPU", "",
-        EM_V800, "EM_V800", "",
-        EM_FR20, "EM_FR20", "",
-        EM_RH32, "EM_RH32", "",
-        EM_RCE, "EM_RCE", "",
-        EM_ARM, "EM_ARM", "",
-        EM_FAKE_ALPHA, "EM_FAKE_ALPHA", "",
-        EM_SH, "EM_SH", "",
-        EM_SPARCV9, "EM_SPARCV9", "",
-        EM_TRICORE, "EM_TRICORE", "",
-        EM_ARC, "EM_ARC", "",
-        EM_H8_300, "EM_H8_300", "",
-        EM_H8_300H, "EM_H8_300H", "",
-        EM_H8S, "EM_H8S", "",
-        EM_H8_500, "EM_H8_500", "",
-        EM_IA_64, "EM_IA_64", "",
-        EM_MIPS_X, "EM_MIPS_X", "",
-        EM_COLDFIRE, "EM_COLDFIRE", "",
-        EM_68HC12, "EM_68HC12", "",
-        EM_MMA, "EM_MMA", "",
-        EM_PCP, "EM_PCP", "",
-        EM_NCPU, "EM_NCPU", "",
-        EM_NDR1, "EM_NDR1", "",
-        EM_STARCORE, "EM_STARCORE", "",
-        EM_ME16, "EM_ME16", "",
-        EM_ST100, "EM_ST100", "",
-        EM_TINYJ, "EM_TINYJ", "",
-        EM_X86_64, "EM_X86_64", "",
-        EM_PDSP, "EM_PDSP", "",
-        EM_PDP10, "EM_PDP10", "",
-        EM_PDP11, "EM_PDP11", "",
-        EM_FX66, "EM_FX66", "",
-        EM_ST9PLUS, "EM_ST9PLUS", "",
-        EM_ST7, "EM_ST7", "",
-        EM_68HC16, "EM_68HC16", "",
-        EM_68HC11, "EM_68HC11", "",
-        EM_68HC08, "EM_68HC08", "",
-        EM_68HC05, "EM_68HC05", "",
-        EM_SVX, "EM_SVX", "",
-        EM_ST19, "EM_ST19", "",
-        EM_VAX, "EM_VAX", "",
-        EM_CRIS, "EM_CRIS", "",
-        EM_JAVELIN, "EM_JAVELIN", "",
-        EM_FIREPATH, "EM_FIREPATH", "",
-        EM_ZSP, "EM_ZSP", "",
-        EM_MMIX, "EM_MMIX", "",
-        EM_HUANY, "EM_HUANY", "",
-        EM_PRISM, "EM_PRISM", "",
-        EM_AVR, "EM_AVR", "",
-        EM_FR30, "EM_FR30", "",
-        EM_D10V, "EM_D10V", "",
-        EM_D30V, "EM_D30V", "",
-        EM_V850, "EM_V850", "",
-        EM_M32R, "EM_M32R", "",
-        EM_MN10300, "EM_MN10300", "",
-        EM_MN10200, "EM_MN10200", "",
-        EM_PJ, "EM_PJ", "",
-        EM_OPENRISC, "EM_OPENRISC", "",
-        EM_ARC_COMPACT, "EM_ARC_COMPACT", "",
-        EM_XTENSA, "EM_XTENSA", "",
-        EM_VIDEOCORE, "EM_VIDEOCORE", "",
-        EM_TMM_GPP, "EM_TMM_GPP", "",
-        EM_NS32K, "EM_NS32K", "",
-        EM_TPC, "EM_TPC", "",
-        EM_SNP1K, "EM_SNP1K", "",
-        EM_ST200, "EM_ST200", "",
-        EM_IP2K, "EM_IP2K", "",
-        EM_MAX, "EM_MAX", "",
-        EM_CR, "EM_CR", "",
-        EM_F2MC16, "EM_F2MC16", "",
-        EM_MSP430, "EM_MSP430", "",
-        EM_BLACKFIN, "EM_BLACKFIN", "",
-        EM_SE_C33, "EM_SE_C33", "",
-        EM_SEP, "EM_SEP", "",
-        EM_ARCA, "EM_ARCA", "",
-        EM_UNICORE, "EM_UNICORE", "",
-        EM_EXCESS, "EM_EXCESS", "",
-        EM_DXP, "EM_DXP", "",
-        EM_ALTERA_NIOS2, "EM_ALTERA_NIOS2", "",
-        EM_CRX, "EM_CRX", "",
-        EM_XGATE, "EM_XGATE", "",
-        EM_C166, "EM_C166", "",
-        EM_M16C, "EM_M16C", "",
-        EM_DSPIC30F, "EM_DSPIC30F", "",
-        EM_CE, "EM_CE", "",
-        EM_M32C, "EM_M32C", "",
-        EM_TSK3000, "EM_TSK3000", "",
-        EM_RS08, "EM_RS08", "",
-        EM_SHARC, "EM_SHARC", "",
-        EM_ECOG2, "EM_ECOG2", "",
-        EM_SCORE7, "EM_SCORE7", "",
-        EM_DSP24, "EM_DSP24", "",
-        EM_VIDEOCORE3, "EM_VIDEOCORE3", "",
-        EM_LATTICEMICO32, "EM_LATTICEMICO32", "",
-        EM_SE_C17, "EM_SE_C17", "",
-        EM_TI_C6000, "EM_TI_C6000", "",
-        EM_TI_C2000, "EM_TI_C2000", "",
-        EM_TI_C5500, "EM_TI_C5500", "",
-        EM_TI_ARP32, "EM_TI_ARP32", "",
-        EM_TI_PRU, "EM_TI_PRU", "",
-        EM_MMDSP_PLUS, "EM_MMDSP_PLUS", "",
-        EM_CYPRESS_M8C, "EM_CYPRESS_M8C", "",
-        EM_R32C, "EM_R32C", "",
-        EM_TRIMEDIA, "EM_TRIMEDIA", "",
-        EM_QDSP6, "EM_QDSP6", "",
-        EM_8051, "EM_8051", "",
-        EM_STXP7X, "EM_STXP7X", "",
-        EM_NDS32, "EM_NDS32", "",
-        EM_ECOG1X, "EM_ECOG1X", "",
-        EM_MAXQ30, "EM_MAXQ30", "",
-        EM_XIMO16, "EM_XIMO16", "",
-        EM_MANIK, "EM_MANIK", "",
-        EM_CRAYNV2, "EM_CRAYNV2", "",
-        EM_RX, "EM_RX", "",
-        EM_METAG, "EM_METAG", "",
-        EM_MCST_ELBRUS, "EM_MCST_ELBRUS", "",
-        EM_ECOG16, "EM_ECOG16", "",
-        EM_CR16, "EM_CR16", "",
-        EM_ETPU, "EM_ETPU", "",
-        EM_SLE9X, "EM_SLE9X", "",
-        EM_L10M, "EM_L10M", "",
-        EM_K10M, "EM_K10M", "",
-        EM_AARCH64, "EM_AARCH64", "",
-        EM_AVR32, "EM_AVR32", "",
-        EM_STM8, "EM_STM8", "",
-        EM_TILE64, "EM_TILE64", "",
-        EM_TILEPRO, "EM_TILEPRO", "",
-        EM_MICROBLAZE, "EM_MICROBLAZE", "",
-        EM_CUDA, "EM_CUDA", "",
-        EM_TILEGX, "EM_TILEGX", "",
-        EM_CLOUDSHIELD, "EM_CLOUDSHIELD", "",
-        EM_COREA_1ST, "EM_COREA_1ST", "",
-        EM_COREA_2ND, "EM_COREA_2ND", "",
-        EM_ARC_COMPACT2, "EM_ARC_COMPACT2", "",
-        EM_OPEN8, "EM_OPEN8", "",
-        EM_RL78, "EM_RL78", "",
-        EM_VIDEOCORE5, "EM_VIDEOCORE5", "",
-        EM_78KOR, "EM_78KOR", "",
-        EM_56800EX, "EM_56800EX", "",
-        EM_BA1, "EM_BA1", "",
-        EM_BA2, "EM_BA2", "",
-        EM_XCORE, "EM_XCORE", "",
-        EM_MCHP_PIC, "EM_MCHP_PIC", "",
-        EM_KM32, "EM_KM32", "",
-        EM_KMX32, "EM_KMX32", "",
-        EM_EMX16, "EM_EMX16", "",
-        EM_EMX8, "EM_EMX8", "",
-        EM_KVARC, "EM_KVARC", "",
-        EM_CDP, "EM_CDP", "",
-        EM_COGE, "EM_COGE", "",
-        EM_COOL, "EM_COOL", "",
-        EM_NORC, "EM_NORC", "",
-        EM_CSR_KALIMBA, "EM_CSR_KALIMBA", "",
-        EM_Z80, "EM_Z80", "",
-        EM_VISIUM, "EM_VISIUM", "",
-        EM_FT32, "EM_FT32", "",
-        EM_MOXIE, "EM_MOXIE", "",
-        EM_AMDGPU, "EM_AMDGPU", "",
-        EM_RISCV, "EM_RISCV", "",
-        EM_BPF, "EM_BPF", "",
+      EM_NONE,
+      "EM_NONE",
+      "",
+      EM_M32,
+      "EM_M32",
+      "",
+      EM_SPARC,
+      "EM_SPARC",
+      "",
+      EM_386,
+      "EM_386",
+      "",
+      EM_68K,
+      "EM_68K",
+      "",
+      EM_88K,
+      "EM_88K",
+      "",
+      EM_IAMCU,
+      "EM_IAMCU",
+      "",
+      EM_860,
+      "EM_860",
+      "",
+      EM_MIPS,
+      "EM_MIPS",
+      "",
+      EM_S370,
+      "EM_S370",
+      "",
+      EM_MIPS_RS3_LE,
+      "EM_MIPS_RS3_LE",
+      "",
+      EM_PARISC,
+      "EM_PARISC",
+      "",
+      EM_VPP500,
+      "EM_VPP500",
+      "",
+      EM_SPARC32PLUS,
+      "EM_SPARC32PLUS",
+      "",
+      EM_960,
+      "EM_960",
+      "",
+      EM_PPC,
+      "EM_PPC",
+      "",
+      EM_PPC64,
+      "EM_PPC64",
+      "",
+      EM_S390,
+      "EM_S390",
+      "",
+      EM_SPU,
+      "EM_SPU",
+      "",
+      EM_V800,
+      "EM_V800",
+      "",
+      EM_FR20,
+      "EM_FR20",
+      "",
+      EM_RH32,
+      "EM_RH32",
+      "",
+      EM_RCE,
+      "EM_RCE",
+      "",
+      EM_ARM,
+      "EM_ARM",
+      "",
+      EM_FAKE_ALPHA,
+      "EM_FAKE_ALPHA",
+      "",
+      EM_SH,
+      "EM_SH",
+      "",
+      EM_SPARCV9,
+      "EM_SPARCV9",
+      "",
+      EM_TRICORE,
+      "EM_TRICORE",
+      "",
+      EM_ARC,
+      "EM_ARC",
+      "",
+      EM_H8_300,
+      "EM_H8_300",
+      "",
+      EM_H8_300H,
+      "EM_H8_300H",
+      "",
+      EM_H8S,
+      "EM_H8S",
+      "",
+      EM_H8_500,
+      "EM_H8_500",
+      "",
+      EM_IA_64,
+      "EM_IA_64",
+      "",
+      EM_MIPS_X,
+      "EM_MIPS_X",
+      "",
+      EM_COLDFIRE,
+      "EM_COLDFIRE",
+      "",
+      EM_68HC12,
+      "EM_68HC12",
+      "",
+      EM_MMA,
+      "EM_MMA",
+      "",
+      EM_PCP,
+      "EM_PCP",
+      "",
+      EM_NCPU,
+      "EM_NCPU",
+      "",
+      EM_NDR1,
+      "EM_NDR1",
+      "",
+      EM_STARCORE,
+      "EM_STARCORE",
+      "",
+      EM_ME16,
+      "EM_ME16",
+      "",
+      EM_ST100,
+      "EM_ST100",
+      "",
+      EM_TINYJ,
+      "EM_TINYJ",
+      "",
+      EM_X86_64,
+      "EM_X86_64",
+      "",
+      EM_PDSP,
+      "EM_PDSP",
+      "",
+      EM_PDP10,
+      "EM_PDP10",
+      "",
+      EM_PDP11,
+      "EM_PDP11",
+      "",
+      EM_FX66,
+      "EM_FX66",
+      "",
+      EM_ST9PLUS,
+      "EM_ST9PLUS",
+      "",
+      EM_ST7,
+      "EM_ST7",
+      "",
+      EM_68HC16,
+      "EM_68HC16",
+      "",
+      EM_68HC11,
+      "EM_68HC11",
+      "",
+      EM_68HC08,
+      "EM_68HC08",
+      "",
+      EM_68HC05,
+      "EM_68HC05",
+      "",
+      EM_SVX,
+      "EM_SVX",
+      "",
+      EM_ST19,
+      "EM_ST19",
+      "",
+      EM_VAX,
+      "EM_VAX",
+      "",
+      EM_CRIS,
+      "EM_CRIS",
+      "",
+      EM_JAVELIN,
+      "EM_JAVELIN",
+      "",
+      EM_FIREPATH,
+      "EM_FIREPATH",
+      "",
+      EM_ZSP,
+      "EM_ZSP",
+      "",
+      EM_MMIX,
+      "EM_MMIX",
+      "",
+      EM_HUANY,
+      "EM_HUANY",
+      "",
+      EM_PRISM,
+      "EM_PRISM",
+      "",
+      EM_AVR,
+      "EM_AVR",
+      "",
+      EM_FR30,
+      "EM_FR30",
+      "",
+      EM_D10V,
+      "EM_D10V",
+      "",
+      EM_D30V,
+      "EM_D30V",
+      "",
+      EM_V850,
+      "EM_V850",
+      "",
+      EM_M32R,
+      "EM_M32R",
+      "",
+      EM_MN10300,
+      "EM_MN10300",
+      "",
+      EM_MN10200,
+      "EM_MN10200",
+      "",
+      EM_PJ,
+      "EM_PJ",
+      "",
+      EM_OPENRISC,
+      "EM_OPENRISC",
+      "",
+      EM_ARC_COMPACT,
+      "EM_ARC_COMPACT",
+      "",
+      EM_XTENSA,
+      "EM_XTENSA",
+      "",
+      EM_VIDEOCORE,
+      "EM_VIDEOCORE",
+      "",
+      EM_TMM_GPP,
+      "EM_TMM_GPP",
+      "",
+      EM_NS32K,
+      "EM_NS32K",
+      "",
+      EM_TPC,
+      "EM_TPC",
+      "",
+      EM_SNP1K,
+      "EM_SNP1K",
+      "",
+      EM_ST200,
+      "EM_ST200",
+      "",
+      EM_IP2K,
+      "EM_IP2K",
+      "",
+      EM_MAX,
+      "EM_MAX",
+      "",
+      EM_CR,
+      "EM_CR",
+      "",
+      EM_F2MC16,
+      "EM_F2MC16",
+      "",
+      EM_MSP430,
+      "EM_MSP430",
+      "",
+      EM_BLACKFIN,
+      "EM_BLACKFIN",
+      "",
+      EM_SE_C33,
+      "EM_SE_C33",
+      "",
+      EM_SEP,
+      "EM_SEP",
+      "",
+      EM_ARCA,
+      "EM_ARCA",
+      "",
+      EM_UNICORE,
+      "EM_UNICORE",
+      "",
+      EM_EXCESS,
+      "EM_EXCESS",
+      "",
+      EM_DXP,
+      "EM_DXP",
+      "",
+      EM_ALTERA_NIOS2,
+      "EM_ALTERA_NIOS2",
+      "",
+      EM_CRX,
+      "EM_CRX",
+      "",
+      EM_XGATE,
+      "EM_XGATE",
+      "",
+      EM_C166,
+      "EM_C166",
+      "",
+      EM_M16C,
+      "EM_M16C",
+      "",
+      EM_DSPIC30F,
+      "EM_DSPIC30F",
+      "",
+      EM_CE,
+      "EM_CE",
+      "",
+      EM_M32C,
+      "EM_M32C",
+      "",
+      EM_TSK3000,
+      "EM_TSK3000",
+      "",
+      EM_RS08,
+      "EM_RS08",
+      "",
+      EM_SHARC,
+      "EM_SHARC",
+      "",
+      EM_ECOG2,
+      "EM_ECOG2",
+      "",
+      EM_SCORE7,
+      "EM_SCORE7",
+      "",
+      EM_DSP24,
+      "EM_DSP24",
+      "",
+      EM_VIDEOCORE3,
+      "EM_VIDEOCORE3",
+      "",
+      EM_LATTICEMICO32,
+      "EM_LATTICEMICO32",
+      "",
+      EM_SE_C17,
+      "EM_SE_C17",
+      "",
+      EM_TI_C6000,
+      "EM_TI_C6000",
+      "",
+      EM_TI_C2000,
+      "EM_TI_C2000",
+      "",
+      EM_TI_C5500,
+      "EM_TI_C5500",
+      "",
+      EM_TI_ARP32,
+      "EM_TI_ARP32",
+      "",
+      EM_TI_PRU,
+      "EM_TI_PRU",
+      "",
+      EM_MMDSP_PLUS,
+      "EM_MMDSP_PLUS",
+      "",
+      EM_CYPRESS_M8C,
+      "EM_CYPRESS_M8C",
+      "",
+      EM_R32C,
+      "EM_R32C",
+      "",
+      EM_TRIMEDIA,
+      "EM_TRIMEDIA",
+      "",
+      EM_QDSP6,
+      "EM_QDSP6",
+      "",
+      EM_8051,
+      "EM_8051",
+      "",
+      EM_STXP7X,
+      "EM_STXP7X",
+      "",
+      EM_NDS32,
+      "EM_NDS32",
+      "",
+      EM_ECOG1X,
+      "EM_ECOG1X",
+      "",
+      EM_MAXQ30,
+      "EM_MAXQ30",
+      "",
+      EM_XIMO16,
+      "EM_XIMO16",
+      "",
+      EM_MANIK,
+      "EM_MANIK",
+      "",
+      EM_CRAYNV2,
+      "EM_CRAYNV2",
+      "",
+      EM_RX,
+      "EM_RX",
+      "",
+      EM_METAG,
+      "EM_METAG",
+      "",
+      EM_MCST_ELBRUS,
+      "EM_MCST_ELBRUS",
+      "",
+      EM_ECOG16,
+      "EM_ECOG16",
+      "",
+      EM_CR16,
+      "EM_CR16",
+      "",
+      EM_ETPU,
+      "EM_ETPU",
+      "",
+      EM_SLE9X,
+      "EM_SLE9X",
+      "",
+      EM_L10M,
+      "EM_L10M",
+      "",
+      EM_K10M,
+      "EM_K10M",
+      "",
+      EM_AARCH64,
+      "EM_AARCH64",
+      "",
+      EM_AVR32,
+      "EM_AVR32",
+      "",
+      EM_STM8,
+      "EM_STM8",
+      "",
+      EM_TILE64,
+      "EM_TILE64",
+      "",
+      EM_TILEPRO,
+      "EM_TILEPRO",
+      "",
+      EM_MICROBLAZE,
+      "EM_MICROBLAZE",
+      "",
+      EM_CUDA,
+      "EM_CUDA",
+      "",
+      EM_TILEGX,
+      "EM_TILEGX",
+      "",
+      EM_CLOUDSHIELD,
+      "EM_CLOUDSHIELD",
+      "",
+      EM_COREA_1ST,
+      "EM_COREA_1ST",
+      "",
+      EM_COREA_2ND,
+      "EM_COREA_2ND",
+      "",
+      EM_ARC_COMPACT2,
+      "EM_ARC_COMPACT2",
+      "",
+      EM_OPEN8,
+      "EM_OPEN8",
+      "",
+      EM_RL78,
+      "EM_RL78",
+      "",
+      EM_VIDEOCORE5,
+      "EM_VIDEOCORE5",
+      "",
+      EM_78KOR,
+      "EM_78KOR",
+      "",
+      EM_56800EX,
+      "EM_56800EX",
+      "",
+      EM_BA1,
+      "EM_BA1",
+      "",
+      EM_BA2,
+      "EM_BA2",
+      "",
+      EM_XCORE,
+      "EM_XCORE",
+      "",
+      EM_MCHP_PIC,
+      "EM_MCHP_PIC",
+      "",
+      EM_KM32,
+      "EM_KM32",
+      "",
+      EM_KMX32,
+      "EM_KMX32",
+      "",
+      EM_EMX16,
+      "EM_EMX16",
+      "",
+      EM_EMX8,
+      "EM_EMX8",
+      "",
+      EM_KVARC,
+      "EM_KVARC",
+      "",
+      EM_CDP,
+      "EM_CDP",
+      "",
+      EM_COGE,
+      "EM_COGE",
+      "",
+      EM_COOL,
+      "EM_COOL",
+      "",
+      EM_NORC,
+      "EM_NORC",
+      "",
+      EM_CSR_KALIMBA,
+      "EM_CSR_KALIMBA",
+      "",
+      EM_Z80,
+      "EM_Z80",
+      "",
+      EM_VISIUM,
+      "EM_VISIUM",
+      "",
+      EM_FT32,
+      "EM_FT32",
+      "",
+      EM_MOXIE,
+      "EM_MOXIE",
+      "",
+      EM_AMDGPU,
+      "EM_AMDGPU",
+      "",
+      EM_RISCV,
+      "EM_RISCV",
+      "",
+      EM_BPF,
+      "EM_BPF",
+      "",
     }
 };
 
 const ComboBoxMap PhdrTypeMap = {
     18,
-    {
-        PT_NULL, "PT_NULL", "",
-        PT_LOAD, "PT_LOAD", "",
-        PT_DYNAMIC, "PT_DYNAMIC", "",
-        PT_INTERP, "PT_INTERP", "",
-        PT_NOTE, "PT_NOTE", "",
-        PT_SHLIB, "PT_SHLIB", "",
-        PT_PHDR, "PT_PHDR", "",
-        PT_TLS, "PT_TLS", "",
-        PT_NUM, "PT_NUM", "",
-        PT_LOOS, "PT_LOOS", "",
-        PT_GNU_EH_FRAME, "PT_GNU_EH_FRAME", "",
-        PT_GNU_STACK, "PT_GNU_STACK", "",
-        PT_GNU_RELRO, "PT_GNU_RELRO", "",
-        PT_SUNWBSS, "PT_SUNWBSS", "",
-        PT_SUNWSTACK, "PT_SUNWSTACK", "",
-        PT_HISUNW, "PT_HISUNW", "",
-        PT_LOPROC, "PT_LOPROC", "",
-        PT_HIPROC, "PT_HIPROC", ""
-    },
+    { PT_NULL, "PT_NULL", "", PT_LOAD, "PT_LOAD", "", PT_DYNAMIC, "PT_DYNAMIC", "", PT_INTERP, "PT_INTERP", "", PT_NOTE, "PT_NOTE", "", PT_SHLIB, "PT_SHLIB", "", PT_PHDR, "PT_PHDR", "", PT_TLS, "PT_TLS", "", PT_NUM, "PT_NUM", "", PT_LOOS, "PT_LOOS", "", PT_GNU_EH_FRAME, "PT_GNU_EH_FRAME", "", PT_GNU_STACK, "PT_GNU_STACK", "", PT_GNU_RELRO, "PT_GNU_RELRO", "", PT_SUNWBSS, "PT_SUNWBSS", "", PT_SUNWSTACK, "PT_SUNWSTACK", "", PT_HISUNW, "PT_HISUNW", "", PT_LOPROC, "PT_LOPROC", "", PT_HIPROC, "PT_HIPROC", "" },
 };
 
 const ComboBoxMap PhdrTypeFlags = {
     7,
     {
-        PF_X, "  X", "",
-        PF_W, " W ", "",
-        PF_W | PF_X, " WX", "",
-        PF_R, "R  ", "",
-        PF_R | PF_X, "R X", "",
-        PF_R | PF_W, "RW ", "",
-        PF_R | PF_W | PF_X, "RWX", "",
+      PF_X,
+      "  X",
+      "",
+      PF_W,
+      " W ",
+      "",
+      PF_W | PF_X,
+      " WX",
+      "",
+      PF_R,
+      "R  ",
+      "",
+      PF_R | PF_X,
+      "R X",
+      "",
+      PF_R | PF_W,
+      "RW ",
+      "",
+      PF_R | PF_W | PF_X,
+      "RWX",
+      "",
     }
 };
 
 const ComboBoxMap ShdrTypeMap = {
     33,
-    { 
-        SHT_NULL, "SHT_NULL", "Section header table entry unused",
-        SHT_PROGBITS, "SHT_PROGBITS", "Program data",
-        SHT_SYMTAB, "SHT_SYMTAB", "Symbol table",
-        SHT_STRTAB, "SHT_STRTAB", "String table",
-        SHT_RELA, "SHT_RELA", "Relocation entries with addends",
-        SHT_HASH, "SHT_HASH", "Symbol hash table",
-        SHT_DYNAMIC, "SHT_DYNAMIC", "Dynamic linking information",
-        SHT_NOTE, "SHT_NOTE", "Notes",
-        SHT_NOBITS, "SHT_NOBITS", "Program space with no data (bss)",
-        SHT_REL, "SHT_REL", "Relocation entries, no addends",
-        SHT_SHLIB, "SHT_SHLIB", "Reserved",
-        SHT_DYNSYM, "SHT_DYNSYM", "Dynamic linker symbol table",
-        SHT_INIT_ARRAY, "SHT_INIT_ARRAY", "Array of constructors",
-        SHT_FINI_ARRAY, "SHT_FINI_ARRAY", "Array of destructors",
-        SHT_PREINIT_ARRAY, "SHT_PREINIT_ARRAY", "Array of pre-constructors",
-        SHT_GROUP, "SHT_GROUP", "Section group",
-        SHT_SYMTAB_SHNDX, "SHT_SYMTAB_SHNDX", "Extended section indeces",
-        SHT_NUM, "SHT_NUM", "Number of defined types",
-        SHT_LOOS, "SHT_LOOS", "Start OS-specific",
-        SHT_GNU_ATTRIBUTES, "SHT_GNU_ATTRIBUTES", "Object attributes",
-        SHT_GNU_HASH, "SHT_GNU_HASH", "GNU-style hash table",
-        SHT_GNU_LIBLIST, "SHT_GNU_LIBLIST", "Prelink library list",
-        SHT_CHECKSUM, "SHT_CHECKSUM", "Checksum for DSO content",
-        SHT_SUNW_move, "SHT_SUNW_move", "Sun-specific low bound",
-        SHT_SUNW_COMDAT, "SHT_SUNW_COMDAT", "",
-        SHT_SUNW_syminfo, "SHT_SUNW_syminfo", "",
-        SHT_GNU_verdef, "SHT_GNU_verdef", "Version definition section",
-        SHT_GNU_verneed, "SHT_GNU_verneed", "Version needs section",
-        SHT_GNU_versym, "SHT_GNU_versym", "Version symbol table",
-        SHT_LOPROC, "SHT_LOPROC", "Start of processor-specific",
-        SHT_HIPROC, "SHT_HIPROC", "End of processor-specific",
-        SHT_LOUSER, "SHT_LOUSER", "Start of application-specific",
-        SHT_HIUSER, "SHT_HIUSER", "End of application-specific",
+    {
+      SHT_NULL,
+      "SHT_NULL",
+      "Section header table entry unused",
+      SHT_PROGBITS,
+      "SHT_PROGBITS",
+      "Program data",
+      SHT_SYMTAB,
+      "SHT_SYMTAB",
+      "Symbol table",
+      SHT_STRTAB,
+      "SHT_STRTAB",
+      "String table",
+      SHT_RELA,
+      "SHT_RELA",
+      "Relocation entries with addends",
+      SHT_HASH,
+      "SHT_HASH",
+      "Symbol hash table",
+      SHT_DYNAMIC,
+      "SHT_DYNAMIC",
+      "Dynamic linking information",
+      SHT_NOTE,
+      "SHT_NOTE",
+      "Notes",
+      SHT_NOBITS,
+      "SHT_NOBITS",
+      "Program space with no data (bss)",
+      SHT_REL,
+      "SHT_REL",
+      "Relocation entries, no addends",
+      SHT_SHLIB,
+      "SHT_SHLIB",
+      "Reserved",
+      SHT_DYNSYM,
+      "SHT_DYNSYM",
+      "Dynamic linker symbol table",
+      SHT_INIT_ARRAY,
+      "SHT_INIT_ARRAY",
+      "Array of constructors",
+      SHT_FINI_ARRAY,
+      "SHT_FINI_ARRAY",
+      "Array of destructors",
+      SHT_PREINIT_ARRAY,
+      "SHT_PREINIT_ARRAY",
+      "Array of pre-constructors",
+      SHT_GROUP,
+      "SHT_GROUP",
+      "Section group",
+      SHT_SYMTAB_SHNDX,
+      "SHT_SYMTAB_SHNDX",
+      "Extended section indeces",
+      SHT_NUM,
+      "SHT_NUM",
+      "Number of defined types",
+      SHT_LOOS,
+      "SHT_LOOS",
+      "Start OS-specific",
+      SHT_GNU_ATTRIBUTES,
+      "SHT_GNU_ATTRIBUTES",
+      "Object attributes",
+      SHT_GNU_HASH,
+      "SHT_GNU_HASH",
+      "GNU-style hash table",
+      SHT_GNU_LIBLIST,
+      "SHT_GNU_LIBLIST",
+      "Prelink library list",
+      SHT_CHECKSUM,
+      "SHT_CHECKSUM",
+      "Checksum for DSO content",
+      SHT_SUNW_move,
+      "SHT_SUNW_move",
+      "Sun-specific low bound",
+      SHT_SUNW_COMDAT,
+      "SHT_SUNW_COMDAT",
+      "",
+      SHT_SUNW_syminfo,
+      "SHT_SUNW_syminfo",
+      "",
+      SHT_GNU_verdef,
+      "SHT_GNU_verdef",
+      "Version definition section",
+      SHT_GNU_verneed,
+      "SHT_GNU_verneed",
+      "Version needs section",
+      SHT_GNU_versym,
+      "SHT_GNU_versym",
+      "Version symbol table",
+      SHT_LOPROC,
+      "SHT_LOPROC",
+      "Start of processor-specific",
+      SHT_HIPROC,
+      "SHT_HIPROC",
+      "End of processor-specific",
+      SHT_LOUSER,
+      "SHT_LOUSER",
+      "Start of application-specific",
+      SHT_HIUSER,
+      "SHT_HIUSER",
+      "End of application-specific",
     }
 };
 
 const ComboBoxMap ShdrRelaType = {
     12,
-    { 
-        R_386_NONE, "R_386_NONE", "Calculation: NONE",
-        R_386_32, "R_386_32", "Calculation: SYM + ADDEND",
-        R_386_PC32, "R_386_PC32", "Calculation: SYM + ADDEND - SECTION OFFSET",
-        R_386_GOT32, "R_386_GOT32", "Calculation: GOT + ADDEND",
-        R_386_PLT32, "R_386_PLT32", "Calculation: PLT + ADDEND - SECTION OFFSET",
-        R_386_COPY, "R_386_COPY", "Calculation: NONE",
-        R_386_GLOB_DAT, "R_386_GLOB_DAT", "Calculation: SYM",
-        R_386_JMP_SLOT, "R_386_JMP_SLOT", "Calculation: SYM",
-        R_386_RELATIVE, "R_386_RELATIVE", "Calculation: BASE + ADDEND",
-        R_386_GOTOFF, "R_386_GOTOFF", "Calculation: SYM + ADDEND - GOT",
-        R_386_GOTPC, "R_386_GOTPC", "Calculation: GOT + ADDEND - SECTION OFFSET",
-        R_386_32PLT, "R_386_32PLT", "Calculation: PLT + ADDEND"
-    }
+    { R_386_NONE, "R_386_NONE", "Calculation: NONE", R_386_32, "R_386_32", "Calculation: SYM + ADDEND", R_386_PC32, "R_386_PC32", "Calculation: SYM + ADDEND - SECTION OFFSET", R_386_GOT32, "R_386_GOT32", "Calculation: GOT + ADDEND", R_386_PLT32, "R_386_PLT32", "Calculation: PLT + ADDEND - SECTION OFFSET", R_386_COPY, "R_386_COPY", "Calculation: NONE", R_386_GLOB_DAT, "R_386_GLOB_DAT", "Calculation: SYM", R_386_JMP_SLOT, "R_386_JMP_SLOT", "Calculation: SYM", R_386_RELATIVE, "R_386_RELATIVE", "Calculation: BASE + ADDEND", R_386_GOTOFF, "R_386_GOTOFF", "Calculation: SYM + ADDEND - GOT", R_386_GOTPC, "R_386_GOTPC", "Calculation: GOT + ADDEND - SECTION OFFSET", R_386_32PLT, "R_386_32PLT", "Calculation: PLT + ADDEND" }
 };
 
 const ComboBoxMap ShdrStrTabOther = {
     4,
-    { 
-        STV_DEFAULT, "STV_DEFAULT", "The visibility of symbols with the STV_DEFAULT attribute is as specified by the symbol's binding type. That is, global and weak symbols are visible outside of their defining component (executable file or shared object). Local symbols are hidden, as described below. Global and weak symbols are also preemptable, that is, they may by preempted by definitions of the same name in another component.",
-        STV_INTERNAL, "STV_INTERNAL", "Processor specific hidden class",
-        STV_HIDDEN, "STV_HIDDEN", "Sym unavailable in other modules",
-        STV_PROTECTED, "STV_PROTECTED", "A symbol defined in the current component is protected if it is visible in other components but not preemptable, meaning that any reference to such a symbol from within the defining component must be resolved to the definition in that component, even if there is a definition in another component that would preempt by the default rules. ",
+    {
+      STV_DEFAULT,
+      "STV_DEFAULT",
+      "The visibility of symbols with the STV_DEFAULT attribute is as specified by the symbol's binding type. That is, global and weak symbols are visible outside of their defining component (executable file or shared object). Local symbols are hidden, as described below. Global and weak symbols are also preemptable, that is, they may by preempted by definitions of the same name in another component.",
+      STV_INTERNAL,
+      "STV_INTERNAL",
+      "Processor specific hidden class",
+      STV_HIDDEN,
+      "STV_HIDDEN",
+      "Sym unavailable in other modules",
+      STV_PROTECTED,
+      "STV_PROTECTED",
+      "A symbol defined in the current component is protected if it is visible in other components but not preemptable, meaning that any reference to such a symbol from within the defining component must be resolved to the definition in that component, even if there is a definition in another component that would preempt by the default rules. ",
     }
 };
 
 const ComboBoxMap ShdrStrTabBind = {
     7,
     {
-        STB_LOCAL, "STB_LOCAL", "Local symbols are not visible outside the object file containing their definition. Local symbols of the same name may exist in multiple files without interfering with each other.",
-        STB_GLOBAL, "STB_GLOBAL", "Global symbols are visible to all object files being combined. One file's definition of a global symbol will satisfy another file's undefined reference to the same global symbol.",
-        STB_WEAK, "STB_WEAK", "Weak symbols resemble global symbols, but their definitions have lower precedence.",
-        STB_LOOS, "STB_LOOS", "Values in this inclusive range are reserved for operating system-specific semantics.",
-        STB_HIOS, "STB_HIOS", "Values in this inclusive range are reserved for operating system-specific semantics.",
-        STB_LOPROC, "STB_LOPROC", "Values in this inclusive range are reserved for processor-specific semantics. If meanings are specified, the processor supplement explains them.",
-        STB_HIPROC, "STB_HIPROC", "Values in this inclusive range are reserved for processor-specific semantics. If meanings are specified, the processor supplement explains them.",
+      STB_LOCAL,
+      "STB_LOCAL",
+      "Local symbols are not visible outside the object file containing their definition. Local symbols of the same name may exist in multiple files without interfering with each other.",
+      STB_GLOBAL,
+      "STB_GLOBAL",
+      "Global symbols are visible to all object files being combined. One file's definition of a global symbol will satisfy another file's undefined reference to the same global symbol.",
+      STB_WEAK,
+      "STB_WEAK",
+      "Weak symbols resemble global symbols, but their definitions have lower precedence.",
+      STB_LOOS,
+      "STB_LOOS",
+      "Values in this inclusive range are reserved for operating system-specific semantics.",
+      STB_HIOS,
+      "STB_HIOS",
+      "Values in this inclusive range are reserved for operating system-specific semantics.",
+      STB_LOPROC,
+      "STB_LOPROC",
+      "Values in this inclusive range are reserved for processor-specific semantics. If meanings are specified, the processor supplement explains them.",
+      STB_HIPROC,
+      "STB_HIPROC",
+      "Values in this inclusive range are reserved for processor-specific semantics. If meanings are specified, the processor supplement explains them.",
     }
 };
 
 const ComboBoxMap ShdrStrTabType = {
     11,
     {
-        STT_NOTYPE, "STT_NOTYPE", "The symbol's type is not specified.",
-        STT_OBJECT, "STT_OBJECT", "The symbol is associated with a data object, such as a variable, an array, and so on.",
-        STT_FUNC, "STT_FUNC", "The symbol is associated with a function or other executable code.",
-        STT_SECTION, "STT_SECTION", "The symbol is associated with a section. Symbol table entries of this type exist primarily for relocation and normally have STB_LOCAL binding.",
-        STT_FILE, "STT_FILE", "Conventionally, the symbol's name gives the name of the source file associated with the object file. A file symbol has STB_LOCAL binding, its section index is SHN_ABS, and it precedes the other STB_LOCAL symbols for the file, if it is present.",
-        STT_COMMON, "STT_COMMON", "The symbol labels an uninitialized common block.",
-        STT_TLS, "STT_TLS", "The symbol specifies a Thread-Local Storage entity. When defined, it gives the assigned offset for the symbol, not the actual address. Symbols of type STT_TLS can be referenced by only special thread-local storage relocations and thread-local storage relocations can only reference symbols with type STT_TLS. Implementation need not support thread-local storage.",
-        STT_LOOS, "STT_LOOS", "Values in this inclusive range are reserved for operating system-specific semantics.",
-        STT_HIOS, "STT_HIOS", "Values in this inclusive range are reserved for operating system-specific semantics.",
-        STT_LOPROC, "STT_LOPROC", "Values in this inclusive range are reserved for processor-specific semantics. If meanings are specified, the processor supplement explains them.",
-        STT_HIPROC, "STT_HIPROC", "Values in this inclusive range are reserved for processor-specific semantics. If meanings are specified, the processor supplement explains them.",
+      STT_NOTYPE,
+      "STT_NOTYPE",
+      "The symbol's type is not specified.",
+      STT_OBJECT,
+      "STT_OBJECT",
+      "The symbol is associated with a data object, such as a variable, an array, and so on.",
+      STT_FUNC,
+      "STT_FUNC",
+      "The symbol is associated with a function or other executable code.",
+      STT_SECTION,
+      "STT_SECTION",
+      "The symbol is associated with a section. Symbol table entries of this type exist primarily for relocation and normally have STB_LOCAL binding.",
+      STT_FILE,
+      "STT_FILE",
+      "Conventionally, the symbol's name gives the name of the source file associated with the object file. A file symbol has STB_LOCAL binding, its section index is SHN_ABS, and it precedes the other STB_LOCAL symbols for the file, if it is present.",
+      STT_COMMON,
+      "STT_COMMON",
+      "The symbol labels an uninitialized common block.",
+      STT_TLS,
+      "STT_TLS",
+      "The symbol specifies a Thread-Local Storage entity. When defined, it gives the assigned offset for the symbol, not the actual address. Symbols of type STT_TLS can be referenced by only special thread-local storage relocations and thread-local storage relocations can only reference symbols with type STT_TLS. Implementation need not support thread-local storage.",
+      STT_LOOS,
+      "STT_LOOS",
+      "Values in this inclusive range are reserved for operating system-specific semantics.",
+      STT_HIOS,
+      "STT_HIOS",
+      "Values in this inclusive range are reserved for operating system-specific semantics.",
+      STT_LOPROC,
+      "STT_LOPROC",
+      "Values in this inclusive range are reserved for processor-specific semantics. If meanings are specified, the processor supplement explains them.",
+      STT_HIPROC,
+      "STT_HIPROC",
+      "Values in this inclusive range are reserved for processor-specific semantics. If meanings are specified, the processor supplement explains them.",
     }
 };
 
 const ComboBoxMap ShdrStrTabSndx = {
     9,
     {
-        SHN_UNDEF, "SHN_UNDEF", "Undefined section",
-        SHN_LOPROC, "SHN_LOPROC", "Start of processor-specific",
-        SHN_AFTER, "SHN_AFTER", "Order section after all others",
-        SHN_HIPROC, "SHN_HIPROC", "End of processor-specific",
-        SHN_LOOS, "SHN_LOOS", "Start of OS-specific",
-        SHN_HIOS, "SHN_HIOS", "End of OS-specific",
-        SHN_ABS, "SHN_ABS", "Associated symbol is absolute",
-        SHN_COMMON, "SHN_COMMON", "Associated symbol is common",
-        SHN_XINDEX, "SHN_XINDEX", "Index is in extra table",
+      SHN_UNDEF,
+      "SHN_UNDEF",
+      "Undefined section",
+      SHN_LOPROC,
+      "SHN_LOPROC",
+      "Start of processor-specific",
+      SHN_AFTER,
+      "SHN_AFTER",
+      "Order section after all others",
+      SHN_HIPROC,
+      "SHN_HIPROC",
+      "End of processor-specific",
+      SHN_LOOS,
+      "SHN_LOOS",
+      "Start of OS-specific",
+      SHN_HIOS,
+      "SHN_HIOS",
+      "End of OS-specific",
+      SHN_ABS,
+      "SHN_ABS",
+      "Associated symbol is absolute",
+      SHN_COMMON,
+      "SHN_COMMON",
+      "Associated symbol is common",
+      SHN_XINDEX,
+      "SHN_XINDEX",
+      "Index is in extra table",
     }
 };
 
@@ -521,7 +976,7 @@ namespace Imelf
             ImGui::Text( "e_ident[EI_MAG]" );
             Tooltip( "0x7F followed by ELF(45 4c 46) in ASCII; these four bytes constitute the magic number." );
             ImGui::TableNextCell();
-            ImGui::Text( "%08x", offsetof( T, e_ident ));
+            ImGui::Text( "%08x", offsetof( T, e_ident ) );
             ImGui::TableNextCell();
             ImGui::Text( "%02x", 4 );
             ImGui::TableNextCell();
@@ -567,7 +1022,7 @@ namespace Imelf
             ImGui::Text( "e_ident[EI_DATA]" );
             Tooltip( "This byte is set to either 1 or 2 to signify little or big endianness, respectively. This affects interpretation of multi-byte fields starting with offset 0x10." );
             ImGui::TableNextCell();
-            ImGui::Text( "%08x", offsetof(T, e_ident[EI_DATA]) );
+            ImGui::Text( "%08x", offsetof( T, e_ident[EI_DATA] ) );
             ImGui::TableNextCell();
             ImGui::Text( "%02x", sizeof( ehdr->e_ident[EI_DATA] ) );
             ImGui::TableNextCell();
@@ -634,7 +1089,7 @@ namespace Imelf
             ImGui::TableNextRow();
             ImGui::Text( "e_ident[EI_ABIVERSION]" );
             Tooltip( "Further specifies the ABI version. Its interpretation depends on the target ABI. "
-                        "Linux kernel (after at least 2.6) has no definition of it, so it is ignored for statically-linked executables." );
+                     "Linux kernel (after at least 2.6) has no definition of it, so it is ignored for statically-linked executables." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", offsetof( T, e_ident[EI_ABIVERSION] ) );
             ImGui::TableNextCell();
@@ -965,7 +1420,7 @@ namespace Imelf
         template< typename O, typename T >
         void Type( O* elf, T* phdr )
         {
-            ImGui::TableNextRow();        
+            ImGui::TableNextRow();
             ImGui::Text( "p_type" );
             Tooltip( "Identifies the type of the segment." );
             ImGui::TableNextCell();
@@ -978,7 +1433,7 @@ namespace Imelf
             ComboBox( phdr->p_type, PhdrTypeMap );
         }
 
-        template< typename O, typename T>
+        template< typename O, typename T >
         void Flags( O* elf, T* phdr )
         {
             ImGui::TableNextRow();
@@ -994,7 +1449,7 @@ namespace Imelf
             ImGui::Text( "%s", PhdrTypeFlags.get_val( phdr->p_flags ) );
         }
 
-        template< typename O, typename T>
+        template< typename O, typename T >
         void Offset( O* elf, T* phdr )
         {
             ImGui::TableNextRow();
@@ -1005,7 +1460,7 @@ namespace Imelf
             ImGui::TableNextCell();
             ImGui::Text( "%02x", sizeof( phdr->p_offset ) );
             ImGui::TableNextCell();
-            InputHex( "phdr_p_offset", phdr->p_offset, phdr->p_offset < elf->get_file_size() );            
+            InputHex( "phdr_p_offset", phdr->p_offset, phdr->p_offset < elf->get_file_size() );
         }
 
         template< typename O, typename T >
@@ -1022,7 +1477,7 @@ namespace Imelf
             InputHex( "phdr_p_vaddr", phdr->p_vaddr );
         }
 
-        template<typename O, typename T>
+        template< typename O, typename T >
         void Paddr( O* elf, T* phdr )
         {
             ImGui::TableNextRow();
@@ -1033,10 +1488,10 @@ namespace Imelf
             ImGui::TableNextCell();
             ImGui::Text( "%02x", sizeof( phdr->p_paddr ) );
             ImGui::TableNextCell();
-            InputHex( "phdr_p_paddr", phdr->p_paddr );        
+            InputHex( "phdr_p_paddr", phdr->p_paddr );
         }
 
-        template<typename O, typename T>
+        template< typename O, typename T >
         void Filesz( O* elf, T* phdr )
         {
             ImGui::TableNextRow();
@@ -1070,12 +1525,12 @@ namespace Imelf
             ImGui::TableNextRow();
             ImGui::Text( "p_align" );
             Tooltip( "This member holds the value to which the segments are\n"
-                "aligned in memory and in the file.  Loadable process seg-\n"
-                "ments must have congruent values for p_vaddr and p_offset,\n"
-                "modulo the page size.  Values of zero and one mean no\n"
-                "alignment is required.  Otherwise, p_align should be a pos-\n"
-                "itive, integral power of two, and p_vaddr should equal\n"
-                "p_offset, modulo p_align." );
+                     "aligned in memory and in the file.  Loadable process seg-\n"
+                     "ments must have congruent values for p_vaddr and p_offset,\n"
+                     "modulo the page size.  Values of zero and one mean no\n"
+                     "alignment is required.  Otherwise, p_align should be a pos-\n"
+                     "itive, integral power of two, and p_vaddr should equal\n"
+                     "p_offset, modulo p_align." );
             ImGui::TableNextCell();
             ImGui::Text( "%08x", elf->va2rva( &phdr->p_align ) );
             ImGui::TableNextCell();
@@ -1120,7 +1575,7 @@ namespace Imelf
 
                 ImGui::PopID();
             }
-            ImGui::EndTable();        
+            ImGui::EndTable();
         }
 
         template< typename T >
@@ -1142,7 +1597,7 @@ namespace Imelf
                 Elf64_Nhdr* note = reinterpret_cast< Elf64_Nhdr* >( elf->rva2va( start + offset ) );
                 char* name = (char*)note + sizeof( *note );
                 unsigned char* desc = reinterpret_cast< unsigned char* >( AlignUp( name + note->n_namesz, 4 ) );
-                offset += ((uintptr_t)AlignUp(desc + note->n_descsz, 4) - (uintptr_t)note);
+                offset += ( (uintptr_t)AlignUp( desc + note->n_descsz, 4 ) - (uintptr_t)note );
 
                 ImGui::PushID( id );
                 ImGui::TableNextRow();
@@ -1173,7 +1628,7 @@ namespace Imelf
             ImGui::NewLine();
         }
 
-        template < typename T, typename H >
+        template< typename T, typename H >
         void DrawPhdrType( T* elf, H* phdr )
         {
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
@@ -1241,14 +1696,14 @@ namespace Imelf
             if ( ctx.idx == 0 ) {
                 DrawPhdr( elf );
             } else {
-                DrawPhdrType( elf, elf->get_prog_header( ctx.idx - 1) );
+                DrawPhdrType( elf, elf->get_prog_header( ctx.idx - 1 ) );
             }
         }
     }
-    
+
     namespace Shdr
     {
-		template<typename O, typename T>
+        template< typename O, typename T >
         void TableRow( O* elf, T* shdr, int idx )
         {
             ImGui::TableNextRow();
@@ -1257,7 +1712,7 @@ namespace Imelf
             ImGui::TableNextCell();
             ComboBox( shdr->sh_type, ShdrTypeMap );
 
-			ImGui::TableNextCell();
+            ImGui::TableNextCell();
             char cflags[16];
             sprintf_s( cflags, sizeof( cflags ), "% 8X", (uint32_t)shdr->sh_flags );
             static uint32_t flags;
@@ -1295,7 +1750,7 @@ namespace Imelf
                 ImGui::EndPopup();
             }
 
-			ImGui::TableNextCell();
+            ImGui::TableNextCell();
             InputHex( "sh_addr", shdr->sh_addr );
 
             ImGui::TableNextCell();
@@ -1370,7 +1825,7 @@ namespace Imelf
             ImGui::EndTable();
         }
 
-        template< typename T, typename H>
+        template< typename T, typename H >
         void DrawStrTab( T* elf, H* shdr )
         {
             assert( shdr->sh_type == SHT_STRTAB );
@@ -1386,7 +1841,6 @@ namespace Imelf
             size_t index = 1;
 
             while ( index < shdr->sh_size && string[index] ) {
-
                 ImGui::TableNextRow();
                 ImGui::Text( "%x", shdr->sh_offset + index );
 
@@ -1409,7 +1863,7 @@ namespace Imelf
             ImGui::BeginTable( ".rela", 5, flags, ImVec2( 0, 0 ) );
 
             if ( elf->get_elf_header()->e_type == ET_EXEC || elf->get_elf_header()->e_type == ET_DYN ) {
-                ImGui::TableSetupColumn( "Virtual Address", 0, 200.0 );            
+                ImGui::TableSetupColumn( "Virtual Address", 0, 200.0 );
             } else if ( elf->get_elf_header()->e_type == ET_REL ) {
                 ImGui::TableSetupColumn( "Section Offset", 0, 200.0 );
             } else {
@@ -1435,7 +1889,7 @@ namespace Imelf
                 size_t val = cur->r_info;
 
                 if ( elf->get_elf_header()->e_ident[EI_CLASS] == ELFCLASS32 ) {
-                    ImGui::Text( "%x", ELF32_R_SYM( val ) );                
+                    ImGui::Text( "%x", ELF32_R_SYM( val ) );
                     ImGui::TableNextCell();
 
                     ImGui::Text( "%s", ShdrRelaType.get_val( ELF32_R_TYPE( val ) ) );
@@ -1525,7 +1979,7 @@ namespace Imelf
         void DrawSymTab( T* elf, H* shdr )
         {
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Scroll;
-            ImGui::BeginTable( "##.symtab", 7, flags, ImVec2( 0, 0 ) );
+            ImGui::BeginTable( "##.symtab", 7, flags, ImVec2( 0, 300 ) );
 
             ImGui::TableSetupColumn( "name", 0, 400.0 );
             ImGui::TableSetupColumn( "bind", 0, 170.0 );
@@ -1538,13 +1992,18 @@ namespace Imelf
             ImGui::TableSetupColumn( "size", ImGuiTableColumnFlags_WidthStretch );
             ImGui::TableAutoHeaders();
 
+            auto strtab_shdr = elf->get_section_header( shdr->sh_link );
+            assert( strtab_shdr->sh_type == SHT_STRTAB );
+
+            char* strtab = (char*)elf->rva2va( strtab_shdr->sh_offset );
+
             auto symtab = elf->get_sym( shdr );
             auto cur = symtab;
 
             while ( (char*)cur < (char*)symtab + shdr->sh_size ) {
                 ImGui::TableNextRow();
 
-                ImGui::Text( "%s", elf->get_strtab() + cur->st_name );
+                ImGui::Text( "%s", strtab + cur->st_name );
                 ImGui::TableNextCell();
 
                 ImGui::Text( "%s", ShdrStrTabBind.get_val( ELF64_ST_BIND( cur->st_info ) ) );
@@ -1583,7 +2042,110 @@ namespace Imelf
             ImGui::EndTable();
         }
 
-        template< typename T, typename H>
+        template< typename T, typename H >
+        void DrawDynSym( T* elf, H* shdr )
+        {
+            ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Scroll;
+            ImGui::BeginTable( "##.dynsym", 7, flags, ImVec2( 0, 300 ) );
+
+            ImGui::TableSetupColumn( "name", 0, 400.0 );
+            ImGui::TableSetupColumn( "bind", 0, 170.0 );
+            ImGui::TableSetupColumn( "type", 0, 150.0 );
+            ImGui::TableSetupColumn( "other", 0, 170.0 );
+            ImGui::TableSetupColumn( "shndx", 0, 200.0 );
+            ImGui::TableSetupColumn( "value", 0, 100.0 );
+
+            ImGui::TableSetupColumn( "size", ImGuiTableColumnFlags_WidthStretch );
+            ImGui::TableAutoHeaders();
+
+            auto dynstr_shdr = elf->get_section_header( shdr->sh_link );
+            assert( dynstr_shdr->sh_type == SHT_STRTAB );
+            char* dynstr = (char*)elf->rva2va( dynstr_shdr->sh_offset );
+
+            auto dynsym = elf->get_sym( shdr );
+            auto cur = dynsym;
+
+            while ( (char*)cur < (char*)dynsym + shdr->sh_size ) {
+                ImGui::TableNextRow();
+
+                ImGui::Text( "%s", dynstr + cur->st_name );
+                ImGui::TableNextCell();
+
+                ImGui::Text( "%s", ShdrStrTabBind.get_val( ELF64_ST_BIND(cur->st_info) ) );
+                Tooltip( ShdrStrTabBind.get_desc( ELF64_ST_BIND(cur->st_info) ) );
+                ImGui::TableNextCell();
+
+                ImGui::Text( "%s", ShdrStrTabType.get_val( ELF64_ST_TYPE(cur->st_info) ) );
+                Tooltip( ShdrStrTabType.get_desc( ELF64_ST_TYPE(cur->st_info) ) );
+                ImGui::TableNextCell();
+
+                ImGui::Text( "%x", cur->st_other );
+                ImGui::TableNextCell();
+
+                ImGui::Text( "%x", cur->st_shndx );
+                ImGui::TableNextCell();
+
+                ImGui::Text( "%x", cur->st_value );
+                ImGui::TableNextCell();
+
+                ImGui::Text( "%x", cur->st_size );
+
+                cur++;
+            }
+
+            ImGui::EndTable();
+        }
+
+        template< typename T, typename H >
+        void DrawInitArray( T* elf, H* shdr )
+        {
+            ImGuiTableFlags flags = ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY;
+            ImGui::BeginTable( "##.init_array", 2, flags, ImVec2( 0, 300 ) );
+            ImGui::TableSetupColumn( "value", 0, 1 );
+            ImGui::TableSetupColumn( "symbol", 0, ImGuiTableColumnFlags_WidthStretch );
+            ImGui::TableAutoHeaders();
+
+            uint32_t ptrsize = elf->get_elf_header()->e_ident[EI_CLASS] << 2;
+            uint64_t count = shdr->sh_size / ptrsize;
+            void* init_array = elf->rva2va( shdr->sh_offset );
+
+            
+            size_t symtab_size = 0;
+            for ( int i = 0; i < elf->get_elf_header()->e_shnum; i++ ) {
+                auto section = elf->get_section_header( i );
+                if ( section->sh_type == SHT_SYMTAB ) {
+                    symtab_size = section->sh_size;
+                }
+            }
+            auto symtab = elf->get_symtab();
+            auto cur_sym = symtab;
+            char* strtab = elf->get_strtab();
+
+            for ( int i = 0; i < count; i++ ) {
+
+                size_t value = 0;
+                memcpy( &value, init_array, ptrsize );
+
+                ImGui::TableNextRow();
+
+                ImGui::Text( "%llx", value );
+                ImGui::TableNextCell();
+
+                while ( (uintptr_t)cur_sym < (uintptr_t)symtab + symtab_size ) {
+                    if ( cur_sym->st_value == value ) {
+                        ImGui::Text( "%s", strtab + cur_sym->st_name );
+                        break;
+                    }
+                    cur_sym++;
+                }       
+
+                init_array = (char*)init_array + count * ptrsize;
+            }
+
+            ImGui::EndTable();
+        }
+
+        template< typename T, typename H >
         void DrawShrType( T* elf, H* shdr )
         {
             const char* title = elf->get_section_name( elf->get_ctx().idx - 1 );
@@ -1596,7 +2158,8 @@ namespace Imelf
                 case SHT_PROGBITS:
                     break;
                 case SHT_SYMTAB:
-                    return DrawSymTab( elf, shdr );
+                    DrawSymTab( elf, shdr );
+                    break;
                 case SHT_STRTAB:
                     return DrawStrTab( elf, shdr );
                 case SHT_RELA:
@@ -1612,10 +2175,19 @@ namespace Imelf
                 case SHT_REL:
                     return DrawRel( elf, shdr );
                 case SHT_SHLIB:
+                    break;
                 case SHT_DYNSYM:
+                    DrawDynSym( elf, shdr );
+                    break;
                 case SHT_INIT_ARRAY:
+                    DrawInitArray( elf, shdr );
+                    break;
                 case SHT_FINI_ARRAY:
+                    DrawInitArray( elf, shdr );
+                    break;
                 case SHT_PREINIT_ARRAY:
+                    DrawInitArray( elf, shdr );
+                    break;
                 case SHT_GROUP:
                 case SHT_SYMTAB_SHNDX:
                 case SHT_NUM:
@@ -1648,8 +2220,6 @@ namespace Imelf
             } else {
                 DrawShrType( elf, elf->get_section_header( ctx.idx - 1 ) );
             }
-
-		}
+        }
     }
 }
-

@@ -495,14 +495,14 @@ Elf32_Shdr* Elf32::va2section( size_t va )
 
 Elf32_Rel* Elf32::get_rel( Elf32_Shdr* shdr, int index )
 {
-    assert( shdr->sh_type == SHT_RELA );
+    assert( shdr->sh_type == SHT_REL );
     return reinterpret_cast< Elf32_Rel* >( (char*)base + shdr->sh_offset ) + index;
 }
 
 
 Elf32_Sym* Elf32::get_sym( Elf32_Shdr* shdr, int index )
 {
-    assert( shdr->sh_type == SHT_SYMTAB );
+    assert( shdr->sh_type == SHT_SYMTAB || shdr->sh_type == SHT_DYNSYM );
     return reinterpret_cast< Elf32_Sym* >( (char*)base + shdr->sh_offset ) + index;
 }
 
@@ -516,6 +516,19 @@ char* Elf32::get_strtab( void )
     }
     return nullptr;
 }
+
+Elf32_Sym* Elf32::get_symtab( void )
+{
+    for ( int i = 0; i < get_elf_header()->e_shnum; i++ ) {
+        auto section = get_section_header( i );
+        if ( section->sh_type == SHT_SYMTAB ) {
+            return reinterpret_cast< Elf32_Sym* >( rva2va( section->sh_offset ) );
+        }
+    }
+    return nullptr;
+}
+
+
 
 // ==========================================================================================================
 
@@ -692,14 +705,14 @@ Elf64_Shdr* Elf64::va2section( size_t va )
 
 Elf64_Rel* Elf64::get_rel( Elf64_Shdr* shdr, int index )
 {
-    assert( shdr->sh_type == SHT_RELA );
+    assert( shdr->sh_type == SHT_REL );
     return reinterpret_cast< Elf64_Rel* >( (char*)base + shdr->sh_offset ) + index;
 }
 
 
 Elf64_Sym* Elf64::get_sym( Elf64_Shdr* shdr, int index )
 {
-    assert( shdr->sh_type == SHT_SYMTAB );
+    assert( shdr->sh_type == SHT_SYMTAB || shdr->sh_type == SHT_DYNSYM );
     return reinterpret_cast< Elf64_Sym* >( (char*)base + shdr->sh_offset ) + index;
 }
 
@@ -710,6 +723,18 @@ char* Elf64::get_strtab( void )
         auto section = get_section_header( i );
         if ( section->sh_type == SHT_STRTAB && !strcmp( get_section_name( i ), ".strtab" ) ) {
             return (char*)base + section->sh_offset;
+        }
+    }
+    return nullptr;
+}
+
+
+Elf64_Sym* Elf64::get_symtab( void )
+{
+    for ( int i = 0; i < get_elf_header()->e_shnum; i++ ) {
+        auto section = get_section_header( i );
+        if ( section->sh_type == SHT_SYMTAB ) {
+            return reinterpret_cast< Elf64_Sym* >( rva2va( section->sh_offset ) );
         }
     }
     return nullptr;
