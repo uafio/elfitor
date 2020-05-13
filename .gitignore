@@ -27,3 +27,5 @@ x64/Release/imgui - Copy.ini
 elfitor/elfitor.vcxproj.user
 x64/Release/elfcmd32
 x64/Release/readelf
+x64/Release/test.c
+x64/Release/test
