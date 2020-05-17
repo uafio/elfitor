@@ -2237,6 +2237,50 @@ namespace Imelf
         }
 
         template< typename T, typename H >
+        void DrawNote( T* elf, H* shdr )
+        {
+            ImGuiTableFlags flags = ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY;
+            ImGui::BeginTable( "##.note", 5, flags, ImVec2( 0, 200 ) );
+            ImGui::TableSetupColumn( "namesc", 0, 0.2f );
+            ImGui::TableSetupColumn( "descsz", 0, 0.2f );
+            ImGui::TableSetupColumn( "type", 0, 0.2f );
+            ImGui::TableSetupColumn( "name", 0, 0.2f );
+            ImGui::TableSetupColumn( "desc", ImGuiTableColumnFlags_WidthStretch );
+            ImGui::TableAutoHeaders();
+
+            size_t offset = 0;
+            do {
+                Elf64_Nhdr* note = reinterpret_cast< Elf64_Nhdr* >( elf->rva2va( shdr->sh_offset + offset ) );
+                char* name = (char*)note + sizeof( *note );
+                unsigned char* desc = reinterpret_cast< unsigned char* >( AlignUp( name + note->n_namesz, 4 ) );
+                offset += ( (uintptr_t)AlignUp( desc + note->n_descsz, 4 ) - (uintptr_t)note );
+
+                ImGui::TableNextRow();
+                ImGui::Text( "%X", note->n_namesz );
+                ImGui::TableNextCell();
+                ImGui::Text( "%X", note->n_descsz );
+                ImGui::TableNextCell();
+                ImGui::Text( "%X", note->n_type );
+                ImGui::TableNextCell();
+                ImGui::Text( "%s", name );
+                ImGui::TableNextCell();
+
+                char buf[256];
+                char* cur = buf;
+                for ( uint32_t i = 0; i < note->n_descsz; i++ ) {
+                    sprintf( cur, "%02X ", desc[i] );
+                    cur += 2;
+                    if ( cur >= buf + sizeof( buf ) ) {
+                        break;
+                    }
+                }
+                ImGui::Text( "%s", buf );
+            } while ( offset < shdr->sh_size );
+
+            ImGui::EndTable();
+        }
+
+        template< typename T, typename H >
         void DrawShrType( T* elf, H* shdr )
         {
             const char* title = elf->get_section_name( elf->get_ctx().idx - 1 );
@@ -2264,6 +2308,7 @@ namespace Imelf
                     DrawDynamic( elf->get_dyn() );
                     break;
                 case SHT_NOTE:
+                    DrawNote( elf, shdr );
                     break;
                 case SHT_NOBITS:
                     return;
