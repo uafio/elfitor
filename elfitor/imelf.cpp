@@ -1786,9 +1786,10 @@ namespace Imelf
                 ImGui::CheckboxFlags( "Processor-specific", &flags, SHF_MASKPROC );
                 ImGui::CheckboxFlags( "Special ordering requirement", &flags, SHF_ORDERED );
                 ImGui::CheckboxFlags( "Excluded", &flags, SHF_EXCLUDE );
-                bool save = ImGui::SmallButton( "Save" );
+                ImGui::Separator();
+                bool save = ImGui::Button( "Save" );
                 ImGui::SameLine();
-                bool cancel = ImGui::SmallButton( "Cancel" );
+                bool cancel = ImGui::Button( "Cancel" );
                 if ( save ) {
                     shdr->sh_flags = flags;
                     ImGui::CloseCurrentPopup();
@@ -2195,6 +2196,47 @@ namespace Imelf
         }
 
         template< typename T, typename H >
+        void DrawHash( T* elf, H* shdr )
+        {
+            ImGuiTableFlags flags = ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY;
+            ImGui::BeginTable( "##.hash_nbucket", 2, flags, ImVec2( 0, 200 ) );
+            ImGui::TableSetupColumn( "nbucket", 0, 1 );
+            ImGui::TableSetupColumn( "value", 0, ImGuiTableColumnFlags_WidthStretch );
+            ImGui::TableAutoHeaders();
+
+            Elf32_Word* htable = reinterpret_cast< Elf32_Word* >( elf->rva2va( shdr->sh_offset ) );
+            Elf32_Word nbucket = htable[0];
+            Elf32_Word nchain = htable[1];
+
+            Elf32_Word* btable = &htable[2];
+            Elf32_Word* ctable = &btable[nbucket];
+
+            for ( uint32_t i = 0; i < nbucket; i++ ) {
+                ImGui::TableNextRow();
+                ImGui::Text( "%d", i );
+                ImGui::TableNextCell();
+                ImGui::Text( "%x", btable[i] );
+            }
+            ImGui::EndTable();
+
+            ImGui::NewLine();
+
+            ImGui::BeginTable( "##.hash_nbucket", 2, flags, ImVec2( 0, 150 ) );
+            ImGui::TableSetupColumn( "nchain", 0, 1 );
+            ImGui::TableSetupColumn( "value", 0, ImGuiTableColumnFlags_WidthStretch );
+            ImGui::TableAutoHeaders();
+
+            for ( uint32_t i = 0; i < nchain; i++ ) {
+                ImGui::TableNextRow();
+                ImGui::Text( "%d", i );
+                ImGui::TableNextCell();
+                ImGui::Text( "%x", ctable[i] );
+            }
+
+            ImGui::EndTable();
+        }
+
+        template< typename T, typename H >
         void DrawShrType( T* elf, H* shdr )
         {
             const char* title = elf->get_section_name( elf->get_ctx().idx - 1 );
@@ -2216,6 +2258,7 @@ namespace Imelf
                     DrawRela( elf, shdr );
                     break;
                 case SHT_HASH:
+                    DrawHash( elf, shdr );
                     break;
                 case SHT_DYNAMIC:
                     DrawDynamic( elf->get_dyn() );
@@ -2246,6 +2289,8 @@ namespace Imelf
                 case SHT_LOOS:
                 case SHT_GNU_ATTRIBUTES:
                 case SHT_GNU_HASH:
+                    DrawHash( elf, shdr );
+                    break;
                 case SHT_GNU_LIBLIST:
                 case SHT_CHECKSUM:
                 case SHT_SUNW_move:
