@@ -529,6 +529,16 @@ Elf32_Sym* Elf32::get_symtab( void )
 }
 
 
+char* Elf32::get_dynstr( void )
+{
+    for ( int i = 0; i < get_elf_header()->e_shnum; i++ ) {
+        auto section = get_section_header( i );
+        if ( section->sh_type == SHT_STRTAB && !_stricmp( get_section_name( (int)i ), ".dynstr" ) ) {
+            return reinterpret_cast< char* >( rva2va( section->sh_offset ) );
+        }
+    }
+    return nullptr;
+}
 
 // ==========================================================================================================
 
@@ -735,6 +745,17 @@ Elf64_Sym* Elf64::get_symtab( void )
         auto section = get_section_header( i );
         if ( section->sh_type == SHT_SYMTAB ) {
             return reinterpret_cast< Elf64_Sym* >( rva2va( section->sh_offset ) );
+        }
+    }
+    return nullptr;
+}
+
+char* Elf64::get_dynstr( void )
+{
+    for ( int i = 0; i < get_elf_header()->e_shnum; i++ ) {
+        auto section = get_section_header( i );
+        if ( section->sh_type == SHT_STRTAB && !_stricmp( get_section_name( (int)i ), ".dynstr" ) ) {
+            return reinterpret_cast< char* >( rva2va( section->sh_offset ) );
         }
     }
     return nullptr;

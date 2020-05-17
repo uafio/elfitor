@@ -141,6 +141,7 @@ public:
     char* get_strtab( void );
     Elf32_Sym* get_symtab( void );
     Elf32_Dyn* get_dyn( void );
+    char* get_dynstr( void );
     Elf32_Rela* get_rela( Elf32_Shdr* shdr, int index = 0 );
     Elf32_Rel* get_rel( Elf32_Shdr* shdr, int index = 0 );
     Elf32_Sym* get_sym( Elf32_Shdr* shdr, int index = 0 );
@@ -167,6 +168,7 @@ public:
     char* get_strtab( void );
     Elf64_Sym* get_symtab( void );
     Elf64_Dyn* get_dyn( void );
+    char* get_dynstr( void );
     Elf64_Rela* get_rela( Elf64_Shdr* shdr, int index = 0 );
     Elf64_Rel* get_rel( Elf64_Shdr* shdr, int index = 0 );
     Elf64_Sym* get_sym( Elf64_Shdr* shdr, int index = 0 );

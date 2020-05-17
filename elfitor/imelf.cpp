@@ -1633,7 +1633,7 @@ namespace Imelf
             ImGui::NewLine();
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
             ImGui::BeginTable( "PT_NOTE", 5, flags, ImVec2( 0, ImGui::GetTextLineHeightWithSpacing() * 1 ) );
-            ImGui::TableSetupColumn( "namesc", 0, 100.0 );
+            ImGui::TableSetupColumn( "namesz", 0, 100.0 );
             ImGui::TableSetupColumn( "descsz", 0, 100.0 );
             ImGui::TableSetupColumn( "type", 0, 100.0 );
             ImGui::TableSetupColumn( "name", 0, 150.0 );
@@ -2241,7 +2241,7 @@ namespace Imelf
         {
             ImGuiTableFlags flags = ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY;
             ImGui::BeginTable( "##.note", 5, flags, ImVec2( 0, 200 ) );
-            ImGui::TableSetupColumn( "namesc", 0, 0.2f );
+            ImGui::TableSetupColumn( "namesz", 0, 0.2f );
             ImGui::TableSetupColumn( "descsz", 0, 0.2f );
             ImGui::TableSetupColumn( "type", 0, 0.2f );
             ImGui::TableSetupColumn( "name", 0, 0.2f );
@@ -2278,6 +2278,66 @@ namespace Imelf
             } while ( offset < shdr->sh_size );
 
             ImGui::EndTable();
+        }
+
+        template< typename T, typename H >
+        void DrawGnuVerneed( T* elf, H* shdr )
+        {
+            Elf64_Verneed* ver = reinterpret_cast< Elf64_Verneed* >( elf->rva2va( shdr->sh_offset ) );
+            ImGuiTableFlags flags = ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable  ;
+            int index = 0;
+            do {
+                char tname[32];
+                sprintf_s( tname, sizeof( tname ), "##.verneed%d", index );
+                ImGui::BeginTable( tname, 5, flags, ImVec2( 0, 0 ) );
+                ImGui::TableSetupColumn( "version", 0, 0.2f );
+                ImGui::TableSetupColumn( "count", 0, 0.2f );
+                ImGui::TableSetupColumn( "file", 0, 0.2f );
+                ImGui::TableSetupColumn( "vernaux", 0, 0.2f );
+                ImGui::TableSetupColumn( "next", ImGuiTableColumnFlags_WidthStretch );
+                ImGui::TableAutoHeaders();
+                ImGui::TableNextRow();
+                ImGui::Text( "%x", ver->vn_version );
+                ImGui::TableNextCell();
+                ImGui::Text( "%x", ver->vn_cnt );
+                ImGui::TableNextCell();
+                ImGui::Text( "%s", elf->get_dynstr() + ver->vn_file );
+                ImGui::TableNextCell();
+                ImGui::Text( "%x", ver->vn_aux );
+                ImGui::TableNextCell();
+                ImGui::Text( "%x", ver->vn_next );
+                ImGui::EndTable();
+
+                Elf64_Vernaux* aux = reinterpret_cast< Elf64_Vernaux* >( (uintptr_t)ver + ver->vn_aux );
+                sprintf_s( tname, sizeof( tname ), "#.veraux%d", index++ );
+                ImGui::BeginTable( tname, 5, flags, ImVec2( 0, 0 ) );
+                ImGui::TableSetupColumn( "hash", 0, 0.2f );
+                ImGui::TableSetupColumn( "flags", 0, 0.2f );
+                ImGui::TableSetupColumn( "other", 0, 0.2f );
+                ImGui::TableSetupColumn( "name", 0, 0.2f );
+                ImGui::TableSetupColumn( "next", ImGuiTableColumnFlags_WidthStretch );
+                ImGui::TableAutoHeaders();
+
+                for ( int i = 0; i < ver->vn_cnt; i++ ) {
+                    ImGui::TableNextRow();
+                    ImGui::Text( "%x", aux[i].vna_hash );
+                    ImGui::TableNextCell();
+                    ImGui::Text( "%x", aux[i].vna_flags );
+                    ImGui::TableNextCell();
+                    ImGui::Text( "%x", aux[i].vna_other );
+                    ImGui::TableNextCell();
+                    ImGui::Text( "%s", elf->get_dynstr() + aux[i].vna_name );
+                    ImGui::TableNextCell();
+                    ImGui::Text( "%x", aux[i].vna_next );
+                }
+
+                ImGui::EndTable();
+            
+                ver = reinterpret_cast< Elf64_Verneed* >( (uintptr_t)ver + ver->vn_next );
+            } while ( ver->vn_next );
+
+            ImGui::NewLine();
+
         }
 
         template< typename T, typename H >
@@ -2343,6 +2403,8 @@ namespace Imelf
                 case SHT_SUNW_syminfo:
                 case SHT_GNU_verdef:
                 case SHT_GNU_verneed:
+                    DrawGnuVerneed( elf, shdr );
+                    break;
                 case SHT_GNU_versym:
                 case SHT_LOPROC:
                 case SHT_HIPROC:
