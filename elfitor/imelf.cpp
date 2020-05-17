@@ -1879,8 +1879,8 @@ namespace Imelf
         {
             assert( shdr->sh_type == SHT_STRTAB );
 
-            ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
-            ImGui::BeginTable( "SHT_STRTAB", 3, flags, ImVec2( 0, 0 ) );
+            ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Scroll;
+            ImGui::BeginTable( "SHT_STRTAB", 3, flags, ImVec2( 0, 300 ) );
             ImGui::TableSetupColumn( "File Offset", 0, 100.0 );
             ImGui::TableSetupColumn( "Index", 0, 100.0 );
             ImGui::TableSetupColumn( "String", ImGuiTableColumnFlags_WidthStretch );
@@ -1909,7 +1909,7 @@ namespace Imelf
         void DrawRela( T* elf, H* shdr )
         {
             ImGuiTableFlags flags = ImGuiTableFlags_SizingPolicyFixedX | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Scroll;
-            ImGui::BeginTable( ".rela", 5, flags, ImVec2( 0, 0 ) );
+            ImGui::BeginTable( ".rela", 5, flags, ImVec2( 0, 300 ) );
 
             if ( elf->get_elf_header()->e_type == ET_EXEC || elf->get_elf_header()->e_type == ET_DYN ) {
                 ImGui::TableSetupColumn( "Virtual Address", 0, 200.0 );
@@ -2210,9 +2210,11 @@ namespace Imelf
                     DrawSymTab( elf, shdr );
                     break;
                 case SHT_STRTAB:
-                    return DrawStrTab( elf, shdr );
+                    DrawStrTab( elf, shdr );
+                    break;
                 case SHT_RELA:
-                    return DrawRela( elf, shdr );
+                    DrawRela( elf, shdr );
+                    break;
                 case SHT_HASH:
                     break;
                 case SHT_DYNAMIC:
