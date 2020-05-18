@@ -1920,8 +1920,8 @@ namespace Imelf
                 ImGui::TableSetupColumn( "r_offset", 0, 200.0 );
             }
 
-            ImGui::TableSetupColumn( "R_SYM", 0, 100.0 );
-            ImGui::TableSetupColumn( "R_TYPE", 0, 300.0 );
+            ImGui::TableSetupColumn( "Sym", 0, 200.0 );
+            ImGui::TableSetupColumn( "Type", 0, 300.0 );
 
             ImGui::TableSetupColumn( "r_addend", 0, 100.0 );
 
@@ -1931,7 +1931,7 @@ namespace Imelf
             auto rela = elf->get_rela( shdr );
             auto cur = rela;
 
-            while ( (char*)cur < (char*)rela + shdr->sh_size ) {
+            while ( (uintptr_t)cur < (uintptr_t)rela + shdr->sh_size ) {
                 ImGui::TableNextRow();
                 ImGui::Text( "%llx", cur->r_offset );
                 ImGui::TableNextCell();
@@ -1939,13 +1939,23 @@ namespace Imelf
                 size_t val = cur->r_info;
 
                 if ( elf->get_elf_header()->e_ident[EI_CLASS] == ELFCLASS32 ) {
-                    ImGui::Text( "%x", ELF32_R_SYM( val ) );
+                    auto r_sym = ELF32_R_SYM( val );
+                    if ( !r_sym && cur->r_addend ) {
+                        ImGui::Text( "%s", elf->get_sym_by_value( cur->r_addend ));
+                    } else {
+                        ImGui::Text( "%x", r_sym );
+                    }
                     ImGui::TableNextCell();
 
                     ImGui::Text( "%s", ShdrRelaType.get_val( ELF32_R_TYPE( val ) ) );
                     Tooltip( ShdrRelaType.get_desc( ELF32_R_TYPE( val ) ) );
                 } else {
-                    ImGui::Text( "%x", ELF64_R_SYM( val ) );
+                    auto r_sym = ELF64_R_SYM( val );
+                    if ( !r_sym && cur->r_addend ) {
+                        ImGui::Text( "%s", elf->get_sym_by_value( cur->r_addend ) );
+                    } else {
+                        ImGui::Text( "%x", r_sym );
+                    }
                     ImGui::TableNextCell();
 
                     ImGui::Text( "%s", ShdrRelaType.get_val( ELF64_R_TYPE( val ) ) );

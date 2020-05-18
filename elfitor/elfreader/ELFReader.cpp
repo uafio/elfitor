@@ -542,7 +542,7 @@ Elf32_Sym* Elf32::get_dynsym( void )
 }
 
 
-char* Elf32::get_sym_by_value( int value )
+char* Elf32::get_sym_by_value( size_t value )
 {
     Elf32_Sym* symtab = get_symtab();
     Elf32_Sym* cursym = symtab;
@@ -786,7 +786,7 @@ Elf64_Sym* Elf64::get_dynsym( void )
 }
 
 
-char* Elf64::get_sym_by_value( int value )
+char* Elf64::get_sym_by_value( size_t value )
 {
     Elf64_Sym* symtab = get_symtab();
     Elf64_Sym* cursym = symtab;
