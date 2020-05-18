@@ -444,7 +444,7 @@ void Elf32::show_main( void )
     }
 }
 
-Elf32_Dyn* Elf32::get_dyn( void )
+Elf32_Dyn* Elf32::get_dynamic( void )
 {
     for ( int i = 0; i < get_elf_header()->e_phnum; i++ ) {
         auto phdr = get_prog_header( i );
@@ -500,22 +500,7 @@ Elf32_Rel* Elf32::get_rel( Elf32_Shdr* shdr, int index )
 }
 
 
-Elf32_Sym* Elf32::get_sym( Elf32_Shdr* shdr, int index )
-{
-    assert( shdr->sh_type == SHT_SYMTAB || shdr->sh_type == SHT_DYNSYM );
-    return reinterpret_cast< Elf32_Sym* >( (char*)base + shdr->sh_offset ) + index;
-}
 
-char* Elf32::get_strtab( void )
-{
-    for ( int i = 0; i < get_elf_header()->e_shnum; i++ ) {
-        auto section = get_section_header( i );
-        if ( section->sh_type == SHT_STRTAB && !strcmp( get_section_name( i ), ".strtab" ) ) {
-            return (char*)base + section->sh_offset;
-        }
-    }
-    return nullptr;
-}
 
 Elf32_Sym* Elf32::get_symtab( void )
 {
@@ -529,16 +514,56 @@ Elf32_Sym* Elf32::get_symtab( void )
 }
 
 
-char* Elf32::get_dynstr( void )
+
+Elf32_Shdr* Elf32::get_section_header( const char* sname )
+{
+    char* sh = reinterpret_cast< char* >( rva2va( get_section_header( get_elf_header()->e_shstrndx )->sh_offset ) );
+
+    for ( int i = 0; i < get_elf_header()->e_shnum; i++ ) {
+        Elf32_Shdr* shdr = get_section_header( i );
+        if ( !_stricmp( sname, sh + shdr->sh_name ) ) {
+            return shdr;
+        }
+    }
+
+    return nullptr;
+}
+
+
+Elf32_Sym* Elf32::get_dynsym( void )
 {
     for ( int i = 0; i < get_elf_header()->e_shnum; i++ ) {
-        auto section = get_section_header( i );
-        if ( section->sh_type == SHT_STRTAB && !_stricmp( get_section_name( (int)i ), ".dynstr" ) ) {
-            return reinterpret_cast< char* >( rva2va( section->sh_offset ) );
+        Elf32_Shdr* shdr = get_section_header( i );
+        if ( shdr->sh_type == SHT_DYNSYM ) {
+            return reinterpret_cast< Elf32_Sym* >( rva2va( shdr->sh_offset ) );
         }
     }
     return nullptr;
 }
+
+
+char* Elf32::get_sym_by_value( int value )
+{
+    Elf32_Sym* symtab = get_symtab();
+    Elf32_Sym* cursym = symtab;
+    char* strtab = reinterpret_cast< char* >( rva2va( get_section_header( ".strtab" )->sh_offset ) );
+
+    for ( int i = 0; i < get_elf_header()->e_shnum; i++ ) {
+        Elf32_Shdr* shdr = get_section_header( i );
+        if ( shdr->sh_type == SHT_SYMTAB ) {
+            while ( (uintptr_t)cursym < (uintptr_t)symtab + shdr->sh_size ) {
+                if ( cursym->st_value == value ) {
+                    return &strtab[cursym->st_name];
+                }
+
+                cursym++;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
 
 // ==========================================================================================================
 
@@ -664,7 +689,7 @@ ElfCTX& Elf64::get_ctx( void )
     return ctx;
 }
 
-Elf64_Dyn* Elf64::get_dyn( void )
+Elf64_Dyn* Elf64::get_dynamic( void )
 {
     for ( int i = 0; i < this->get_elf_header()->e_phnum; i++ ) {
         auto phdr = get_prog_header( i );
@@ -720,23 +745,6 @@ Elf64_Rel* Elf64::get_rel( Elf64_Shdr* shdr, int index )
 }
 
 
-Elf64_Sym* Elf64::get_sym( Elf64_Shdr* shdr, int index )
-{
-    assert( shdr->sh_type == SHT_SYMTAB || shdr->sh_type == SHT_DYNSYM );
-    return reinterpret_cast< Elf64_Sym* >( (char*)base + shdr->sh_offset ) + index;
-}
-
-
-char* Elf64::get_strtab( void )
-{
-    for ( int i = 0; i < get_elf_header()->e_shnum; i++ ) {
-        auto section = get_section_header( i );
-        if ( section->sh_type == SHT_STRTAB && !strcmp( get_section_name( i ), ".strtab" ) ) {
-            return (char*)base + section->sh_offset;
-        }
-    }
-    return nullptr;
-}
 
 
 Elf64_Sym* Elf64::get_symtab( void )
@@ -750,14 +758,56 @@ Elf64_Sym* Elf64::get_symtab( void )
     return nullptr;
 }
 
-char* Elf64::get_dynstr( void )
+
+Elf64_Shdr* Elf64::get_section_header( const char* sname )
 {
+    char* sh = reinterpret_cast< char* >( rva2va( get_section_header( get_elf_header()->e_shstrndx )->sh_offset ) );
+
     for ( int i = 0; i < get_elf_header()->e_shnum; i++ ) {
-        auto section = get_section_header( i );
-        if ( section->sh_type == SHT_STRTAB && !_stricmp( get_section_name( (int)i ), ".dynstr" ) ) {
-            return reinterpret_cast< char* >( rva2va( section->sh_offset ) );
+        Elf64_Shdr* shdr = get_section_header( i );
+        if ( !_stricmp( sname, sh + shdr->sh_name ) ) {
+            return shdr;
         }
     }
+
+    return nullptr;
+}
+
+
+Elf64_Sym* Elf64::get_dynsym( void )
+{
+    for ( int i = 0; i < get_elf_header()->e_shnum; i++ ) {
+        Elf64_Shdr* shdr = get_section_header( i );
+        if ( shdr->sh_type == SHT_DYNSYM ) {
+            return reinterpret_cast< Elf64_Sym* >( rva2va( shdr->sh_offset ) );
+        }
+    }
+    return nullptr;
+}
+
+
+char* Elf64::get_sym_by_value( int value )
+{
+    Elf64_Sym* symtab = get_symtab();
+    Elf64_Sym* cursym = symtab;
+    char* strtab = reinterpret_cast< char* >( rva2va( get_section_header( ".strtab" )->sh_offset ) );
+
+    for ( int i = 0; i < get_elf_header()->e_shnum; i++ ) {
+        Elf64_Shdr* shdr = get_section_header( i );
+        if ( shdr->sh_type == SHT_SYMTAB ) {
+
+            while ( (uintptr_t)cursym < (uintptr_t)symtab + shdr->sh_size ) {
+            
+                if ( cursym->st_value == value ) {
+                    return &strtab[cursym->st_name];
+                }
+            
+                cursym++;
+            }
+
+        }
+    }
+
     return nullptr;
 }
 

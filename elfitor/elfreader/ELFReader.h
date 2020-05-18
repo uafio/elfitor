@@ -99,6 +99,7 @@ public:
     // Relative Virtual Address to Virtual Address
     void* rva2va( size_t rva );
 
+    // Virtual Address to Relative Virtual Address
     uint64_t va2rva( void* va );
 
     // Saves File on disk
@@ -136,16 +137,16 @@ public:
     Elf32_Ehdr* get_elf_header( void );
     Elf32_Phdr* get_prog_header( int index );
     Elf32_Shdr* get_section_header( int index );
+    Elf32_Shdr* get_section_header( const char* sname );
     char* get_section_name( int index );
     char* get_section_name( Elf32_Shdr* section );
-    char* get_strtab( void );
     Elf32_Sym* get_symtab( void );
-    Elf32_Dyn* get_dyn( void );
-    char* get_dynstr( void );
+    Elf32_Sym* get_dynsym( void );
+    Elf32_Dyn* get_dynamic( void );
     Elf32_Rela* get_rela( Elf32_Shdr* shdr, int index = 0 );
     Elf32_Rel* get_rel( Elf32_Shdr* shdr, int index = 0 );
-    Elf32_Sym* get_sym( Elf32_Shdr* shdr, int index = 0 );
     Elf32_Shdr* va2section( size_t va );
+    char* get_sym_by_value( int value );
 };
 
 class Elf64 : public File
@@ -163,14 +164,14 @@ public:
     Elf64_Ehdr* get_elf_header( void );
     Elf64_Phdr* get_prog_header( int index );
     Elf64_Shdr* get_section_header( int index );
+    Elf64_Shdr* get_section_header( const char* sname );
     char* get_section_name( int index );
     char* get_section_name( Elf64_Shdr* section );
-    char* get_strtab( void );
     Elf64_Sym* get_symtab( void );
-    Elf64_Dyn* get_dyn( void );
-    char* get_dynstr( void );
+    Elf64_Sym* get_dynsym( void );
+    Elf64_Dyn* get_dynamic( void );
     Elf64_Rela* get_rela( Elf64_Shdr* shdr, int index = 0 );
     Elf64_Rel* get_rel( Elf64_Shdr* shdr, int index = 0 );
-    Elf64_Sym* get_sym( Elf64_Shdr* shdr, int index = 0 );
     Elf64_Shdr* va2section( size_t va );
+    char* get_sym_by_value( int value );
 };

@@ -2047,10 +2047,10 @@ namespace Imelf
 
             char* strtab = (char*)elf->rva2va( strtab_shdr->sh_offset );
 
-            auto symtab = elf->get_sym( shdr );
+            auto symtab = elf->get_symtab();
             auto cur = symtab;
 
-            while ( (char*)cur < (char*)symtab + shdr->sh_size ) {
+            while ( (uintptr_t)cur < (uintptr_t)symtab + shdr->sh_size ) {
                 ImGui::TableNextRow();
 
                 ImGui::Text( "%s", strtab + cur->st_name );
@@ -2112,10 +2112,10 @@ namespace Imelf
             assert( dynstr_shdr->sh_type == SHT_STRTAB );
             char* dynstr = (char*)elf->rva2va( dynstr_shdr->sh_offset );
 
-            auto dynsym = elf->get_sym( shdr );
+            auto dynsym = elf->get_dynsym();
             auto cur = dynsym;
 
-            while ( (char*)cur < (char*)dynsym + shdr->sh_size ) {
+            while ( (uintptr_t)cur < (uintptr_t)dynsym + shdr->sh_size ) {
                 ImGui::TableNextRow();
 
                 ImGui::Text( "%s", dynstr + cur->st_name );
@@ -2159,18 +2159,6 @@ namespace Imelf
             uint64_t count = shdr->sh_size / ptrsize;
             void* init_array = elf->rva2va( shdr->sh_offset );
 
-            
-            size_t symtab_size = 0;
-            for ( int i = 0; i < elf->get_elf_header()->e_shnum; i++ ) {
-                auto section = elf->get_section_header( i );
-                if ( section->sh_type == SHT_SYMTAB ) {
-                    symtab_size = section->sh_size;
-                }
-            }
-            auto symtab = elf->get_symtab();
-            auto cur_sym = symtab;
-            char* strtab = elf->get_strtab();
-
             for ( int i = 0; i < count; i++ ) {
 
                 size_t value = 0;
@@ -2181,13 +2169,7 @@ namespace Imelf
                 ImGui::Text( "%llx", value );
                 ImGui::TableNextCell();
 
-                while ( (uintptr_t)cur_sym < (uintptr_t)symtab + symtab_size ) {
-                    if ( cur_sym->st_value == value ) {
-                        ImGui::Text( "%s", strtab + cur_sym->st_name );
-                        break;
-                    }
-                    cur_sym++;
-                }       
+                ImGui::Text( "%s", elf->get_sym_by_value( value ) );
 
                 init_array = (char*)init_array + count * ptrsize;
             }
@@ -2284,7 +2266,8 @@ namespace Imelf
         void DrawGnuVerneed( T* elf, H* shdr )
         {
             Elf64_Verneed* ver = reinterpret_cast< Elf64_Verneed* >( elf->rva2va( shdr->sh_offset ) );
-            ImGuiTableFlags flags = ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable  ;
+            ImGuiTableFlags flags = ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable;
+            char* dynstr = reinterpret_cast< char* >( elf->rva2va( elf->get_section_header( ".dynstr" )->sh_offset ) );
             int index = 0;
             do {
                 char tname[32];
@@ -2301,7 +2284,7 @@ namespace Imelf
                 ImGui::TableNextCell();
                 ImGui::Text( "%x", ver->vn_cnt );
                 ImGui::TableNextCell();
-                ImGui::Text( "%s", elf->get_dynstr() + ver->vn_file );
+                ImGui::Text( "%s", &dynstr[ver->vn_file] );
                 ImGui::TableNextCell();
                 ImGui::Text( "%x", ver->vn_aux );
                 ImGui::TableNextCell();
@@ -2326,7 +2309,7 @@ namespace Imelf
                     ImGui::TableNextCell();
                     ImGui::Text( "%x", aux[i].vna_other );
                     ImGui::TableNextCell();
-                    ImGui::Text( "%s", elf->get_dynstr() + aux[i].vna_name );
+                    ImGui::Text( "%s", &dynstr[aux[i].vna_name] );
                     ImGui::TableNextCell();
                     ImGui::Text( "%x", aux[i].vna_next );
                 }
@@ -2365,7 +2348,7 @@ namespace Imelf
                     DrawHash( elf, shdr );
                     break;
                 case SHT_DYNAMIC:
-                    DrawDynamic( elf->get_dyn() );
+                    DrawDynamic( elf->get_dynamic() );
                     break;
                 case SHT_NOTE:
                     DrawNote( elf, shdr );
