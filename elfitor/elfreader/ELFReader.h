@@ -147,6 +147,7 @@ public:
     Elf32_Rel* get_rel( Elf32_Shdr* shdr, int index = 0 );
     Elf32_Shdr* va2section( size_t va );
     char* get_sym_by_value( size_t value );
+    char* get_dynsym_by_index( size_t index );
 };
 
 class Elf64 : public File
@@ -174,4 +175,5 @@ public:
     Elf64_Rel* get_rel( Elf64_Shdr* shdr, int index = 0 );
     Elf64_Shdr* va2section( size_t va );
     char* get_sym_by_value( size_t value );
+    char* get_dynsym_by_index( size_t index );
 };

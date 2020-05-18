@@ -565,6 +565,14 @@ char* Elf32::get_sym_by_value( size_t value )
 }
 
 
+char* Elf32::get_dynsym_by_index( size_t index )
+{
+    Elf32_Sym* dynsym = get_dynsym() + index;
+    char* strings = reinterpret_cast< char* >( rva2va( get_section_header( ".dynstr" )->sh_offset ) );
+    return &strings[dynsym->st_name];
+}
+
+
 // ==========================================================================================================
 
 
@@ -790,7 +798,7 @@ char* Elf64::get_sym_by_value( size_t value )
 {
     Elf64_Sym* symtab = get_symtab();
     Elf64_Sym* cursym = symtab;
-    char* strtab = reinterpret_cast< char* >( rva2va( get_section_header( ".strtab" )->sh_offset ) );
+    char* strings = reinterpret_cast< char* >( rva2va( get_section_header( ".strtab" )->sh_offset ) );
 
     for ( int i = 0; i < get_elf_header()->e_shnum; i++ ) {
         Elf64_Shdr* shdr = get_section_header( i );
@@ -799,7 +807,7 @@ char* Elf64::get_sym_by_value( size_t value )
             while ( (uintptr_t)cursym < (uintptr_t)symtab + shdr->sh_size ) {
             
                 if ( cursym->st_value == value ) {
-                    return &strtab[cursym->st_name];
+                    return &strings[cursym->st_name];
                 }
             
                 cursym++;
@@ -810,5 +818,15 @@ char* Elf64::get_sym_by_value( size_t value )
 
     return nullptr;
 }
+
+
+char* Elf64::get_dynsym_by_index( size_t index )
+{
+    Elf64_Sym* dynsym = get_dynsym() + index;
+    char* strings = reinterpret_cast< char* >( rva2va( get_section_header( ".dynstr" )->sh_offset ) );
+    return &strings[dynsym->st_name];
+}
+
+
 
 // ==========================================================================================================

@@ -889,40 +889,108 @@ const ComboBoxMap ShdrStrTabSndx = {
 const ComboBoxMap ShdrDynamicTag = {
     34,
     {
-      DT_NULL,"DT_NULL","An entry with a DT_NULL tag marks the end of the _DYNAMIC array.",
-      DT_NEEDED,"DT_NEEDED","This element holds the string table offset of a null-terminated string, giving the name of a needed library. The offset is an index into the table recorded in the DT_STRTAB code.",
-      DT_PLTRELSZ,"DT_PLTRELSZ","This element holds the total size, in bytes, of the relocation entries associated with the procedure linkage table. If an entry of type DT_JMPREL is present, a DT_PLTRELSZ must accompany it.",
-      DT_PLTGOT,"DT_PLTGOT","This element holds an address associated with the procedure linkage table and/or the global offset table. See this section in the processor supplement for details.",
-      DT_HASH,"DT_HASH","This element holds the address of the symbol hash table. This hash table refers to the symbol table referenced by the DT_SYMTAB element.",
-      DT_STRTAB,"DT_STRTAB","This element holds the address of the string table. Symbol names, library names, and other strings reside in this table.",
-      DT_SYMTAB,"DT_SYMTAB","This element holds the address of the symbol table, described in the first part of this chapter, with Elf32_Sym entries for the 32-bit class of files and Elf64_Sym entries for the 64-bit class of files.",
-      DT_RELA,"DT_RELA","This element holds the address of a relocation table. Entries in the table have explicit addends, such as Elf32_Rela for the 32-bit file class or Elf64_Rela for the 64-bit file class.",
-      DT_RELASZ,"DT_RELASZ","This element holds the total size, in bytes, of the DT_RELA relocation table.",
-      DT_RELAENT,"DT_RELAENT","This element holds the size, in bytes, of the DT_RELA relocation entry.",
-      DT_STRSZ,"DT_STRSZ","This element holds the size, in bytes, of the string table.",
-      DT_SYMENT,"DT_SYMENT","This element holds the size, in bytes, of a symbol table entry.",
-      DT_INIT,"DT_INIT","This element holds the address of the initialization function.",
-      DT_FINI,"DT_FINI","This element holds the address of the termination function.",
-      DT_SONAME,"DT_SONAME","This element holds the string table offset of a null-terminated string, giving the name of the shared object. The offset is an index into the table recorded in the DT_STRTAB entry.",
-      DT_RPATH,"DT_RPATH","This element holds the string table offset of a null-terminated search library search path string. The offset is an index into the table recorded in the DT_STRTAB entry. This entry is at level 2. Its use has been superseded by DT_RUNPATH.",
-      DT_SYMBOLIC,"DT_SYMBOLIC","This element's presence in a shared object library alters the dynamic linker's symbol resolution algorithm for references within the library. Instead of starting a symbol search with the executable file, the dynamic linker starts from the shared object itself. If the shared object fails to supply the referenced symbol, the dynamic linker then searches the executable file and other shared objects as usual. This entry is at level 2. Its use has been superseded by the DF_SYMBOLIC flag.",
-      DT_REL,"DT_REL","This element is similar to DT_RELA, except its table has implicit addends, such as Elf32_Rel for the 32-bit file class or Elf64_Rel for the 64-bit file class. If this element is present, the dynamic structure must also have DT_RELSZ and DT_RELENT elements.",
-      DT_RELSZ,"DT_RELSZ","This element holds the total size, in bytes, of the DT_REL relocation table.",
-      DT_RELENT,"DT_RELENT","This element holds the size, in bytes, of the DT_REL relocation entry.",
-      DT_PLTREL,"DT_PLTREL","This member specifies the type of relocation entry to which the procedure linkage table refers. The d_val member holds DT_REL or DT_RELA, as appropriate. All relocations in a procedure linkage table must use the same relocation.",
-      DT_DEBUG,"DT_DEBUG","This member is used for debugging. Its contents are not specified for the ABI; programs that access this entry are not ABI-conforming.",
-      DT_TEXTREL,"DT_TEXTREL","This member's absence signifies that no relocation entry should cause a modification to a non-writable segment, as specified by the segment permissions in the program header table. If this member is present, one or more relocation entries might request modifications to a non-writable segment, and the dynamic linker can prepare accordingly. This entry is at level 2. Its use has been superseded by the DF_TEXTREL flag.",
-      DT_JMPREL,"DT_JMPREL","If present, this entry's d_ptr member holds the address of relocation entries associated solely with the procedure linkage table. Separating these relocation entries lets the dynamic linker ignore them during process initialization, if lazy binding is enabled. If this entry is present, the related entries of types DT_PLTRELSZ and DT_PLTREL must also be present.",
-      DT_BIND_NOW,"DT_BIND_NOW","If present in a shared object or executable, this entry instructs the dynamic linker to process all relocations for the object containing this entry before transferring control to the program. The presence of this entry takes precedence over a directive to use lazy binding for this object when specified through the environment or via dlopen(BA_LIB). This entry is at level 2. Its use has been superseded by the DF_BIND_NOW flag.",
-      DT_INIT_ARRAY,"DT_INIT_ARRAY","This element holds the address of the array of pointers to initialization functions.",
-      DT_FINI_ARRAY,"DT_FINI_ARRAY","This element holds the address of the array of pointers to termination functions.",
-      DT_INIT_ARRAYSZ,"DT_INIT_ARRAYSZ","This element holds the size in bytes of the array of initialization functions pointed to by the DT_INIT_ARRAY entry. If an object has a DT_INIT_ARRAY entry, it must also have a DT_INIT_ARRAYSZ entry.",
-      DT_FINI_ARRAYSZ,"DT_FINI_ARRAYSZ","This element holds the size in bytes of the array of termination functions pointed to by the DT_FINI_ARRAY entry. If an object has a DT_FINI_ARRAY entry, it must also have a DT_FINI_ARRAYSZ entry.",
-      DT_RUNPATH,"DT_RUNPATH","This element holds the string table offset of a null-terminated library search path string. The offset is an index into the table recorded in the DT_STRTAB entry.",
-      DT_FLAGS,"DT_FLAGS","This element holds flag values specific to the object being loaded.",
-      DT_ENCODING,"DT_ENCODING","",
-      DT_PREINIT_ARRAY,"DT_PREINIT_ARRAY","This element holds the address of the array of pointers to pre-initialization functions. The DT_PREINIT_ARRAY table is processed only in an executable file; it is ignored if contained in a shared object.",
-      DT_PREINIT_ARRAYSZ,"DT_PREINIT_ARRAYSZ","This element holds the size in bytes of the array of pre-initialization functions pointed to by the DT_PREINIT_ARRAY entry. If an object has a DT_PREINIT_ARRAY entry, it must also have a DT_PREINIT_ARRAYSZ entry. As with DT_PREINIT_ARRAY, this entry is ignored if it appears in a shared object.",
+      DT_NULL,
+      "DT_NULL",
+      "An entry with a DT_NULL tag marks the end of the _DYNAMIC array.",
+      DT_NEEDED,
+      "DT_NEEDED",
+      "This element holds the string table offset of a null-terminated string, giving the name of a needed library. The offset is an index into the table recorded in the DT_STRTAB code.",
+      DT_PLTRELSZ,
+      "DT_PLTRELSZ",
+      "This element holds the total size, in bytes, of the relocation entries associated with the procedure linkage table. If an entry of type DT_JMPREL is present, a DT_PLTRELSZ must accompany it.",
+      DT_PLTGOT,
+      "DT_PLTGOT",
+      "This element holds an address associated with the procedure linkage table and/or the global offset table. See this section in the processor supplement for details.",
+      DT_HASH,
+      "DT_HASH",
+      "This element holds the address of the symbol hash table. This hash table refers to the symbol table referenced by the DT_SYMTAB element.",
+      DT_STRTAB,
+      "DT_STRTAB",
+      "This element holds the address of the string table. Symbol names, library names, and other strings reside in this table.",
+      DT_SYMTAB,
+      "DT_SYMTAB",
+      "This element holds the address of the symbol table, described in the first part of this chapter, with Elf32_Sym entries for the 32-bit class of files and Elf64_Sym entries for the 64-bit class of files.",
+      DT_RELA,
+      "DT_RELA",
+      "This element holds the address of a relocation table. Entries in the table have explicit addends, such as Elf32_Rela for the 32-bit file class or Elf64_Rela for the 64-bit file class.",
+      DT_RELASZ,
+      "DT_RELASZ",
+      "This element holds the total size, in bytes, of the DT_RELA relocation table.",
+      DT_RELAENT,
+      "DT_RELAENT",
+      "This element holds the size, in bytes, of the DT_RELA relocation entry.",
+      DT_STRSZ,
+      "DT_STRSZ",
+      "This element holds the size, in bytes, of the string table.",
+      DT_SYMENT,
+      "DT_SYMENT",
+      "This element holds the size, in bytes, of a symbol table entry.",
+      DT_INIT,
+      "DT_INIT",
+      "This element holds the address of the initialization function.",
+      DT_FINI,
+      "DT_FINI",
+      "This element holds the address of the termination function.",
+      DT_SONAME,
+      "DT_SONAME",
+      "This element holds the string table offset of a null-terminated string, giving the name of the shared object. The offset is an index into the table recorded in the DT_STRTAB entry.",
+      DT_RPATH,
+      "DT_RPATH",
+      "This element holds the string table offset of a null-terminated search library search path string. The offset is an index into the table recorded in the DT_STRTAB entry. This entry is at level 2. Its use has been superseded by DT_RUNPATH.",
+      DT_SYMBOLIC,
+      "DT_SYMBOLIC",
+      "This element's presence in a shared object library alters the dynamic linker's symbol resolution algorithm for references within the library. Instead of starting a symbol search with the executable file, the dynamic linker starts from the shared object itself. If the shared object fails to supply the referenced symbol, the dynamic linker then searches the executable file and other shared objects as usual. This entry is at level 2. Its use has been superseded by the DF_SYMBOLIC flag.",
+      DT_REL,
+      "DT_REL",
+      "This element is similar to DT_RELA, except its table has implicit addends, such as Elf32_Rel for the 32-bit file class or Elf64_Rel for the 64-bit file class. If this element is present, the dynamic structure must also have DT_RELSZ and DT_RELENT elements.",
+      DT_RELSZ,
+      "DT_RELSZ",
+      "This element holds the total size, in bytes, of the DT_REL relocation table.",
+      DT_RELENT,
+      "DT_RELENT",
+      "This element holds the size, in bytes, of the DT_REL relocation entry.",
+      DT_PLTREL,
+      "DT_PLTREL",
+      "This member specifies the type of relocation entry to which the procedure linkage table refers. The d_val member holds DT_REL or DT_RELA, as appropriate. All relocations in a procedure linkage table must use the same relocation.",
+      DT_DEBUG,
+      "DT_DEBUG",
+      "This member is used for debugging. Its contents are not specified for the ABI; programs that access this entry are not ABI-conforming.",
+      DT_TEXTREL,
+      "DT_TEXTREL",
+      "This member's absence signifies that no relocation entry should cause a modification to a non-writable segment, as specified by the segment permissions in the program header table. If this member is present, one or more relocation entries might request modifications to a non-writable segment, and the dynamic linker can prepare accordingly. This entry is at level 2. Its use has been superseded by the DF_TEXTREL flag.",
+      DT_JMPREL,
+      "DT_JMPREL",
+      "If present, this entry's d_ptr member holds the address of relocation entries associated solely with the procedure linkage table. Separating these relocation entries lets the dynamic linker ignore them during process initialization, if lazy binding is enabled. If this entry is present, the related entries of types DT_PLTRELSZ and DT_PLTREL must also be present.",
+      DT_BIND_NOW,
+      "DT_BIND_NOW",
+      "If present in a shared object or executable, this entry instructs the dynamic linker to process all relocations for the object containing this entry before transferring control to the program. The presence of this entry takes precedence over a directive to use lazy binding for this object when specified through the environment or via dlopen(BA_LIB). This entry is at level 2. Its use has been superseded by the DF_BIND_NOW flag.",
+      DT_INIT_ARRAY,
+      "DT_INIT_ARRAY",
+      "This element holds the address of the array of pointers to initialization functions.",
+      DT_FINI_ARRAY,
+      "DT_FINI_ARRAY",
+      "This element holds the address of the array of pointers to termination functions.",
+      DT_INIT_ARRAYSZ,
+      "DT_INIT_ARRAYSZ",
+      "This element holds the size in bytes of the array of initialization functions pointed to by the DT_INIT_ARRAY entry. If an object has a DT_INIT_ARRAY entry, it must also have a DT_INIT_ARRAYSZ entry.",
+      DT_FINI_ARRAYSZ,
+      "DT_FINI_ARRAYSZ",
+      "This element holds the size in bytes of the array of termination functions pointed to by the DT_FINI_ARRAY entry. If an object has a DT_FINI_ARRAY entry, it must also have a DT_FINI_ARRAYSZ entry.",
+      DT_RUNPATH,
+      "DT_RUNPATH",
+      "This element holds the string table offset of a null-terminated library search path string. The offset is an index into the table recorded in the DT_STRTAB entry.",
+      DT_FLAGS,
+      "DT_FLAGS",
+      "This element holds flag values specific to the object being loaded.",
+      DT_ENCODING,
+      "DT_ENCODING",
+      "",
+      DT_PREINIT_ARRAY,
+      "DT_PREINIT_ARRAY",
+      "This element holds the address of the array of pointers to pre-initialization functions. The DT_PREINIT_ARRAY table is processed only in an executable file; it is ignored if contained in a shared object.",
+      DT_PREINIT_ARRAYSZ,
+      "DT_PREINIT_ARRAYSZ",
+      "This element holds the size in bytes of the array of pre-initialization functions pointed to by the DT_PREINIT_ARRAY entry. If an object has a DT_PREINIT_ARRAY entry, it must also have a DT_PREINIT_ARRAYSZ entry. As with DT_PREINIT_ARRAY, this entry is ignored if it appears in a shared object.",
     }
 };
 
@@ -1009,7 +1077,7 @@ namespace Imelf
 
             ImGui::TableNextCell();
             ImGui::Text( "%llx", dyn->d_un.d_val );
-            
+
             dyn++;
         }
 
@@ -1940,8 +2008,11 @@ namespace Imelf
 
                 if ( elf->get_elf_header()->e_ident[EI_CLASS] == ELFCLASS32 ) {
                     auto r_sym = ELF32_R_SYM( val );
+
                     if ( !r_sym && cur->r_addend ) {
-                        ImGui::Text( "%s", elf->get_sym_by_value( cur->r_addend ));
+                        ImGui::Text( "%s", elf->get_sym_by_value( cur->r_addend ) );
+                    } else if ( r_sym && !cur->r_addend ) {
+                        ImGui::Text( "%s", elf->get_dynsym_by_index( r_sym ) );
                     } else {
                         ImGui::Text( "%x", r_sym );
                     }
@@ -1949,10 +2020,14 @@ namespace Imelf
 
                     ImGui::Text( "%s", ShdrRelaType.get_val( ELF32_R_TYPE( val ) ) );
                     Tooltip( ShdrRelaType.get_desc( ELF32_R_TYPE( val ) ) );
+
                 } else {
                     auto r_sym = ELF64_R_SYM( val );
+
                     if ( !r_sym && cur->r_addend ) {
                         ImGui::Text( "%s", elf->get_sym_by_value( cur->r_addend ) );
+                    } else if ( r_sym && !cur->r_addend ) {
+                        ImGui::Text( "%s", elf->get_dynsym_by_index( r_sym ) );
                     } else {
                         ImGui::Text( "%x", r_sym );
                     }
@@ -1966,6 +2041,7 @@ namespace Imelf
                 ImGui::Text( "%llx", cur->r_addend );
 
                 ImGui::TableNextCell();
+
                 if ( elf->get_elf_header()->e_type == ET_REL ) {
                     ImGui::Text( "%s", elf->get_section_name( shdr->sh_info ) );
                 } else {
@@ -2131,12 +2207,12 @@ namespace Imelf
                 ImGui::Text( "%s", dynstr + cur->st_name );
                 ImGui::TableNextCell();
 
-                ImGui::Text( "%s", ShdrStrTabBind.get_val( ELF64_ST_BIND(cur->st_info) ) );
-                Tooltip( ShdrStrTabBind.get_desc( ELF64_ST_BIND(cur->st_info) ) );
+                ImGui::Text( "%s", ShdrStrTabBind.get_val( ELF64_ST_BIND( cur->st_info ) ) );
+                Tooltip( ShdrStrTabBind.get_desc( ELF64_ST_BIND( cur->st_info ) ) );
                 ImGui::TableNextCell();
 
-                ImGui::Text( "%s", ShdrStrTabType.get_val( ELF64_ST_TYPE(cur->st_info) ) );
-                Tooltip( ShdrStrTabType.get_desc( ELF64_ST_TYPE(cur->st_info) ) );
+                ImGui::Text( "%s", ShdrStrTabType.get_val( ELF64_ST_TYPE( cur->st_info ) ) );
+                Tooltip( ShdrStrTabType.get_desc( ELF64_ST_TYPE( cur->st_info ) ) );
                 ImGui::TableNextCell();
 
                 ImGui::Text( "%x", cur->st_other );
@@ -2170,7 +2246,6 @@ namespace Imelf
             void* init_array = elf->rva2va( shdr->sh_offset );
 
             for ( int i = 0; i < count; i++ ) {
-
                 size_t value = 0;
                 memcpy( &value, init_array, ptrsize );
 
@@ -2325,12 +2400,11 @@ namespace Imelf
                 }
 
                 ImGui::EndTable();
-            
+
                 ver = reinterpret_cast< Elf64_Verneed* >( (uintptr_t)ver + ver->vn_next );
             } while ( ver->vn_next );
 
             ImGui::NewLine();
-
         }
 
         template< typename T, typename H >
