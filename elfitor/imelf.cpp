@@ -1007,9 +1007,12 @@ namespace Imelf
             }
         }
 
-        if ( ImGui::BeginCombo( map.kv[0].val, preview, ImGuiComboFlags_None ) ) {
+        ImGui::SetNextItemWidth( 100.0f );
+        if ( ImGui::BeginCombo( preview, nullptr, ImGuiComboFlags_NoPreview ) ) {
             for ( int i = 0; i < map.count; i++ ) {
                 bool is_selected = ( preview == map.kv[i].val );
+                if ( is_selected )
+                    ImGui::SetItemDefaultFocus();
                 if ( ImGui::Selectable( map.kv[i].val, is_selected ) ) {
                     dest = map.kv[i].key;
                     preview = map.kv[i].val;
