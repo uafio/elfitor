@@ -16,7 +16,8 @@ typedef struct {
     enum _hdr {
         ehdr = 0,
         phdr,
-        shdr
+        shdr,
+        hex
     } hdr;
     int idx;
 } ElfCTX;
@@ -120,6 +121,9 @@ public:
     // Optional code of additional windows
     virtual void other_windows( void )
     {};
+
+    // Show hex editor
+    void show_hex_editor( void );
 };
 
 class Elf32 : public File

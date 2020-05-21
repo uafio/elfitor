@@ -217,6 +217,29 @@ File::~File( void )
     }
 }
 
+
+void File::show_hex_editor( void )
+{
+    static char cfo[32];
+    static uint64_t fo;
+    static uint64_t dsize = size;
+
+    ImGuiInputTextFlags flags = ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsNoBlank | ImGuiInputTextFlags_EnterReturnsTrue;
+    ImGui::PushItemWidth( 200 );
+
+    if ( ImGui::InputText( "File Offset", cfo, sizeof( cfo ) - 1, flags ) ) {
+        fo = strtoull( cfo, nullptr, 16 );
+        if ( fo >= size ) {
+            fo = size;
+        }
+        dsize = size - fo;
+    }
+
+    ImGui::PopItemWidth();
+
+    mViewer.DrawChildWindow( "##hexview", rva2va( fo ), dsize, fo );
+}
+
 // ==========================================================================================================
 
 FileFactory::FileFactory( const char* filename )
@@ -643,15 +666,15 @@ void Elf64::show_nav( void )
     const char* leafs[] = { 
         "ELF Header",
         "Program Headers",
-        "Section Headers" 
+        "Section Headers",
+        "Hex-Editor"
     };
 
     for ( int i = 0; i < _countof( leafs ); i++ ) {
-        if ( ctx.hdr == i ) {
-            ImGui::TreeNodeEx( leafs[i], ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Selected, (char*)leafs[i] );
-        } else {
-            ImGui::TreeNodeEx( leafs[i], ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf, (char*)leafs[i] );
-        }
+        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf;
+        flags |= ctx.hdr == i ? ImGuiTreeNodeFlags_Selected : 0;
+        ImGui::TreeNodeEx( leafs[i], flags, (char*)leafs[i] );
+
         if ( ImGui::IsItemClicked() ) {
             ctx.hdr = static_cast< ElfCTX::_hdr >( i );
             ctx.idx = 0;
@@ -686,6 +709,9 @@ void Elf64::show_main( void )
             break;
         case ElfCTX::shdr:
             Imelf::Shdr::Draw( this );
+            break;
+        case ElfCTX::hex:
+            show_hex_editor();
             break;
         default:
             assert( false );
