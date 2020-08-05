@@ -569,7 +569,11 @@ char* Elf32::get_sym_by_value( size_t value )
 {
     Elf32_Sym* symtab = get_symtab();
     Elf32_Sym* cursym = symtab;
-    char* strtab = reinterpret_cast< char* >( rva2va( get_section_header( ".strtab" )->sh_offset ) );
+    Elf32_Shdr* section = get_section_header( ".strtab" );
+    if ( section == nullptr ) {
+        return nullptr;
+    }
+    char* strtab = reinterpret_cast< char* >( rva2va( section->sh_offset ) );
 
     for ( int i = 0; i < get_elf_header()->e_shnum; i++ ) {
         Elf32_Shdr* shdr = get_section_header( i );
@@ -824,7 +828,12 @@ char* Elf64::get_sym_by_value( size_t value )
 {
     Elf64_Sym* symtab = get_symtab();
     Elf64_Sym* cursym = symtab;
-    char* strings = reinterpret_cast< char* >( rva2va( get_section_header( ".strtab" )->sh_offset ) );
+    Elf64_Shdr* section = get_section_header( ".strtab" );
+    if ( section == nullptr ) {
+        return nullptr;
+    }
+
+    char* strings = reinterpret_cast< char* >( rva2va( section->sh_offset ) );
 
     for ( int i = 0; i < get_elf_header()->e_shnum; i++ ) {
         Elf64_Shdr* shdr = get_section_header( i );

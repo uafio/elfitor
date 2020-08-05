@@ -2008,7 +2008,8 @@ namespace Imelf
                 ImGui::TableNextCell();
 
                 size_t val = cur->r_info;
-
+                
+                // TODO: remove (null) print for nullptr in symbol column
                 if ( elf->get_elf_header()->e_ident[EI_CLASS] == ELFCLASS32 ) {
                     auto r_sym = ELF32_R_SYM( val );
 
